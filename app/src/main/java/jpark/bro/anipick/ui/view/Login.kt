@@ -3,6 +3,7 @@ package jpark.bro.anipick.ui.view
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,7 +34,10 @@ import jpark.bro.anipick.R
  * Login View
  */
 @Composable
-fun Login() {
+fun Login(
+    onNavigateToEmailLogin: () -> Unit,
+    onNavigateToEmailSignUp: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -78,54 +82,9 @@ fun Login() {
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Row(
-                modifier = Modifier
-                    .width(360.dp)
-                    .height(64.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFFEE500)),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.kakao_symbol),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(28.dp)
-                )
-                Spacer(modifier = Modifier.width(24.dp))
-                Text(
-                    text = "카카오 계정으로 계속하기",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W600,
-                    color = Color(0xFF3A1E20)
-                )
-            }
+            KakaoLogin()
             Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier
-                    .width(360.dp)
-                    .height(64.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .border(1.dp, Color(0xFFE3E3E3), RoundedCornerShape(8.dp))
-                    .background(Color(0xFFFFFFFF)),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.google_symbol),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(28.dp)
-                )
-                Spacer(modifier = Modifier.width(24.dp))
-                Text(
-                    text = "구글 계정으로 계속하기",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W600,
-                    color = Color(0xFF3A1E20)
-                )
-            }
+            GoogleLogin()
             Spacer(modifier = Modifier.height(24.dp))
             Row(
                 modifier = Modifier
@@ -137,7 +96,9 @@ fun Login() {
                     text = "이메일 회원가입",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W500,
-                    color = Color(0xFFB1B6C1)
+                    color = Color(0xFFB1B6C1),
+                    modifier = Modifier
+                        .clickable { onNavigateToEmailSignUp() }
                 )
                 VerticalDivider(
                     modifier = Modifier
@@ -146,10 +107,13 @@ fun Login() {
                     color = Color(0xFFB1B6C1)
                 )
                 Text(
-                    text = "이메일 회원가입",
+                    text = "이메일 로그인",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W500,
-                    color = Color(0xFFB1B6C1)
+                    color = Color(0xFFB1B6C1),
+                    modifier = Modifier
+                        .clickable { onNavigateToEmailLogin() }
+
                 )
             }
         }
@@ -174,8 +138,72 @@ fun Login() {
     }
 }
 
+/**
+ * KaKao Login Component
+ */
+@Composable
+fun KakaoLogin() {
+    Row(
+        modifier = Modifier
+            .width(360.dp)
+            .height(64.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color(0xFFFEE500)),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(R.drawable.kakao_symbol),
+            contentDescription = "",
+            modifier = Modifier
+                .size(28.dp)
+        )
+        Spacer(modifier = Modifier.width(24.dp))
+        Text(
+            text = "카카오 계정으로 계속하기",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.W600,
+            color = Color(0xFF3A1E20)
+        )
+    }
+}
+
+/**
+ * Google Login Component
+ */
+@Composable
+fun GoogleLogin() {
+    Row(
+        modifier = Modifier
+            .width(360.dp)
+            .height(64.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .border(1.dp, Color(0xFFE3E3E3), RoundedCornerShape(8.dp))
+            .background(Color(0xFFFFFFFF)),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(R.drawable.google_symbol),
+            contentDescription = "",
+            modifier = Modifier
+                .size(28.dp)
+        )
+        Spacer(modifier = Modifier.width(24.dp))
+        Text(
+            text = "구글 계정으로 계속하기",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.W600,
+            color = Color(0xFF3A1E20)
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun LoginPreview() {
-    Login()
+    Login(
+        {},
+        {}
+    )
 }
