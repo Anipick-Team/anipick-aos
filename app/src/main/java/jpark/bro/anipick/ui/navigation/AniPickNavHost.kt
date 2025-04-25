@@ -22,7 +22,16 @@ fun APNavHost(
                 onNavigateToEmailSignUp = { navController.navigate("email-signup") }
             )
         }
-        composable("email-login") { EmailLogin() }
-        composable("email-signup") { EmailSignup() }
+        composable("email-login") {
+            EmailLogin(
+                onNavigateToEmailSignUp = { navController.navigate("email-signup") },
+                handleBackNavigation = { navController.navigateUp() }
+            )
+        }
+        composable("email-signup") {
+            EmailSignup(
+                handleBackNavigation = { navController.navigateUp() }
+            )
+        }
     }
 }

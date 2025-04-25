@@ -1,6 +1,7 @@
 package jpark.bro.anipick.ui.view
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import jpark.bro.anipick.R
+import jpark.bro.anipick.ui.theme.APColors
 
 /**
  * Login View
@@ -36,7 +38,8 @@ fun Login(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(APColors.Background),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -60,13 +63,13 @@ fun Login(
                 text = "나에게 딱 맞는 애니 추천을 위해.",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.W700,
-                color = Color(0xFF2F2E41)
+                color = APColors.Black
             )
             Text(
                 text = "사용할수록 더 좋아지는 애니메이션 환경을 만나보세요",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.W400,
-                color = Color(0xFF2F2E41)
+                color = APColors.Black
             )
         }
 
@@ -98,7 +101,7 @@ fun Login(
                     text = "이메일 회원가입",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W500,
-                    color = Color(0xFFB1B6C1),
+                    color = APColors.TextGray,
                     modifier = Modifier
                         .clickable { onNavigateToEmailSignUp() }
                 )
@@ -106,13 +109,13 @@ fun Login(
                     modifier = Modifier
                         .height(16.dp)
                         .padding(horizontal = 24.dp),
-                    color = Color(0xFFB1B6C1)
+                    color = APColors.TextGray
                 )
                 Text(
                     text = "이메일 로그인",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W500,
-                    color = Color(0xFFB1B6C1),
+                    color = APColors.TextGray,
                     modifier = Modifier
                         .clickable { onNavigateToEmailLogin() }
 
@@ -130,9 +133,9 @@ fun Login(
                 text = "로그인에 문제가 있으신가요?",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.W500,
-                color = Color(0xFFB1B6C1),
+                color = APColors.TextGray,
                 modifier = Modifier
-                    .border(1.dp, Color(0xFFB1B6C1), RoundedCornerShape(50))
+                    .border(1.dp, APColors.TextGray, RoundedCornerShape(50))
                     .padding(horizontal = 14.dp, vertical = 6.dp)
 
             )
