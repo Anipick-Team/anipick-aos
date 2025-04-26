@@ -1,5 +1,6 @@
 package jpark.bro.anipick.ui.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
@@ -27,6 +29,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,22 +39,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import jpark.bro.anipick.R
 import jpark.bro.anipick.ui.theme.APColors
+import jpark.bro.anipick.ui.view.common.APSimpleBackTopAppBar
 import jpark.bro.anipick.ui.view.common.APSurfaceTextField
 import jpark.bro.anipick.ui.view.common.APSurfaceTextFieldWithTrailing
+import jpark.bro.anipick.ui.viewmodel.EmailSignupViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmailSignup(
+    viewModel: EmailSignupViewModel = hiltViewModel(),
     handleBackNavigation: () -> Unit,
 ) {
-    var emailText by remember { mutableStateOf("") }
-    var passwordText by remember { mutableStateOf("") }
-    var isVisibility by remember { mutableStateOf(false) }
+    val emailText by viewModel.emailText.collectAsState()
+    val passwordText by viewModel.passwordText.collectAsState()
+    val isVisibility by viewModel.isVisibility.collectAsState()
     var isPasswordValid by remember { mutableStateOf(false) }
 
     var isAgeVerified by remember { mutableStateOf(false) }
@@ -61,23 +69,7 @@ fun EmailSignup(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(
-                        onClick = { handleBackNavigation() },
-                        modifier = Modifier
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                            contentDescription = "",
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = APColors.Background
-                )
-            )
+            APSimpleBackTopAppBar { handleBackNavigation() }
         },
         modifier = Modifier
             .fillMaxSize(),
@@ -111,15 +103,18 @@ fun EmailSignup(
                 APSurfaceTextField(
                     label = "이메일",
                     value = emailText,
-                    onValueChange = { emailText = it },
-                    placeholder = "이메일을 입력해주세요"
+                    onValueChange = { viewModel.updateEmail(it) },
+                    placeholder = "이메일을 입력해주세요",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email
+                    ),
                 )
                 Spacer(modifier = Modifier.height(32.dp))
                 APSurfaceTextFieldWithTrailing(
                     label = "비밀번호",
                     value = passwordText,
                     onValueChange = {
-                        passwordText = it
+                        viewModel.updatePassword(it)
                         // TODO 수정
                         if (passwordText.isNotEmpty()) {
                             isPasswordValid = true
@@ -133,10 +128,19 @@ fun EmailSignup(
                         Icon(
                             painter = painterResource(R.drawable.ic_check),
                             contentDescription = null,
-                            tint = if (!isPasswordValid) APColors.TextGray else APColors.Primary
+                            tint = if (!isPasswordValid) APColors.TextGray else APColors.Primary,
+                            modifier = Modifier
+                                .size(18.dp)
                         )
                     },
-                    onVisibilityToggle = { isVisibility = !isVisibility }
+                    trailingComponent = {
+                        Image(
+                            painter = if (!isVisibility) painterResource(R.drawable.ic_visibility_off) else painterResource(R.drawable.ic_visibility_on),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .clickable { viewModel.togglePasswordVisibility() }
+                        )
+                    }
                 )
             }
             Column(

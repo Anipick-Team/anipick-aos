@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import jpark.bro.anipick.ui.view.EmailLogin
 import jpark.bro.anipick.ui.view.EmailSignup
+import jpark.bro.anipick.ui.view.FindPassword
 import jpark.bro.anipick.ui.view.Login
 
 @Composable
@@ -25,11 +26,17 @@ fun APNavHost(
         composable("email-login") {
             EmailLogin(
                 onNavigateToEmailSignUp = { navController.navigate("email-signup") },
+                onNavigateToFindPassword = { navController.navigate("find-password") },
                 handleBackNavigation = { navController.navigateUp() }
             )
         }
         composable("email-signup") {
             EmailSignup(
+                handleBackNavigation = { navController.navigateUp() }
+            )
+        }
+        composable("find-password") {
+            FindPassword(
                 handleBackNavigation = { navController.navigateUp() }
             )
         }

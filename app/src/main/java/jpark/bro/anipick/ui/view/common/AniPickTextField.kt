@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +40,7 @@ fun APBaseTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     trailingIcon: @Composable (() -> Unit)? = null,
     trailingComponent: @Composable (() -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None
@@ -75,6 +78,7 @@ fun APBaseTextField(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                 ),
+                keyboardOptions = keyboardOptions,
                 visualTransformation = visualTransformation,
                 textStyle = TextStyle(
                     fontSize = 16.sp,
@@ -111,12 +115,14 @@ fun APSurfaceTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
 ) {
     APBaseTextField(
         label = label,
         value = value,
         onValueChange = { onValueChange(it) },
         placeholder = placeholder,
+        keyboardOptions = keyboardOptions
     )
 }
 
@@ -129,25 +135,19 @@ fun APSurfaceTextFieldWithTrailing(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    isVisibility: Boolean,
-    isPasswordValid: Boolean = false,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    isVisibility: Boolean = false,
     trailingIcon: @Composable (() -> Unit)? = null,
-    onVisibilityToggle: () -> Unit,
+    trailingComponent: @Composable (() -> Unit)? = null,
 ) {
     APBaseTextField(
         label = label,
         value = value,
         onValueChange = { onValueChange(it) },
         placeholder = placeholder,
+        keyboardOptions = keyboardOptions,
         trailingIcon = trailingIcon,
-        trailingComponent = {
-            Image(
-                painter = if (!isVisibility) painterResource(R.drawable.ic_visibility_off) else painterResource(R.drawable.ic_visibility_on),
-                contentDescription = "",
-                modifier = Modifier
-                    .clickable { onVisibilityToggle() }
-            )
-        },
+        trailingComponent = { if (trailingComponent != null) trailingComponent() },
         visualTransformation = if (!isVisibility) PasswordVisualTransformation() else VisualTransformation.None
     )
 }
@@ -171,7 +171,13 @@ fun APSurfaceTextFieldWithTrailingPreview() {
         onValueChange = {  },
         placeholder = "비밀번호를 입력해주세요",
         isVisibility = false,
-        isPasswordValid = true,
-        onVisibilityToggle = {},
+        trailingComponent = {
+            Image(
+                painter = painterResource(R.drawable.ic_visibility_on),
+                contentDescription = "",
+                modifier = Modifier
+                    .clickable { }
+            )
+        }
     )
 }
