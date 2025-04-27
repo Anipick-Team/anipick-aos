@@ -24,14 +24,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import jpark.bro.anipick.R
 import jpark.bro.anipick.ui.theme.APColors
+import jpark.bro.anipick.ui.viewmodel.LoginViewModel
 
 /**
  * Login View
  */
 @Composable
 fun Login(
+    viewModel: LoginViewModel = hiltViewModel(),
     onNavigateToEmailLogin: () -> Unit,
     onNavigateToEmailSignUp: () -> Unit,
 ) {
@@ -80,14 +83,22 @@ fun Login(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            /**
+             * 카카오 Login
+             */
             Image(
                 painterResource(R.drawable.kakao_login),
                 contentDescription = null
             )
             Spacer(modifier = Modifier.height(12.dp))
+            /**
+             * Google Login
+             */
             Image(
                 painterResource(R.drawable.google_login),
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier
+                    .clickable { viewModel.signInWithGoogle() }
             )
             Spacer(modifier = Modifier.height(24.dp))
             Row(
@@ -146,7 +157,7 @@ fun Login(
 @Composable
 fun LoginPreview() {
     Login(
-        {},
-        {}
+        onNavigateToEmailLogin = {},
+        onNavigateToEmailSignUp = {}
     )
 }

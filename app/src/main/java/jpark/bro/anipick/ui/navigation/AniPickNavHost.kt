@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import jpark.bro.anipick.ui.view.EmailLogin
 import jpark.bro.anipick.ui.view.EmailSignup
 import jpark.bro.anipick.ui.view.FindPassword
+import jpark.bro.anipick.ui.view.Home
 import jpark.bro.anipick.ui.view.Login
 
 @Composable
@@ -39,6 +40,9 @@ fun APNavHost(
             FindPassword(
                 handleBackNavigation = { navController.navigateUp() }
             )
+        }
+        composable("home") {
+            Home()
         }
     }
 }

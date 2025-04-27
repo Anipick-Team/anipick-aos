@@ -1,0 +1,7 @@
+package jpark.bro.anipick.domain.model
+
+data class User(
+    val id: String,
+    val displayName: String,
+    val profilePictureUrl: String
+)
