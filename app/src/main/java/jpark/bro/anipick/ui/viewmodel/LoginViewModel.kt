@@ -1,8 +1,10 @@
 package jpark.bro.anipick.ui.viewmodel
 
+import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kakao.sdk.user.UserApiClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jpark.bro.anipick.data.model.SignInState
 import jpark.bro.anipick.domain.model.User
@@ -11,6 +13,7 @@ import jpark.bro.anipick.domain.usecase.CheckAuthStatusUseCase
 import jpark.bro.anipick.domain.util.Result
 import jpark.bro.anipick.domain.usecase.GetAuthStateUseCase
 import jpark.bro.anipick.domain.usecase.SignInWithGoogleUseCase
+import jpark.bro.anipick.domain.usecase.SignInWithKakaoUseCase
 import jpark.bro.anipick.domain.usecase.SignOutUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,11 +25,14 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
+    private val signInWithKakaoUseCase: SignInWithKakaoUseCase,
     private val getAuthStateUseCase: GetAuthStateUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val authenticateWithServerUseCase: AuthenticateWithServerUseCase,
     private val checkAuthStatusUseCase: CheckAuthStatusUseCase,
 ) : ViewModel() {
+
+
 
     val authState: StateFlow<Result<User>> = getAuthStateUseCase()
         .stateIn(
@@ -65,6 +71,12 @@ class LoginViewModel @Inject constructor(
     fun signOut() {
         viewModelScope.launch {
             signOutUseCase()
+        }
+    }
+
+    fun signInWithKakao(activity: Activity) {
+        viewModelScope.launch {
+            signInWithKakaoUseCase(activity)
         }
     }
 }

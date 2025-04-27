@@ -71,4 +71,7 @@ dependencies {
     implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
+    // Kakao
+    implementation("com.kakao.sdk:v2-user:2.21.1")
+
 }

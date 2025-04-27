@@ -1,5 +1,6 @@
 package jpark.bro.anipick.data.repository
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import androidx.credentials.CredentialManager
@@ -8,7 +9,9 @@ import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.kakao.sdk.user.UserApiClient
 import dagger.hilt.android.qualifiers.ApplicationContext
+import jpark.bro.anipick.data.model.KakaoSignInRequest
 import jpark.bro.anipick.data.model.UserData
 import jpark.bro.anipick.domain.model.User
 import jpark.bro.anipick.domain.repository.AuthRepository
@@ -16,6 +19,8 @@ import jpark.bro.anipick.domain.util.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import java.io.IOException
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -96,6 +101,23 @@ class AuthRepositoryImpl @Inject constructor(
             error
         }
     }
+
+    override suspend fun signInWithKakao(activity: Activity) {
+        _authState.value = Result.Loading
+
+        // 카카오계정으로 로그인
+        UserApiClient.instance.loginWithKakaoTalk(activity) { token, error ->
+            if (error != null) {
+                Log.e("kakao login", "로그인 실패", error)
+            }
+            else if (token != null) {
+                Log.i("kakao login", "로그인 성공 ${token.accessToken}")
+            }
+        }
+    }
+
+
+
 
 //    // 서버에 인증 요청
 //    override suspend fun authenticateWithServer(idToken: String): Result<Unit> {
