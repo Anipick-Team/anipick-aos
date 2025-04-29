@@ -39,6 +39,7 @@ fun Login(
     viewModel: LoginViewModel = hiltViewModel(),
     onNavigateToEmailLogin: () -> Unit,
     onNavigateToEmailSignUp: () -> Unit,
+    onNavigateMainScreen: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -98,6 +99,8 @@ fun Login(
                         if (context is Activity) {
                             viewModel.signInWithKakao(activity = context)
                         }
+                        // TODO 조건
+                        onNavigateMainScreen()
                     }
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -108,7 +111,12 @@ fun Login(
                 painterResource(R.drawable.google_login),
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { viewModel.signInWithGoogle() }
+                    .clickable {
+                        viewModel.signInWithGoogle()
+
+                        // TODO 조건
+                        onNavigateMainScreen()
+                    }
             )
             Spacer(modifier = Modifier.height(24.dp))
             Row(
@@ -168,6 +176,7 @@ fun Login(
 fun LoginPreview() {
     Login(
         onNavigateToEmailLogin = {},
-        onNavigateToEmailSignUp = {}
+        onNavigateToEmailSignUp = {},
+        onNavigateMainScreen = {},
     )
 }

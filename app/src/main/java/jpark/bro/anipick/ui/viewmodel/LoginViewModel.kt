@@ -56,6 +56,8 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             val result = signInWithGoogleUseCase()
             // 구글 로그인 성공 시 서버 인증도 함께 진행됨
+
+
         }
     }
 

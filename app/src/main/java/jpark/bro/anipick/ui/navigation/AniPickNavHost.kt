@@ -7,8 +7,8 @@ import androidx.navigation.compose.composable
 import jpark.bro.anipick.ui.view.EmailLogin
 import jpark.bro.anipick.ui.view.EmailSignup
 import jpark.bro.anipick.ui.view.FindPassword
-import jpark.bro.anipick.ui.view.Home
 import jpark.bro.anipick.ui.view.Login
+import jpark.bro.anipick.ui.view.MainScreen
 
 @Composable
 fun APNavHost(
@@ -16,33 +16,34 @@ fun APNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = "login"
+        startDestination = AniPickDestinations.Auth.Login
     ) {
-        composable("login") {
+        composable(AniPickDestinations.Auth.Login) {
             Login(
-                onNavigateToEmailLogin = { navController.navigate("email-login") },
-                onNavigateToEmailSignUp = { navController.navigate("email-signup") }
+                onNavigateToEmailLogin = { navController.navigate(AniPickDestinations.Auth.EmailLogin) },
+                onNavigateToEmailSignUp = { navController.navigate(AniPickDestinations.Auth.EmailSignup) },
+                onNavigateMainScreen = { navController.navigate(AniPickDestinations.MainScreen) }
             )
         }
-        composable("email-login") {
+        composable(AniPickDestinations.Auth.EmailLogin) {
             EmailLogin(
-                onNavigateToEmailSignUp = { navController.navigate("email-signup") },
-                onNavigateToFindPassword = { navController.navigate("find-password") },
+                onNavigateToEmailSignUp = { navController.navigate(AniPickDestinations.Auth.EmailSignup) },
+                onNavigateToFindPassword = { navController.navigate(AniPickDestinations.Auth.FindPassword) },
                 handleBackNavigation = { navController.navigateUp() }
             )
         }
-        composable("email-signup") {
+        composable(AniPickDestinations.Auth.EmailSignup) {
             EmailSignup(
                 handleBackNavigation = { navController.navigateUp() }
             )
         }
-        composable("find-password") {
+        composable(AniPickDestinations.Auth.FindPassword) {
             FindPassword(
                 handleBackNavigation = { navController.navigateUp() }
             )
         }
-        composable("home") {
-            Home()
+        composable(AniPickDestinations.MainScreen) {
+            MainScreen()
         }
     }
 }
