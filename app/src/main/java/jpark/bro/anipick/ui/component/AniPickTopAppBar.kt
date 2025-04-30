@@ -1,4 +1,4 @@
-package jpark.bro.anipick.ui.view.common
+package jpark.bro.anipick.ui.component
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft

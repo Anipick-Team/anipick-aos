@@ -22,7 +22,7 @@ object AniPickDestinations {
         val items = listOf(
             BottomNavItem(Home, "홈", R.drawable.ic_home_fill, R.drawable.ic_home_outline),
             BottomNavItem(Ranking, "랭킹", R.drawable.ic_rank_fill, R.drawable.ic_rank_outline),
-            BottomNavItem(Explore, "탐색", R.drawable.ic_search_fill, R.drawable.ic_rank_outline),
+            BottomNavItem(Explore, "탐색", R.drawable.ic_search_fill, R.drawable.ic_search_outline),
             BottomNavItem(Profile, "프로필", R.drawable.ic_profile_fill, R.drawable.ic_profile_outline),
         )
     }

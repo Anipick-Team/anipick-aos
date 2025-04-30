@@ -34,9 +34,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import jpark.bro.anipick.R
 import jpark.bro.anipick.ui.theme.APColors
-import jpark.bro.anipick.ui.view.common.APSimpleBackTopAppBar
-import jpark.bro.anipick.ui.view.common.APSurfaceTextField
-import jpark.bro.anipick.ui.view.common.APSurfaceTextFieldWithTrailing
+import jpark.bro.anipick.ui.component.APSimpleBackTopAppBar
+import jpark.bro.anipick.ui.component.APSurfaceTextField
+import jpark.bro.anipick.ui.component.APSurfaceTextFieldWithTrailing
 import jpark.bro.anipick.ui.viewmodel.EmailLoginViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
