@@ -24,3 +24,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "AniPick"
 include(":app")
+include(":ui")
+include(":data")
+include(":domain")
