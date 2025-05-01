@@ -6,8 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import jpark.bro.anipick.ui.navigation.APNavHost
-import jpark.bro.anipick.ui.theme.AniPickTheme
+import jpark.bro.ui.navigation.APNavHost
+import jpark.bro.ui.theme.AniPickTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
