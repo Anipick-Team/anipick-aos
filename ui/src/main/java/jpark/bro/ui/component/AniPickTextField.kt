@@ -1,23 +1,26 @@
 package jpark.bro.ui.component
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -29,17 +32,76 @@ import androidx.compose.ui.unit.sp
 import jpark.bro.ui.R
 import jpark.bro.ui.theme.APColors
 
+@Composable
+fun APBaseTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    trailingIcon: @Composable (() -> Unit)? = null,
+) {
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        textStyle = TextStyle(
+            fontSize = 16.sp,
+            fontWeight = FontWeight.W500,
+            color = APColors.Black
+        ),
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
+        visualTransformation = visualTransformation,
+        singleLine = true,
+        modifier = modifier
+            .height(52.dp),
+        decorationBox = { innerTextField ->
+            Box(
+                modifier = modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(APColors.LightGray)
+                    .padding(start = 16.dp, end = 8.dp)
+                    .padding(vertical = 8.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        if (value.isEmpty()) {
+                            placeholder()
+                        }
+                        innerTextField()
+                    }
+                    if (trailingIcon != null) {
+                        trailingIcon()
+                    }
+                }
+            }
+        }
+    )
+}
+
 /**
  * Label + BaseTextField
  */
 @Composable
-fun APBaseTextField(
+fun APLabelTextField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     trailingIcon: @Composable (() -> Unit)? = null,
+    trailingButton: @Composable (() -> Unit)? = null,
     trailingComponent: @Composable (() -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
@@ -66,23 +128,9 @@ fun APBaseTextField(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            TextField(
+            APBaseTextField(
                 value = value,
                 onValueChange = { onValueChange(it) },
-                shape = RoundedCornerShape(8.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = APColors.LightGray,
-                    unfocusedContainerColor = APColors.LightGray,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                ),
-                keyboardOptions = keyboardOptions,
-                visualTransformation = visualTransformation,
-                textStyle = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W500,
-                    color = APColors.Black
-                ),
                 placeholder = {
                     Text(
                         text = placeholder,
@@ -91,10 +139,10 @@ fun APBaseTextField(
                         color = APColors.TextGray
                     )
                 },
-                singleLine = true,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(52.dp)
+                modifier = Modifier.weight(1f),
+                keyboardOptions = keyboardOptions,
+                visualTransformation = visualTransformation,
+                trailingIcon = trailingButton
             )
             if (trailingComponent != null) {
                 Spacer(modifier = Modifier.width(8.dp))
@@ -115,7 +163,7 @@ fun APSurfaceTextField(
     placeholder: String,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
 ) {
-    APBaseTextField(
+    APLabelTextField(
         label = label,
         value = value,
         onValueChange = { onValueChange(it) },
@@ -125,7 +173,7 @@ fun APSurfaceTextField(
 }
 
 /**
- * BackGround Color + Trailing Component
+ * BackGround Color + Trailing Icon
  */
 @Composable
 fun APSurfaceTextFieldWithTrailing(
@@ -136,16 +184,18 @@ fun APSurfaceTextFieldWithTrailing(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     isVisibility: Boolean = false,
     trailingIcon: @Composable (() -> Unit)? = null,
+    trailingButton: @Composable (() -> Unit)? = null,
     trailingComponent: @Composable (() -> Unit)? = null,
 ) {
-    APBaseTextField(
+    APLabelTextField(
         label = label,
         value = value,
         onValueChange = { onValueChange(it) },
         placeholder = placeholder,
         keyboardOptions = keyboardOptions,
         trailingIcon = trailingIcon,
-        trailingComponent = { if (trailingComponent != null) trailingComponent() },
+        trailingButton = trailingButton,
+        trailingComponent = trailingComponent,
         visualTransformation = if (!isVisibility) PasswordVisualTransformation() else VisualTransformation.None
     )
 }
@@ -155,7 +205,7 @@ fun APSurfaceTextFieldWithTrailing(
 fun APSurfaceTextFieldPreview() {
     APSurfaceTextField(
         label = "비밀번호",
-        value = "",
+        value = "salfibekfibsakebfk",
         onValueChange = {  },
         placeholder = "비밀번호를 입력해주세요"
     )
@@ -169,13 +219,35 @@ fun APSurfaceTextFieldWithTrailingPreview() {
         onValueChange = {  },
         placeholder = "비밀번호를 입력해주세요",
         isVisibility = false,
+        trailingIcon = {
+            IconButton(
+                onClick = {}
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_visibility_off),
+                    contentDescription = null
+                )
+            }
+        },
+        trailingButton = {
+            IconButton(
+                onClick = {}
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_visibility_off),
+                    contentDescription = null
+                )
+            }
+        },
         trailingComponent = {
-            Image(
-                painter = painterResource(R.drawable.ic_visibility_on),
-                contentDescription = "",
-                modifier = Modifier
-                    .clickable { }
-            )
+            IconButton(
+                onClick = {}
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_visibility_off),
+                    contentDescription = null
+                )
+            }
         }
     )
 }

@@ -1,4 +1,4 @@
-package jpark.bro.ui.view
+package jpark.bro.ui.features.auth.email_signup
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -43,7 +43,6 @@ import jpark.bro.ui.theme.APColors
 import jpark.bro.ui.component.APSimpleBackTopAppBar
 import jpark.bro.ui.component.APSurfaceTextField
 import jpark.bro.ui.component.APSurfaceTextFieldWithTrailing
-import jpark.bro.ui.viewmodel.EmailSignupViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,7 +126,7 @@ fun EmailSignup(
                                 .size(18.dp)
                         )
                     },
-                    trailingComponent = {
+                    trailingButton = {
                         Image(
                             painter = if (!isVisibility) painterResource(R.drawable.ic_visibility_off) else painterResource(R.drawable.ic_visibility_on),
                             contentDescription = "",

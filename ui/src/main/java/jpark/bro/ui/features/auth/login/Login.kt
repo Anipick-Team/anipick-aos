@@ -1,4 +1,4 @@
-package jpark.bro.ui.view
+package jpark.bro.ui.features.auth.login
 
 import android.app.Activity
 import androidx.compose.foundation.Image
@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import jpark.bro.ui.R
 import jpark.bro.ui.theme.APColors
-import jpark.bro.ui.viewmodel.LoginViewModel
 
 /**
  * Login View

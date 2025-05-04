@@ -1,4 +1,4 @@
-package jpark.bro.ui.view
+package jpark.bro.ui.features.main.ranking
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun Explore() {
+fun Ranking() {
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -18,13 +18,13 @@ fun Explore() {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Explore"
+            text = "Ranking"
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun SearchPreview() {
-    Explore()
+fun RankingPreview() {
+    Ranking()
 }

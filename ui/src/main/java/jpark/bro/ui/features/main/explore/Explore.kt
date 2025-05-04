@@ -1,4 +1,4 @@
-package jpark.bro.ui.view
+package jpark.bro.ui.features.main.explore
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun Profile() {
+fun Explore() {
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -18,13 +18,13 @@ fun Profile() {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Profile"
+            text = "Explore"
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ProfilePreview() {
-    Profile()
+fun SearchPreview() {
+    Explore()
 }

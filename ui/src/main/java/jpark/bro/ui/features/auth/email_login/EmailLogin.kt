@@ -1,4 +1,4 @@
-package jpark.bro.ui.view
+package jpark.bro.ui.features.auth.email_login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -16,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -37,7 +38,6 @@ import jpark.bro.ui.theme.APColors
 import jpark.bro.ui.component.APSimpleBackTopAppBar
 import jpark.bro.ui.component.APSurfaceTextField
 import jpark.bro.ui.component.APSurfaceTextFieldWithTrailing
-import jpark.bro.ui.viewmodel.EmailLoginViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,13 +100,15 @@ fun EmailLogin(
                     onValueChange = { viewModel.updatePassword(it) },
                     placeholder = "비밀번호를 입력해주세요",
                     isVisibility = isVisibility,
-                    trailingComponent = {
-                        Image(
-                            painter = if (!isVisibility) painterResource(R.drawable.ic_visibility_off) else painterResource(R.drawable.ic_visibility_on),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .clickable { viewModel.togglePasswordVisibility() }
-                        )
+                    trailingButton = {
+                        IconButton(
+                            onClick = { viewModel.togglePasswordVisibility() }
+                        ) {
+                            Image(
+                                painter = if (!isVisibility) painterResource(R.drawable.ic_visibility_off) else painterResource(R.drawable.ic_visibility_on),
+                                contentDescription = "",
+                            )
+                        }
                     }
                 )
                 Spacer(modifier = Modifier.height(32.dp))

@@ -1,4 +1,4 @@
-package jpark.bro.ui.viewmodel
+package jpark.bro.ui.features.main.container
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

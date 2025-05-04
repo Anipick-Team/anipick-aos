@@ -13,8 +13,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import jpark.bro.ui.navigation.AniPickDestinations.Tabs.Companion.items as entries
 import jpark.bro.ui.theme.APColors
-import jpark.bro.ui.navigation.AniPickDestinations.Tabs.items as entries
 
 @Composable
 fun APBottomBar(

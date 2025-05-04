@@ -1,4 +1,4 @@
-package jpark.bro.ui.viewmodel
+package jpark.bro.ui.features.auth.find_password
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class FindPasswordViewModel @Inject constructor(
+class PasswordVerificationViewModel @Inject constructor(
 
 ) : ViewModel() {
 

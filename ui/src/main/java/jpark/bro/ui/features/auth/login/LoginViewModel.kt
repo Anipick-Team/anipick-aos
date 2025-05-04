@@ -1,4 +1,4 @@
-package jpark.bro.ui.viewmodel
+package jpark.bro.ui.features.auth.login
 
 import android.app.Activity
 import androidx.lifecycle.ViewModel
@@ -35,7 +35,7 @@ class LoginViewModel @Inject constructor(
     val authState: StateFlow<ApiResult<User>> = getAuthStateUseCase()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.Lazily,
+            started = SharingStarted.Companion.Lazily,
             initialValue = ApiResult.Loading
         )
 

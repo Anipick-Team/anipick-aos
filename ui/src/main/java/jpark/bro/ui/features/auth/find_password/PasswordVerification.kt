@@ -1,4 +1,4 @@
-package jpark.bro.ui.view
+package jpark.bro.ui.features.auth.find_password
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,11 +31,12 @@ import jpark.bro.ui.theme.APColors
 import jpark.bro.ui.component.APSimpleBackTopAppBar
 import jpark.bro.ui.component.APSurfaceTextField
 import jpark.bro.ui.component.APSurfaceTextFieldWithTrailing
-import jpark.bro.ui.viewmodel.FindPasswordViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FindPassword(
-    viewModel: FindPasswordViewModel = hiltViewModel(),
+fun PasswordVerification(
+    viewModel: PasswordVerificationViewModel = hiltViewModel(),
+    onNavigateToPasswordReset: () -> Unit,
     handleBackNavigation: () -> Unit,
 ) {
     val emailText by viewModel.emailText.collectAsState()
@@ -141,7 +143,9 @@ fun FindPassword(
                     color = APColors.Gray
                 )
                 Button(
-                    onClick = {},
+                    onClick = {
+                        onNavigateToPasswordReset()
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = APColors.Primary,
                         disabledContainerColor = APColors.Gray
@@ -168,7 +172,7 @@ fun FindPassword(
 @Preview(showBackground = true)
 @Composable
 fun FindPasswordPreview() {
-    FindPassword(
-
+    PasswordVerification(
+        onNavigateToPasswordReset = {}
     ) {}
 }
