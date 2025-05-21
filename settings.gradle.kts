@@ -24,6 +24,19 @@ dependencyResolutionManagement {
 
 rootProject.name = "AniPick"
 include(":app")
-include(":ui")
-include(":data")
-include(":domain")
+
+include(":core:ui")
+include(":core:data")
+
+include(":core:domain")
+include(":core:model")
+include(":feature:auth:login")
+include(":feature:auth:email")
+include(":feature:auth:findpassword")
+include(":feature:auth:preferencesetup")
+include(":feature:main:home")
+include(":feature:main:explore")
+include(":feature:main:search")
+include(":feature:main:ranking")
+include(":feature:main:profile")
+include(":feature:main:detail")
