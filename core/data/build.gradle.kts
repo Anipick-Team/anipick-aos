@@ -7,8 +7,8 @@ plugins {
 }
 
 android {
-    namespace = "jpark.bro.data"
-    compileSdk = 35
+    namespace = "com.jparkbro.data"
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 32
@@ -34,7 +34,9 @@ android {
 
 dependencies {
 
+    implementation(project(":core:datastore"))
     implementation(project(":core:model"))
+    implementation(project(":core:network"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

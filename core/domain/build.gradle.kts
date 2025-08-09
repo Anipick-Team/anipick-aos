@@ -7,8 +7,8 @@ plugins {
 }
 
 android {
-    namespace = "jpark.bro.domain"
-    compileSdk = 35
+    namespace = "com.jparkbro.domain"
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 32

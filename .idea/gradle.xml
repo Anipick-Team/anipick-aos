@@ -13,8 +13,10 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core/data" />
+            <option value="$PROJECT_DIR$/core/datastore" />
             <option value="$PROJECT_DIR$/core/domain" />
             <option value="$PROJECT_DIR$/core/model" />
+            <option value="$PROJECT_DIR$/core/network" />
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/auth" />
@@ -26,9 +28,11 @@
             <option value="$PROJECT_DIR$/feature/main/detail" />
             <option value="$PROJECT_DIR$/feature/main/explore" />
             <option value="$PROJECT_DIR$/feature/main/home" />
-            <option value="$PROJECT_DIR$/feature/main/profile" />
+            <option value="$PROJECT_DIR$/feature/main/mypage" />
             <option value="$PROJECT_DIR$/feature/main/ranking" />
+            <option value="$PROJECT_DIR$/feature/main/review" />
             <option value="$PROJECT_DIR$/feature/main/search" />
+            <option value="$PROJECT_DIR$/feature/main/setting" />
           </set>
         </option>
       </GradleProjectSettings>

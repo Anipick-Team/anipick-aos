@@ -5,8 +5,8 @@ plugins {
 }
 
 android {
-    namespace = "jpark.bro.ui"
-    compileSdk = 35
+    namespace = "com.jparkbro.ui"
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 32
@@ -35,6 +35,9 @@ android {
 
 dependencies {
 
+    // Module Inject
+    implementation(project(":core:model"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
@@ -54,4 +57,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 }

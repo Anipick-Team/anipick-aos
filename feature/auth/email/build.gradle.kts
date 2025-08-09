@@ -9,8 +9,8 @@ plugins {
 }
 
 android {
-    namespace = "jpark.bro.email"
-    compileSdk = 35
+    namespace = "com.jparkbro.email"
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 32
@@ -41,7 +41,9 @@ dependencies {
 
     // Module
     implementation(project(":core:ui"))
+    implementation(project(":core:data"))
     implementation(project(":core:domain"))
+    implementation(project(":core:model"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

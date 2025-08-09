@@ -9,8 +9,8 @@ plugins {
 }
 
 android {
-    namespace = "jpark.bro.preferencesetup"
-    compileSdk = 35
+    namespace = "com.jparkbro.preferencesetup"
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 32
@@ -41,7 +41,9 @@ dependencies {
 
     // Module
     implementation(project(":core:ui"))
+    implementation(project(":core:data"))
     implementation(project(":core:domain"))
+    implementation(project(":core:model"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -70,4 +72,8 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+
+    // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 }

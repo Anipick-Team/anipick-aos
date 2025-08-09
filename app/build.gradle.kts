@@ -9,15 +9,15 @@ plugins {
 }
 
 android {
-    namespace = "jpark.bro.anipick"
-    compileSdk = 35
+    namespace = "com.jparkbro.anipick"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "jpark.bro.anipick"
+        applicationId = "com.jparkbro.anipick"
         minSdk = 32
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "${rootProject.extra["versionName"]}"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,21 +37,33 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
 dependencies {
 
     // Module
-    implementation(project(":core:ui"))
     implementation(project(":core:data"))
+    implementation(project(":core:datastore"))
     implementation(project(":core:domain"))
     implementation(project(":core:model"))
+    implementation(project(":core:network"))
+    implementation(project(":core:ui"))
 
-    implementation(project(":feature:auth:login"))
     implementation(project(":feature:auth:email"))
     implementation(project(":feature:auth:findpassword"))
+    implementation(project(":feature:auth:login"))
     implementation(project(":feature:auth:preferencesetup"))
+
+    implementation(project(":feature:main:detail"))
+    implementation(project(":feature:main:explore"))
+    implementation(project(":feature:main:home"))
+    implementation(project(":feature:main:mypage"))
+    implementation(project(":feature:main:ranking"))
+    implementation(project(":feature:main:review"))
+    implementation(project(":feature:main:search"))
+    implementation(project(":feature:main:setting"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -79,4 +91,7 @@ dependencies {
 
     // Kakao
     implementation(libs.v2.user)
+
+    // Splash Screen
+    implementation(libs.androidx.core.splashscreen)
 }
