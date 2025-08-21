@@ -10,6 +10,7 @@ import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Multipart
+import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Query
@@ -58,7 +59,7 @@ interface MyPageApi {
     ): Response<ApiResponse<MyReviewsResponse>>
 
     @Multipart
-    @PUT(ApiConstants.EDIT_PROFILE_IMG)
+    @POST(ApiConstants.EDIT_PROFILE_IMG)
     suspend fun editProfileImg(
         @Part profileImageFile: MultipartBody.Part
     ): Response<ApiResponse<ProfileImgResponse>>

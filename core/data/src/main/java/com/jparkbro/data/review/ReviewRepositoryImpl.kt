@@ -3,6 +3,7 @@ package com.jparkbro.data.review
 import com.jparkbro.model.common.ApiAction
 import com.jparkbro.model.review.EditMyReviewRequest
 import com.jparkbro.model.review.MyReview
+import com.jparkbro.model.review.ReportReviewRequest
 import com.jparkbro.network.review.ReviewDataSource
 import javax.inject.Inject
 
@@ -29,8 +30,8 @@ class ReviewRepositoryImpl @Inject constructor(
         return reviewDataSource.deleteReview(reviewId)
     }
 
-    override suspend fun reportReview(reviewId: Int): Result<Unit> {
-        return reviewDataSource.reportReview(reviewId)
+    override suspend fun reportReview(reviewId: Int, request: ReportReviewRequest): Result<Unit> {
+        return reviewDataSource.reportReview(reviewId, request)
     }
 
     override suspend fun blockUser(userId: Int): Result<Unit> {

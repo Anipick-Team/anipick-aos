@@ -22,6 +22,7 @@ fun NavController.navigateToReviewForm(
 
 fun NavGraphBuilder.reviewFormScreen(
     onNavigateBack: () -> Unit,
+    onPopBackWithRefresh: () -> Unit,
 ) {
     composable<ReviewForm> { entry ->
         val route = entry.toRoute<ReviewForm>()
@@ -30,6 +31,7 @@ fun NavGraphBuilder.reviewFormScreen(
 
         ReviewForm(
             onNavigateBack = onNavigateBack,
+            onPopBackWithRefresh = onPopBackWithRefresh,
             viewModel = hiltViewModel<ReviewFormViewModel, ReviewFormViewModel.Factory>(
                 key = "${route.type}"
             ) { factory ->

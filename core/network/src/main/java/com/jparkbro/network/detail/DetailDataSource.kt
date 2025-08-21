@@ -1,6 +1,7 @@
 package com.jparkbro.network.detail
 
 import com.jparkbro.model.common.DefaultAnime
+import com.jparkbro.model.common.WatchStatus
 import com.jparkbro.model.detail.DetailActor
 import com.jparkbro.model.detail.DetailInfo
 import com.jparkbro.model.detail.DetailMyReview
@@ -20,8 +21,8 @@ interface DetailDataSource {
     suspend fun likeAnime(animeId: Int): Result<Unit>
     suspend fun unLikeAnime(animeId: Int): Result<Unit>
 
-    suspend fun createWatchStatus(animeId: Int): Result<Unit>
-    suspend fun updateWatchStatus(animeId: Int): Result<Unit>
+    suspend fun createWatchStatus(animeId: Int, status: WatchStatus): Result<Unit>
+    suspend fun updateWatchStatus(animeId: Int, status: WatchStatus): Result<Unit>
     suspend fun deleteWatchStatus(animeId: Int): Result<Unit>
 
     suspend fun createAnimeRating(animeId: Int, request: ReviewRating): Result<Unit>

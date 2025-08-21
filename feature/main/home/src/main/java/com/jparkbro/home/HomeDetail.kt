@@ -36,6 +36,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +45,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -177,7 +179,10 @@ private fun HomeDetail(
                         .distinctUntilChanged()
                         .collect { shouldLoadMore ->
                             if (shouldLoadMore && !isLoading && items.isNotEmpty()) {
-                                onLoadMoreData(responseData?.cursor?.lastId)
+                                val lastId = responseData?.cursor?.lastId
+                                if (lastId != null) {
+                                    onLoadMoreData(lastId)
+                                }
                             }
                         }
                 }
@@ -201,7 +206,7 @@ private fun HomeDetail(
                         }
                     ) { review ->
                         val radioOptions = listOf("스포일러", "편파적인 언행", "욕설 및 비하", "홍보성 및 영리 목적", "음란성 및 선정성")
-                        val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+                        var selectedOption by remember { mutableStateOf(radioOptions[0]) }
                         APReviewItem(
                             reviewItem = review as HomeReviewItem,
                             onNavigateAnimeDetail = { onNavigateToAnimeDetail(it) },
@@ -248,14 +253,18 @@ private fun HomeDetail(
                                                                 .height(22.dp)
                                                                 .selectable(
                                                                     selected = (text == selectedOption),
-                                                                    onClick = { onOptionSelected(text) },
+                                                                    onClick = { selectedOption = text },
                                                                     role = Role.RadioButton
                                                                 ),
                                                             verticalAlignment = Alignment.CenterVertically
                                                         ) {
                                                             RadioButton(
                                                                 selected = (text == selectedOption),
-                                                                onClick = null
+                                                                onClick = { selectedOption = text },
+                                                                colors = RadioButtonDefaults.colors(
+                                                                    selectedColor = APColors.Point,
+                                                                    unselectedColor = APColors.Gray
+                                                                )
                                                             )
                                                             Text(
                                                                 text = text,
@@ -317,7 +326,10 @@ private fun HomeDetail(
                         .distinctUntilChanged()
                         .collect { shouldLoadMore ->
                             if (shouldLoadMore && !isLoading && items.isNotEmpty()) {
-                                onLoadMoreData(responseData?.cursor?.lastId)
+                                val lastId = responseData?.cursor?.lastId
+                                if (lastId != null) {
+                                    onLoadMoreData(lastId)
+                                }
                             }
                         }
                 }
@@ -333,7 +345,10 @@ private fun HomeDetail(
                     horizontalArrangement = Arrangement.spacedBy(calculateItemSpacing()),
                 ) {
                     item(span = { GridItemSpan(3) }) {
-                        Spacer(modifier = Modifier.fillMaxWidth().height(12.dp).background(APColors.Surface))
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(12.dp)
+                            .background(APColors.Surface))
                     }
                     item(span = { GridItemSpan(3) }) {
                         Box(
@@ -472,7 +487,10 @@ private fun HomeDetail(
                         .distinctUntilChanged()
                         .collect { shouldLoadMore ->
                             if (shouldLoadMore && !isLoading && items.isNotEmpty()) {
-                                onLoadMoreData(responseData?.cursor?.lastId)
+                                val lastId = responseData?.cursor?.lastId
+                                if (lastId != null) {
+                                    onLoadMoreData(lastId)
+                                }
                             }
                         }
                 }
@@ -488,7 +506,10 @@ private fun HomeDetail(
                     horizontalArrangement = Arrangement.spacedBy(calculateItemSpacing()),
                 ) {
                     item(span = { GridItemSpan(3) }) {
-                        Spacer(modifier = Modifier.fillMaxWidth().height(12.dp).background(APColors.Surface))
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(12.dp)
+                            .background(APColors.Surface))
                     }
                     item(span = { GridItemSpan(3) }) {
                         Box(
@@ -596,7 +617,10 @@ private fun HomeDetail(
                         .distinctUntilChanged()
                         .collect { shouldLoadMore ->
                             if (shouldLoadMore && !isLoading && items.isNotEmpty()) {
-                                onLoadMoreData(responseData?.cursor?.lastId)
+                                val lastId = responseData?.cursor?.lastId
+                                if (lastId != null) {
+                                    onLoadMoreData(lastId)
+                                }
                             }
                         }
                 }
@@ -611,7 +635,10 @@ private fun HomeDetail(
                     horizontalArrangement = Arrangement.spacedBy(calculateItemSpacing()),
                 ) {
                     item(span = { GridItemSpan(3) }) {
-                        Spacer(modifier = Modifier.fillMaxWidth().height(12.dp).background(APColors.Surface))
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(12.dp)
+                            .background(APColors.Surface))
                     }
                     item(span = { GridItemSpan(3) }) {
                         Row(
@@ -640,7 +667,7 @@ private fun HomeDetail(
                                 Row(
                                     modifier = Modifier
                                         .clip(CircleShape)
-                                        .clickable{ onChangeSortDropdown() },
+                                        .clickable { onChangeSortDropdown() },
                                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {

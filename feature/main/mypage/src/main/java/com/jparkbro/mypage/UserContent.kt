@@ -63,6 +63,8 @@ import kotlinx.coroutines.flow.map
 internal fun UserContent(
     onNavigateBack: () -> Unit,
     onNavigateToAnimeDetail: (Int) -> Unit,
+    onCheckStatusRefresh: () -> Boolean,
+    onStatusRefresh: () -> Unit,
     viewModel: UserContentViewModel = hiltViewModel()
 ) {
     val type = viewModel.type
@@ -79,8 +81,11 @@ internal fun UserContent(
         dataList = dataList,
         isLoading = isLoading,
         onLoadMoreData = viewModel::loadData,
+        onRefreshData = viewModel::refreshData,
         onNavigateBack = onNavigateBack,
         onNavigateToAnimeDetail = onNavigateToAnimeDetail,
+        onCheckStatusRefresh = onCheckStatusRefresh,
+        onStatusRefresh = onStatusRefresh,
     )
 }
 
@@ -93,9 +98,20 @@ private fun UserContent(
     dataList: List<Any> = emptyList(),
     isLoading: Boolean = false,
     onLoadMoreData: (Int?) -> Unit = {},
+    onRefreshData: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     onNavigateToAnimeDetail: (Int) -> Unit = {},
+    onCheckStatusRefresh: () -> Boolean = { false },
+    onStatusRefresh: () -> Unit,
 ) {
+    LaunchedEffect(Unit) {
+        val isStatusUpdate = onCheckStatusRefresh()
+        if (isStatusUpdate) {
+            onRefreshData()
+            onStatusRefresh()
+        }
+    }
+
     Scaffold(
         topBar = {
             APTitledBackTopAppBar(
@@ -117,7 +133,10 @@ private fun UserContent(
                 .distinctUntilChanged()
                 .collect { shouldLoadMore ->
                     if (shouldLoadMore && !isLoading && dataList.isNotEmpty()) {
-                        onLoadMoreData(responseData?.cursor?.lastId)
+                        val lastId = responseData?.cursor?.lastId
+                        if (lastId != null) {
+                            onLoadMoreData(lastId)
+                        }
                     }
                 }
         }
@@ -225,5 +244,7 @@ private fun UserContent(
 @Preview(showBackground = true, widthDp = 480)
 @Composable
 private fun UserContentPreview() {
-    UserContent()
+    UserContent(
+        onStatusRefresh = {}
+    )
 }

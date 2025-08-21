@@ -35,7 +35,7 @@ class MyPageViewModel @Inject constructor(
         getInfo()
     }
 
-    private fun getInfo() {
+    fun getInfo() {
         viewModelScope.launch {
             _uiState.value = MyPageUiState.Loading
 

@@ -20,12 +20,16 @@ fun NavGraphBuilder.settingScreen(
     onNavigateBack: () -> Unit,
     onNavigateToProfileEdit: (ProfileEditType) -> Unit,
     onNavigateToLogin: () -> Unit,
+    onCheckSettingRefresh: () -> Boolean,
+    onPopBackWithRefresh: () -> Unit,
 ) {
     composable<Setting> {
         Setting(
             onNavigateBack = onNavigateBack,
             onNavigateToProfileEdit = onNavigateToProfileEdit,
             onNavigateToLogin = onNavigateToLogin,
+            onCheckSettingRefresh = onCheckSettingRefresh,
+            onPopBackWithRefresh = onPopBackWithRefresh,
         )
     }
 }
@@ -35,6 +39,7 @@ fun NavController.navigateToProfileEdit(type: ProfileEditType, navOptions: NavOp
 fun NavGraphBuilder.profileEditScreen(
     onNavigateBack: () -> Unit,
     onNavigateToLogin: () -> Unit,
+    onPopBackWithRefresh: () -> Unit,
 ) {
     composable<ProfileEdit> { entry ->
         val route = entry.toRoute<ProfileEdit>()
@@ -43,6 +48,7 @@ fun NavGraphBuilder.profileEditScreen(
             type = route.type,
             onNavigateBack = onNavigateBack,
             onNavigateToLogin = onNavigateToLogin,
+            onPopBackWithRefresh = onPopBackWithRefresh,
         )
     }
 }

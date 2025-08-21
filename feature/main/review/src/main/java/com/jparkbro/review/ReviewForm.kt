@@ -70,6 +70,7 @@ import com.jparkbro.ui.util.extension.advancedImePadding
 @Composable
 internal fun ReviewForm(
     onNavigateBack: () -> Unit,
+    onPopBackWithRefresh: () -> Unit,
     viewModel: ReviewFormViewModel = hiltViewModel()
 ) {
     val infoData = viewModel.infoData
@@ -88,8 +89,9 @@ internal fun ReviewForm(
         onChangeRating = viewModel::updateRating,
         onChangeReviewContent = viewModel::updateReviewContent,
         onChangeIncludeSpoiler = viewModel::toggleIncludeSpoiler,
-        onNavigateBack = onNavigateBack,
         onEditMyReview = viewModel::editReview,
+        onNavigateBack = onNavigateBack,
+        onPopBackWithRefresh = onPopBackWithRefresh,
     )
 }
 
@@ -104,8 +106,9 @@ internal fun ReviewForm(
     onChangeRating: (Float) -> Unit,
     onChangeReviewContent: (String) -> Unit,
     onChangeIncludeSpoiler: () -> Unit,
-    onNavigateBack: () -> Unit,
     onEditMyReview: ((Boolean) -> Unit) -> Unit,
+    onNavigateBack: () -> Unit,
+    onPopBackWithRefresh: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -270,8 +273,7 @@ internal fun ReviewForm(
                     }
                     TextButton(
                         onClick = { onEditMyReview { result ->
-                            if (result) onNavigateBack()
-                            // TODO 화면 리렌더링 하는 걸로 수정
+                            if (result) onPopBackWithRefresh()
                         } },
                         modifier = Modifier
                             .fillMaxWidth(),

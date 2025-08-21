@@ -2,6 +2,7 @@ package com.jparkbro.data.detail
 
 import com.jparkbro.model.common.ApiAction
 import com.jparkbro.model.common.DefaultAnime
+import com.jparkbro.model.common.WatchStatus
 import com.jparkbro.model.detail.DetailActor
 import com.jparkbro.model.detail.DetailInfo
 import com.jparkbro.model.detail.DetailMyReview
@@ -22,6 +23,6 @@ interface DetailRepository {
     suspend fun loadRecentAnime(): Result<Int>
 
     suspend fun setLikeAnime(action: ApiAction, animeId: Int): Result<Unit>
-    suspend fun setWatchStatus(action: ApiAction, animeId: Int): Result<Unit>
+    suspend fun setWatchStatus(action: ApiAction, animeId: Int, status: WatchStatus): Result<Unit>
     suspend fun setAnimeRating(action: ApiAction, animeId: Int, reviewId: Int, request: ReviewRating): Result<Unit>
 }

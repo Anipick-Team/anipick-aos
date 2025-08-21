@@ -6,6 +6,7 @@ import com.jparkbro.model.detail.DetailInfo
 import com.jparkbro.model.detail.DetailMyReview
 import com.jparkbro.model.detail.DetailSeries
 import com.jparkbro.model.detail.ReviewDetailResponse
+import com.jparkbro.model.detail.WatchStatusRequest
 import com.jparkbro.model.review.ReviewRating
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
@@ -62,11 +63,13 @@ interface DetailApi {
     @POST(ApiConstants.SET_WATCH_STATUS)
     suspend fun createWatchStatus(
         @Path("animeId") animeId: Int,
+        @Body request: WatchStatusRequest,
     ): Response<ApiResponse<Unit>>
 
     @PATCH(ApiConstants.SET_WATCH_STATUS)
     suspend fun updateWatchStatus(
         @Path("animeId") animeId: Int,
+        @Body request: WatchStatusRequest,
     ): Response<ApiResponse<Unit>>
 
     @DELETE(ApiConstants.SET_WATCH_STATUS)

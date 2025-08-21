@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,6 +44,8 @@ internal fun Setting(
     onNavigateBack: () -> Unit,
     onNavigateToProfileEdit: (ProfileEditType) -> Unit,
     onNavigateToLogin: () -> Unit,
+    onCheckSettingRefresh: () -> Boolean,
+    onPopBackWithRefresh: () -> Unit,
     viewModel: SettingViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -56,9 +59,12 @@ internal fun Setting(
         onChangeDialogData = viewModel::updateDialogData,
         userInfo = userInfo,
         onLogout = viewModel::logout,
+        onGetUserInfo = viewModel::getUserInfo,
         onNavigateBack = onNavigateBack,
         onNavigateToProfileEdit = onNavigateToProfileEdit,
         onNavigateToLogin = onNavigateToLogin,
+        onCheckSettingRefresh = onCheckSettingRefresh,
+        onPopBackWithRefresh = onPopBackWithRefresh,
     )
 }
 
@@ -70,11 +76,22 @@ private fun Setting(
     onChangeDialogData: (DialogData?) -> Unit,
     userInfo: UserInfo? = null,
     onLogout: ((Boolean) -> Unit) -> Unit,
+    onGetUserInfo: () -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToProfileEdit: (ProfileEditType) -> Unit,
     onNavigateToLogin: () -> Unit,
+    onCheckSettingRefresh: () -> Boolean,
+    onPopBackWithRefresh: () -> Unit,
 ) {
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        val isUpdate = onCheckSettingRefresh()
+        if (isUpdate) {
+            onGetUserInfo()
+            onPopBackWithRefresh()
+        }
+    }
 
     Scaffold(
         topBar = {

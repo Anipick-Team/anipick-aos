@@ -40,6 +40,9 @@ class UserPreferenceRepositoryImpl @Inject constructor(
     }
 
     override suspend fun clearAllData(): Result<Unit> {
-        return jwtTokenDataStore.clearToken()
+        return runCatching {
+            jwtTokenDataStore.clearToken().getOrThrow()
+            userDataStore.clearUserInfo().getOrThrow()
+        }
     }
 }

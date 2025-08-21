@@ -2,6 +2,7 @@ package com.jparkbro.network.review
 
 import com.jparkbro.model.review.EditMyReviewRequest
 import com.jparkbro.model.review.MyReview
+import com.jparkbro.model.review.ReportReviewRequest
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
 import retrofit2.Response
@@ -41,7 +42,8 @@ interface ReviewApi {
 
     @POST(ApiConstants.REPORT_REVIEW)
     suspend fun reportReview(
-        @Path("reviewId") reviewId: Int
+        @Path("reviewId") reviewId: Int,
+        @Body request: ReportReviewRequest
     ): Response<ApiResponse<Unit>>
 
     @POST(ApiConstants.BLOCK_USER)

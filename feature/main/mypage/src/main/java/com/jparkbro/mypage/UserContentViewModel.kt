@@ -1,5 +1,6 @@
 package com.jparkbro.mypage
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,7 +36,7 @@ class UserContentViewModel @AssistedInject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val hasMoreData = mutableStateOf(true)
+    private val _hasMoreData = mutableStateOf(true)
 
     init {
         loadData()
@@ -44,7 +45,7 @@ class UserContentViewModel @AssistedInject constructor(
     fun loadData(lastId: Int? = null) {
         val isInitialLoad = lastId == null && _dataList.value.isEmpty()
 
-        if (_isLoading.value || !hasMoreData.value) return
+        if (_isLoading.value || !_hasMoreData.value) return
 
         viewModelScope.launch {
             if (isInitialLoad) _uiState.value = UserContentUiState.Loading
@@ -71,6 +72,13 @@ class UserContentViewModel @AssistedInject constructor(
                 }
             )
         }
+    }
+
+    fun refreshData() {
+        _hasMoreData.value = true
+        _dataList.value = emptyList()
+
+        loadData()
     }
 
     @AssistedFactory

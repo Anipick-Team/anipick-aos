@@ -13,6 +13,7 @@ import com.jparkbro.model.home.ContentType
 import com.jparkbro.model.home.HomeDetailRequest
 import com.jparkbro.model.home.HomeDetailResponse
 import com.jparkbro.model.home.Sort
+import com.jparkbro.model.review.ReportReviewRequest
 import com.jparkbro.ui.DialogData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -165,8 +166,7 @@ class HomeDetailViewModel @AssistedInject constructor(
 
     fun reportReview(reviewId: Int, reason: String) {
         viewModelScope.launch {
-            Log.d("report", reason)
-            reviewRepository.reportReview(reviewId).getOrThrow()
+            reviewRepository.reportReview(reviewId, ReportReviewRequest(reason)).getOrThrow()
             loadData()
         }
     }

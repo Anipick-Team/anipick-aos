@@ -3,6 +3,7 @@ package com.jparkbro.data.detail
 import com.jparkbro.datastore.RecentAnimeDataStore
 import com.jparkbro.model.common.ApiAction
 import com.jparkbro.model.common.DefaultAnime
+import com.jparkbro.model.common.WatchStatus
 import com.jparkbro.model.detail.DetailActor
 import com.jparkbro.model.detail.DetailInfo
 import com.jparkbro.model.detail.DetailMyReview
@@ -58,10 +59,10 @@ class DetailRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun setWatchStatus(action: ApiAction, animeId: Int): Result<Unit> {
+    override suspend fun setWatchStatus(action: ApiAction, animeId: Int, status: WatchStatus): Result<Unit> {
         return when (action) {
-            ApiAction.CREATE -> detailDataSource.createWatchStatus(animeId)
-            ApiAction.UPDATE -> detailDataSource.updateWatchStatus(animeId)
+            ApiAction.CREATE -> detailDataSource.createWatchStatus(animeId, status)
+            ApiAction.UPDATE -> detailDataSource.updateWatchStatus(animeId, status)
             ApiAction.DELETE -> detailDataSource.deleteWatchStatus(animeId)
         }
     }

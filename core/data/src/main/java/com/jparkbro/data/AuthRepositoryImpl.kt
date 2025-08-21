@@ -8,6 +8,7 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialRequest.Builder
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialException
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
@@ -28,7 +29,9 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
+import com.jparkbro.data.BuildConfig
 
 class AuthRepositoryImpl @Inject constructor(
     private val authDataSource: AuthDataSource,
@@ -59,6 +62,8 @@ class AuthRepositoryImpl @Inject constructor(
         if (UserApiClient.instance.isKakaoTalkLoginAvailable(activity)) {
             UserApiClient.instance.loginWithKakaoTalk(activity) { token, error ->
                 if (error != null) {
+                    Log.e("kakao", "Error: ${error.message}")
+                    Log.e("kakao", "Error cause: ${error.cause}")
                     // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
                     // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
                     if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
@@ -81,17 +86,15 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     /*
-    * Google API Get Token
-    */
-    private val WEB_CLIENT_ID = "376808777267-e9rs6a9sfo4hhl5gj29kn3nh2k325125.apps.googleusercontent.com" // TODO properties 로 빼기
-
+     * Google API Get Token
+     */
     // Trigger a Sign in with Google button flow
-    private val signInWithGoogleOption: GetSignInWithGoogleOption = GetSignInWithGoogleOption
-        .Builder(serverClientId = WEB_CLIENT_ID)
+    val signInWithGoogleOption: GetSignInWithGoogleOption = GetSignInWithGoogleOption
+        .Builder(serverClientId = BuildConfig.WEB_CLIENT_ID)
         .build()
 
-    private val request: GetCredentialRequest = Builder()
-        .addCredentialOption(credentialOption = signInWithGoogleOption)
+    val request: GetCredentialRequest = GetCredentialRequest.Builder()
+        .addCredentialOption(signInWithGoogleOption)
         .build()
 
     override suspend fun getGoogleAuthToken(activity: Activity): Result<String> {
@@ -100,10 +103,8 @@ class AuthRepositoryImpl @Inject constructor(
                 request = request,
                 context = activity,
             )
-            Log.d("repository", "111")
             handleSignIn(result)
         } catch (e: GetCredentialException) {
-            Log.d("repository", e.toString())
             Result.failure(e)
         }
     }

@@ -1,5 +1,6 @@
 package com.jparkbro.detail
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,6 +40,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -64,6 +66,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -106,6 +109,9 @@ internal fun DetailAnime(
     onNavigateBack: () -> Unit,
     onNavigateToReviewForm: (Int, Int?, FormType) -> Unit,
     onNavigateToStudioDetail: (String, Int) -> Unit,
+    onCheckReviewRefresh: () -> Boolean,
+    onClearReviewRefresh: () -> Unit,
+    onStatusRefresh: () -> Unit,
     viewModel: DetailAnimeViewModel = hiltViewModel()
 ) {
 
@@ -154,6 +160,7 @@ internal fun DetailAnime(
         isLikeLoading = isLikeLoading,
         isChangeStatusLoading = isChangeStatusLoading,
         isAnimeRatingLoading = isAnimeRatingLoading,
+        onShareAnimeLink = viewModel::copyAnimeLink,
         onChangeTabIndex = viewModel::updateTabIndex,
         onChangeIncludeSpoiler = viewModel::toggleIncludeSpoiler,
         onChangeSort = viewModel::updateSort,
@@ -170,6 +177,10 @@ internal fun DetailAnime(
         onNavigateBack = onNavigateBack,
         onNavigateToReviewForm = onNavigateToReviewForm,
         onNavigateToStudioDetail = onNavigateToStudioDetail,
+        onCheckReviewRefresh = onCheckReviewRefresh,
+        onClearReviewRefresh = onClearReviewRefresh,
+        onStatusRefresh = onStatusRefresh,
+        onRefreshAllData = viewModel::getInitData
     )
 }
 
@@ -195,6 +206,7 @@ private fun DetailAnime(
     isLikeLoading: Boolean,
     isChangeStatusLoading: Boolean,
     isAnimeRatingLoading: Boolean,
+    onShareAnimeLink: () -> Unit,
     onChangeTabIndex: (DetailTab) -> Unit,
     onChangeIncludeSpoiler: () -> Unit,
     onChangeSort: (ReviewSort) -> Unit,
@@ -211,7 +223,19 @@ private fun DetailAnime(
     onNavigateBack: () -> Unit,
     onNavigateToReviewForm: (Int, Int?, FormType) -> Unit,
     onNavigateToStudioDetail: (String, Int) -> Unit,
+    onCheckReviewRefresh: () -> Boolean,
+    onClearReviewRefresh: () -> Unit,
+    onStatusRefresh: () -> Unit,
+    onRefreshAllData: () -> Unit,
 ) {
+    LaunchedEffect(Unit) {
+        val isUpdate = onCheckReviewRefresh()
+        if (isUpdate) {
+            onRefreshAllData()
+            onClearReviewRefresh()
+        }
+    }
+
     val lazyListState = rememberLazyListState()
 
     val isTopComponentVisible by remember {
@@ -336,9 +360,16 @@ private fun DetailAnime(
                                     Icon(
                                         painter = painterResource(R.drawable.ic_share),
                                         contentDescription = null,
+                                        tint = Color.Unspecified,
                                         modifier = Modifier
-                                            .size(33.dp),
-                                        tint = Color.Unspecified
+                                            .size(33.dp)
+                                            .clickable(
+                                                indication = null,
+                                                interactionSource = remember { MutableInteractionSource() }
+                                            ) {
+                                                onShareAnimeLink()
+                                                onChangeSnackBarData(SnackBarData(text = "링크가 복사되었습니다."))
+                                              },
                                     )
                                 }
                                 Row(
@@ -360,7 +391,6 @@ private fun DetailAnime(
                                         fontWeight = FontWeight.W600,
                                         color = APColors.Point
                                     )
-
                                 }
                                 Row(
                                     modifier = Modifier
@@ -377,7 +407,10 @@ private fun DetailAnime(
                                         modifier = Modifier
                                             .weight(1f)
                                             .clip(RoundedCornerShape(8.dp))
-                                            .clickable(enabled = !isChangeStatusLoading) { onSetAnimeStatus(WatchStatus.WATCHLIST) }
+                                            .clickable(enabled = !isChangeStatusLoading) {
+                                                onSetAnimeStatus(WatchStatus.WATCHLIST)
+                                                onStatusRefresh()
+                                            }
                                             .background(
                                                 if (watchStatus == WatchStatus.WATCHLIST) APColors.Primary else APColors.LightGray,
                                                 RoundedCornerShape(8.dp)
@@ -393,7 +426,10 @@ private fun DetailAnime(
                                         modifier = Modifier
                                             .weight(1f)
                                             .clip(RoundedCornerShape(8.dp))
-                                            .clickable(enabled = !isChangeStatusLoading) { onSetAnimeStatus(WatchStatus.WATCHING) }
+                                            .clickable(enabled = !isChangeStatusLoading) {
+                                                onSetAnimeStatus(WatchStatus.WATCHING)
+                                                onStatusRefresh()
+                                            }
                                             .background(
                                                 if (watchStatus == WatchStatus.WATCHING) APColors.Primary else APColors.LightGray,
                                                 RoundedCornerShape(8.dp)
@@ -409,7 +445,10 @@ private fun DetailAnime(
                                         modifier = Modifier
                                             .weight(1f)
                                             .clip(RoundedCornerShape(8.dp))
-                                            .clickable(enabled = !isChangeStatusLoading) { onSetAnimeStatus(WatchStatus.FINISHED) }
+                                            .clickable(enabled = !isChangeStatusLoading) {
+                                                onSetAnimeStatus(WatchStatus.FINISHED)
+                                                onStatusRefresh()
+                                            }
                                             .background(
                                                 if (watchStatus == WatchStatus.FINISHED) APColors.Primary else APColors.LightGray,
                                                 RoundedCornerShape(8.dp)
@@ -1131,7 +1170,7 @@ private fun AnimeReview(
             }
             reviewItems.filter { !it.isSpoiler || includeSpoiler }.forEach { review ->
                 val radioOptions = listOf("스포일러", "편파적인 언행", "욕설 및 비하", "홍보성 및 영리 목적", "음란성 및 선정성")
-                val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+                var selectedOption by remember { mutableStateOf(radioOptions[0]) }
                 APReviewItem(
                     reviewItem = review,
                     onClickUpdate = { onNavigateToReviewForm(detailInfo?.animeId ?: -1, review.reviewId, FormType.EDIT) },
@@ -1177,14 +1216,18 @@ private fun AnimeReview(
                                                         .height(22.dp)
                                                         .selectable(
                                                             selected = (text == selectedOption),
-                                                            onClick = { onOptionSelected(text) },
+                                                            onClick = { selectedOption = text },
                                                             role = Role.RadioButton
                                                         ),
                                                     verticalAlignment = Alignment.CenterVertically
                                                 ) {
                                                     RadioButton(
                                                         selected = (text == selectedOption),
-                                                        onClick = null
+                                                        onClick = { selectedOption = text },
+                                                        colors = RadioButtonDefaults.colors(
+                                                            selectedColor = APColors.Point,
+                                                            unselectedColor = APColors.Gray
+                                                        )
                                                     )
                                                     Text(
                                                         text = text,

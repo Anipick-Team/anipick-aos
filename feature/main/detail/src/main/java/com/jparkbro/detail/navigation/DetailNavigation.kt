@@ -23,6 +23,9 @@ fun NavGraphBuilder.detailAnimeScreen(
     onNavigateBack: () -> Unit,
     onNavigateToReviewForm: (Int, Int?, FormType) -> Unit,
     onNavigateToStudioDetail: (String, Int) -> Unit,
+    onCheckReviewRefresh: () -> Boolean,
+    onClearReviewRefresh: () -> Unit,
+    onStatusRefresh: () -> Unit,
 ) {
     composable<AnimeDetail> { entry ->
         val animeId = entry.toRoute<AnimeDetail>().animeId
@@ -31,6 +34,9 @@ fun NavGraphBuilder.detailAnimeScreen(
             onNavigateBack = onNavigateBack,
             onNavigateToReviewForm = onNavigateToReviewForm,
             onNavigateToStudioDetail = onNavigateToStudioDetail,
+            onCheckReviewRefresh = onCheckReviewRefresh,
+            onClearReviewRefresh = onClearReviewRefresh,
+            onStatusRefresh = onStatusRefresh,
             viewModel = hiltViewModel<DetailAnimeViewModel, DetailAnimeViewModel.Factory>(
                 key = "$animeId"
             ) { factory ->

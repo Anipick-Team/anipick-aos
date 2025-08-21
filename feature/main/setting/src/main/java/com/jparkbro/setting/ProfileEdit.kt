@@ -55,6 +55,7 @@ internal fun ProfileEdit(
     type: ProfileEditType,
     onNavigateBack: () -> Unit,
     onNavigateToLogin: () -> Unit,
+    onPopBackWithRefresh: () -> Unit,
     viewModel: SettingViewModel = hiltViewModel()
 ) {
     val userInfo by viewModel.userInfo.collectAsState()
@@ -84,6 +85,7 @@ internal fun ProfileEdit(
         onChangeUserInfo = viewModel::updateUserInfo,
         onNavigateBack = onNavigateBack,
         onNavigateToLogin = onNavigateToLogin,
+        onPopBackWithRefresh = onPopBackWithRefresh,
     )
 
 }
@@ -108,6 +110,7 @@ private fun ProfileEdit(
     onChangeUserInfo: (ProfileEditType, (Boolean) -> Unit) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToLogin: () -> Unit,
+    onPopBackWithRefresh: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -197,7 +200,7 @@ private fun ProfileEdit(
                             }
                             else -> {
                                 onChangeUserInfo(type) { result ->
-                                    if (result) onNavigateBack() // TODO 수정필요
+                                    if (result) onPopBackWithRefresh()
                                 }
                             }
                         }

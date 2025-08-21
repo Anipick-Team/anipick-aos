@@ -1,6 +1,7 @@
 package com.jparkbro.mypage
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -68,6 +70,10 @@ internal fun MyPage(
     onNavigateToUserContent: (ContentType) -> Unit,
     onNavigateToMyRatings: () -> Unit,
     onNavigateToSetting: () -> Unit,
+    onCheckSettingRefresh: () -> Boolean,
+    onClearSettingRefresh: () -> Unit,
+    onCheckStatusRefresh: () -> Boolean,
+    onClearStatusRefresh: () -> Unit,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
     // TODO 리렌더링 필요 ( 좋아요 , Watch Status , 닉네임 , 프로필 이미지 )
@@ -81,10 +87,15 @@ internal fun MyPage(
         profileImage = profileImage,
         bottomNav = bottomNav,
         onChangeProfileImage = viewModel::editProfileImg,
+        onGetInfo = viewModel::getInfo,
         onNavigateToAnimeDetail = onNavigateToAnimeDetail,
         onNavigateToUserContent = onNavigateToUserContent,
         onNavigateToMyRatings = onNavigateToMyRatings,
         onNavigateToSetting = onNavigateToSetting,
+        onCheckSettingRefresh = onCheckSettingRefresh,
+        onClearSettingRefresh = onClearSettingRefresh,
+        onCheckStatusRefresh = onCheckStatusRefresh,
+        onClearStatusRefresh = onClearStatusRefresh,
     )
 }
 
@@ -94,11 +105,29 @@ private fun MyPage(
     profileImage: String? = null,
     bottomNav: @Composable () -> Unit,
     onChangeProfileImage: (Uri) -> Unit,
+    onGetInfo: () -> Unit,
     onNavigateToAnimeDetail: (Int) -> Unit,
     onNavigateToUserContent: (ContentType) -> Unit,
     onNavigateToMyRatings: () -> Unit,
     onNavigateToSetting: () -> Unit,
+    onCheckSettingRefresh: () -> Boolean,
+    onClearSettingRefresh: () -> Unit,
+    onCheckStatusRefresh: () -> Boolean,
+    onClearStatusRefresh: () -> Unit,
 ) {
+
+    LaunchedEffect(Unit) {
+        val isSettingUpdate = onCheckSettingRefresh()
+        val isStatusUpdate = onCheckStatusRefresh()
+
+        if (isSettingUpdate || isStatusUpdate) {
+            onGetInfo()
+
+            if (isSettingUpdate) onClearSettingRefresh()
+            if (isStatusUpdate) onClearStatusRefresh()
+        }
+    }
+
     Scaffold(
         topBar = {
             Row(
@@ -325,14 +354,25 @@ private fun ProfileImage(
                 )
             ) }
     ) {
-        AsyncImage(
-            model = profileImageUrl,
-            contentDescription = null,
-            modifier = Modifier
-                .size(96.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
+        if (profileImageUrl == null || profileImageUrl == "default.png") {
+            Image(
+                painter = painterResource(com.jparkbro.ui.R.drawable.profile_default_img),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            AsyncImage(
+                model = profileImageUrl,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+        }
         Icon(
             painter = painterResource(R.drawable.ic_edit),
             contentDescription = null,
@@ -528,9 +568,14 @@ private fun ProfilePreview() {
         uiState = MyPageUiState.Loading,
         bottomNav = {},
         onChangeProfileImage = {},
+        onGetInfo = {},
         onNavigateToAnimeDetail = {},
         onNavigateToMyRatings = {},
         onNavigateToUserContent = {},
         onNavigateToSetting = {},
+        onCheckSettingRefresh = { false },
+        onClearSettingRefresh = {},
+        onCheckStatusRefresh = { false },
+        onClearStatusRefresh = {},
     )
 }

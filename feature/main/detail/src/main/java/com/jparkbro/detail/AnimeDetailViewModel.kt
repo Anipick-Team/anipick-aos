@@ -1,5 +1,9 @@
 package com.jparkbro.detail
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -20,6 +24,7 @@ import com.jparkbro.model.detail.DetailSeries
 import com.jparkbro.model.detail.ReviewDetailRequest
 import com.jparkbro.model.detail.ReviewDetailResponse
 import com.jparkbro.model.detail.ReviewSort
+import com.jparkbro.model.review.ReportReviewRequest
 import com.jparkbro.model.review.ReviewRating
 import com.jparkbro.ui.DialogData
 import com.jparkbro.ui.SnackBarData
@@ -27,6 +32,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,6 +45,7 @@ class DetailAnimeViewModel @AssistedInject constructor(
     private val detailRepository: DetailRepository,
     private val reviewRepository: ReviewRepository,
     @Assisted val animeId: Int,
+    @ApplicationContext val context: Context,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<DetailUiState>(DetailUiState.Loading)
@@ -119,7 +126,7 @@ class DetailAnimeViewModel @AssistedInject constructor(
         }
     }
 
-    private fun getInitData() {
+    fun getInitData() {
         viewModelScope.launch {
             detailDataUseCase(animeId).collect { result ->
                 when (result) {
@@ -142,6 +149,9 @@ class DetailAnimeViewModel @AssistedInject constructor(
     fun getAnimeReviews(lastId: Int? = null) {
         if (lastId != null && (_isLoading.value || !_hasMoreData.value)) return
 
+        if (lastId == null) {
+            _reviewItems.value = emptyList()
+        }
         _isLoading.value = true
 
         viewModelScope.launch {
@@ -255,10 +265,12 @@ class DetailAnimeViewModel @AssistedInject constructor(
                         ApiAction.UPDATE
                     }
                 },
-                animeId = animeId
+                animeId = animeId,
+                status = watchStatus
             ).fold(
                 onSuccess = {
                     _isChangeStatusLoading.value = false
+                    if (currentStatus == watchStatus) _detailInfo.value = _detailInfo.value?.copy(watchStatus = null)
                 },
                 onFailure = {
                     _detailInfo.value = _detailInfo.value?.copy(watchStatus = currentStatus)
@@ -297,8 +309,7 @@ class DetailAnimeViewModel @AssistedInject constructor(
 
     fun reportReview(reviewId: Int, reason: String) {
         viewModelScope.launch {
-            Log.d("report", reason)
-            reviewRepository.reportReview(reviewId).getOrThrow()
+            reviewRepository.reportReview(reviewId, ReportReviewRequest(message = reason)).getOrThrow()
             getInitData()
         }
     }
@@ -315,6 +326,14 @@ class DetailAnimeViewModel @AssistedInject constructor(
             _tabIndex.value = detailTab
         }
     }
+
+    fun copyAnimeLink() {
+        val deepLink = "anipick://anime/$animeId"
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("애니메이션 링크", deepLink)
+        clipboard.setPrimaryClip(clip)
+    }
+
 
     @AssistedFactory
     interface Factory {

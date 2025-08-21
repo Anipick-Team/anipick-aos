@@ -29,6 +29,10 @@ fun NavGraphBuilder.myPageScreen(
     onNavigateToUserContent: (ContentType) -> Unit,
     onNavigateToMyRatings: () -> Unit,
     onNavigateToSetting: () -> Unit,
+    onCheckSettingRefresh: () -> Boolean,
+    onClearSettingRefresh: () -> Unit,
+    onCheckStatusRefresh: () -> Boolean,
+    onClearStatusRefresh: () -> Unit,
 ) {
     composable<MyPage> { entry ->
         MyPage(
@@ -37,6 +41,10 @@ fun NavGraphBuilder.myPageScreen(
             onNavigateToUserContent = onNavigateToUserContent,
             onNavigateToMyRatings = onNavigateToMyRatings,
             onNavigateToSetting = onNavigateToSetting,
+            onCheckSettingRefresh = onCheckSettingRefresh,
+            onClearSettingRefresh = onClearSettingRefresh,
+            onCheckStatusRefresh = onCheckStatusRefresh,
+            onClearStatusRefresh = onClearStatusRefresh,
         )
     }
 }
@@ -46,6 +54,8 @@ fun NavController.navigateToUserContent(type: ContentType, navOptions: NavOption
 fun NavGraphBuilder.userContentScreen(
     onNavigateBack: () -> Unit,
     onNavigateToAnimeDetail: (Int) -> Unit,
+    onCheckStatusRefresh: () -> Boolean,
+    onStatusRefresh: () -> Unit,
 ) {
     composable<UserContent> { entry ->
         val route = entry.toRoute<UserContent>()
@@ -53,6 +63,8 @@ fun NavGraphBuilder.userContentScreen(
         UserContent(
             onNavigateBack = onNavigateBack,
             onNavigateToAnimeDetail = onNavigateToAnimeDetail,
+            onCheckStatusRefresh = onCheckStatusRefresh,
+            onStatusRefresh = onStatusRefresh,
             viewModel = hiltViewModel<UserContentViewModel, UserContentViewModel.Factory>(
                 key = route.type.title
             ) { factory ->

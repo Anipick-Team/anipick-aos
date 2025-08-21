@@ -13,3 +13,12 @@
 -if interface * { @retrofit2.http.* public *** *(...); }
 -keep,allowoptimization,allowshrinking,allowobfuscation class <3>
 -keep,allowobfuscation,allowshrinking class retrofit2.Response
+
+# model 모듈의 모든 클래스 보호
+-keep class com.jparkbro.model.** { *; }
+
+# Serializable 클래스들 보호
+-keep @kotlinx.serialization.Serializable class * { *; }
+
+# enum 클래스들 특별히 보호
+-keep enum * { *; }

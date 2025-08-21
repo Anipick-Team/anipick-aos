@@ -97,7 +97,7 @@ fun APNavHost(
             bottomNav = bottomNav,
             onNavigateToSearch = navController::navigateToSearch,
             onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
-            onNavigateToRanking = { navController.navigateToRanking()},
+            onNavigateToRanking = { navController.navigateToRanking() },
             onNavigateToExplore = { year, quarter ->
                 navController.navigateToExplore(year = year, quarter = quarter)
             },
@@ -128,10 +128,16 @@ fun APNavHost(
             onNavigateToUserContent = navController::navigateToUserContent,
             onNavigateToMyRatings = navController::navigateToMyRatings,
             onNavigateToSetting = navController::navigateToSetting,
+            onCheckSettingRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("setting_refresh") ?: false },
+            onClearSettingRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("setting_refresh", false) },
+            onCheckStatusRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("status_refresh") ?: false },
+            onClearStatusRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("status_refresh", false) },
         )
         userContentScreen(
             onNavigateBack = navController::navigateUp,
             onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
+            onCheckStatusRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("status_refresh") ?: false },
+            onStatusRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("status_refresh", true) }
         )
         myRatingsScreen(
             onNavigateBack = navController::navigateUp,
@@ -142,7 +148,10 @@ fun APNavHost(
         detailAnimeScreen(
             onNavigateBack = navController::navigateUp,
             onNavigateToReviewForm = navController::navigateToReviewForm,
-            onNavigateToStudioDetail = navController::navigateToStudioDetail
+            onNavigateToStudioDetail = navController::navigateToStudioDetail,
+            onCheckReviewRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("review_refresh") ?: false },
+            onClearReviewRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("review_refresh", false) },
+            onStatusRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("status_refresh", true) }
         )
         studioDetailScreen(
             onNavigateBack = navController::navigateUp
@@ -152,17 +161,29 @@ fun APNavHost(
         settingScreen(
             onNavigateBack = navController::navigateUp,
             onNavigateToProfileEdit = navController::navigateToProfileEdit,
-            onNavigateToLogin = { navController.navigateToLogin(navOptions {
-                popUpTo(0) { inclusive = true }
-                launchSingleTop = true
-            }) }
+            onNavigateToLogin = {
+                navController.navigateToLogin(navOptions {
+                    popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
+                })
+            },
+            onCheckSettingRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("setting_refresh") ?: false },
+            onPopBackWithRefresh = {
+                navController.previousBackStackEntry?.savedStateHandle?.set("setting_refresh", true)
+            }
         )
         profileEditScreen(
             onNavigateBack = navController::navigateUp,
-            onNavigateToLogin = { navController.navigateToLogin(navOptions {
-                popUpTo(0) { inclusive = true }
-                launchSingleTop = true
-            }) }
+            onNavigateToLogin = {
+                navController.navigateToLogin(navOptions {
+                    popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
+                })
+            },
+            onPopBackWithRefresh = {
+                navController.previousBackStackEntry?.savedStateHandle?.set("setting_refresh", true)
+                navController.popBackStack()
+            }
         )
 
         /* Search */
@@ -179,6 +200,10 @@ fun APNavHost(
         /* review */
         reviewFormScreen(
             onNavigateBack = navController::navigateUp,
+            onPopBackWithRefresh = {
+                navController.previousBackStackEntry?.savedStateHandle?.set("review_refresh", true)
+                navController.popBackStack()
+            }
         )
     }
 }
