@@ -10,10 +10,10 @@ plugins {
 
 android {
     namespace = "com.jparkbro.home"
-    compileSdk = 36
+    compileSdk = rootProject.extra["targetSdk"] as Int
 
     defaultConfig {
-        minSdk = 32
+        minSdk = rootProject.extra["minSdk"] as Int
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")

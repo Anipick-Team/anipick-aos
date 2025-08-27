@@ -10,4 +10,6 @@ interface SearchDataSource {
     suspend fun getSearchAnimes(request: SearchRequest): Result<SearchResultResponse>
     suspend fun getSearchPersons(request: SearchRequest): Result<SearchResultResponse>
     suspend fun getSearchStudios(request: SearchRequest): Result<SearchResultResponse>
+
+    suspend fun submitAnimeLog(logUrl: String): Result<Unit>
 }

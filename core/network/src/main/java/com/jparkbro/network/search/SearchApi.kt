@@ -37,7 +37,7 @@ interface SearchApi {
     ): Response<ApiResponse<SearchResultResponse>>
 
     @GET
-    suspend fun getLogByUrl(
+    suspend fun submitLogByUrl(
         @Url url: String
     ): Response<ApiResponse<Unit>>
 }

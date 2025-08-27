@@ -48,6 +48,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -101,6 +103,7 @@ internal fun SearchResult(
         isLoading = isLoading,
         onSearchResult = viewModel::loadSearchResults,
         onSaveRecentSearch = viewModel::saveRecentSearch,
+        onSubmitAnimeLog = viewModel::submitAnimeLog,
         onNavigateBack = onNavigateBack,
         onNavigateToAnimeDetail = onNavigateToAnimeDetail,
     )
@@ -120,6 +123,7 @@ private fun SearchResult(
     isLoading: Boolean,
     onSearchResult: (Int?, Int?) -> Unit,
     onSaveRecentSearch: (String) -> Unit,
+    onSubmitAnimeLog: (String) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToAnimeDetail: (Int) -> Unit,
 ) {
@@ -247,6 +251,13 @@ private fun SearchResult(
                             when (searchType) {
                                 SearchType.ANIMES -> {
                                     val anime = item as SearchResultAnime
+                                    var hasLogged by rememberSaveable(anime.animeId) { mutableStateOf(false) }
+                                    LaunchedEffect(anime.animeId) {
+                                        if (!hasLogged) {
+                                            onSubmitAnimeLog(anime.impressionLog)
+                                            hasLogged = true
+                                        }
+                                    }
                                     APCardItem(
                                         title = "${anime.title}",
                                         imageUrl = anime.coverImageUrl,
@@ -254,7 +265,10 @@ private fun SearchResult(
                                         cardHeight = 162.dp,
                                         fontSize = 14.sp,
                                         maxLine = 1,
-                                        onClick = { onNavigateToAnimeDetail(anime.animeId) }
+                                        onClick = {
+                                            onSubmitAnimeLog(anime.clickLog)
+                                            onNavigateToAnimeDetail(anime.animeId)
+                                        }
                                     )
                                 }
                                 SearchType.PERSONS -> {

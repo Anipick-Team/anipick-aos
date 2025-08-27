@@ -4,6 +4,7 @@ import com.jparkbro.model.search.SearchRequest
 import com.jparkbro.model.search.SearchResponse
 import com.jparkbro.model.search.SearchResultResponse
 import com.jparkbro.network.util.toResult
+import com.jparkbro.network.util.toUnitResult
 import javax.inject.Inject
 
 class RetrofitSearchDataSource @Inject constructor(
@@ -40,5 +41,11 @@ class RetrofitSearchDataSource @Inject constructor(
             lastId = request.lastId,
             size = request.size,
         ).toResult(TAG, "getSearchStudios")
+    }
+
+    override suspend fun submitAnimeLog(logUrl: String): Result<Unit> {
+        return searchApi.submitLogByUrl(
+            url = logUrl
+        ).toUnitResult(TAG, "submitAnimeLog")
     }
 }

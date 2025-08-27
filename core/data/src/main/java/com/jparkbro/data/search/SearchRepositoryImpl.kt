@@ -40,4 +40,8 @@ class SearchRepositoryImpl @Inject constructor(
             SearchType.STUDIOS -> searchDataSource.getSearchStudios(request)
         }
     }
+
+    override suspend fun submitAnimeLog(logUrl: String): Result<Unit> {
+        return searchDataSource.submitAnimeLog(logUrl)
+    }
 }

@@ -17,13 +17,13 @@ keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 android {
     namespace = "com.jparkbro.anipick"
-    compileSdk = 36
+    compileSdk = rootProject.extra["targetSdk"] as Int
 
     defaultConfig {
         applicationId = "com.jparkbro.anipick"
-        minSdk = 32
-        targetSdk = 36
-        versionCode = 1
+        minSdk = rootProject.extra["minSdk"] as Int
+        targetSdk = rootProject.extra["targetSdk"] as Int
+        versionCode = rootProject.extra["versionCode"] as Int
         versionName = "${rootProject.extra["versionName"]}"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

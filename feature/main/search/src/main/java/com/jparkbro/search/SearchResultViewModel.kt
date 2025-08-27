@@ -144,6 +144,12 @@ class SearchResultViewModel @AssistedInject constructor(
         }
     }
 
+    fun submitAnimeLog(logUrl: String) {
+        viewModelScope.launch {
+            searchRepository.submitAnimeLog(logUrl).getOrThrow()
+        }
+    }
+
     @AssistedFactory
     interface Factory {
         fun create(

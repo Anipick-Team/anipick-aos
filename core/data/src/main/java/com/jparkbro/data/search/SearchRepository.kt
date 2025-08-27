@@ -14,4 +14,6 @@ interface SearchRepository {
     suspend fun getPopularAnimes(): Result<SearchResponse>      // Search API
 
     suspend fun getSearchResult(type: SearchType, request: SearchRequest): Result<SearchResultResponse>
+
+    suspend fun submitAnimeLog(logUrl: String): Result<Unit>
 }
