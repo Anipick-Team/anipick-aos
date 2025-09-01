@@ -16,7 +16,7 @@ data class AnimePerson(
     @SerialName("id")
     val id: Int,
     @SerialName("name")
-    val name: String,
+    val name: String? = "",
     @SerialName("imageUrl")
     val imageUrl: String,
 )

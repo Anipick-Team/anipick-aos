@@ -20,3 +20,7 @@ fun String.quarterStringToInt(): Int? {
         else -> null
     }
 }
+
+fun String.toFullImageUrl(baseUrl: String = "http://anipick.p-e.kr:8080"): String {
+    return this.replace("./uploads", baseUrl)
+}

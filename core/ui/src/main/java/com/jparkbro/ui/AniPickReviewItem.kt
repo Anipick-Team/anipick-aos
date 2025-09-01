@@ -196,13 +196,25 @@ fun <T : ReviewItem> APReviewItem(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        AsyncImage(
-                            model = reviewItem.profileImageUrl,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .size(24.dp)
-                        )
+                        if (reviewItem.profileImageUrl == null || reviewItem.profileImageUrl == "default.png") {
+                            Image(
+                                painter = painterResource(R.drawable.profile_default_img),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            AsyncImage(
+                                model = reviewItem.profileImageUrl,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
                         Text(
                             text = reviewItem.nickname,
                             fontSize = 12.sp,

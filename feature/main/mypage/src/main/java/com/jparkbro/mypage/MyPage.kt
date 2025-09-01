@@ -62,6 +62,7 @@ import com.jparkbro.model.mypage.ContentType
 import com.jparkbro.model.mypage.LikedAnime
 import com.jparkbro.model.mypage.LikedPerson
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.util.extension.toFullImageUrl
 
 @Composable
 internal fun MyPage(
@@ -192,7 +193,7 @@ private fun MyPage(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         ProfileImage(
-                            profileImageUrl = profileImage,
+                            profileImageUrl = "${profileImage?.toFullImageUrl()}",
                             onChangeProfileImage = onChangeProfileImage
                         )
                         Column {

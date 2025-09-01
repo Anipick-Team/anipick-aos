@@ -15,6 +15,10 @@ val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
+val localPropertiesFile = rootProject.file("local.properties")
+val localProperties = Properties()
+localProperties.load(FileInputStream(localPropertiesFile))
+
 android {
     namespace = "com.jparkbro.anipick"
     compileSdk = rootProject.extra["targetSdk"] as Int
@@ -27,6 +31,12 @@ android {
         versionName = "${rootProject.extra["versionName"]}"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "KAKAO_APP_KEY",
+            "\"${localProperties.getProperty("KAKAO_APP_KEY", "")}\""
+        )
     }
 
     signingConfigs {

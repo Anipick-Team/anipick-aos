@@ -92,14 +92,14 @@ class DetailAnimeViewModel @AssistedInject constructor(
     private val _detailInfo = MutableStateFlow<DetailInfo?>(null)
     val detailInfo: StateFlow<DetailInfo?> = _detailInfo.asStateFlow()
 
-    private val _actor = MutableStateFlow<List<DetailActor>>(emptyList())
-    val actor: StateFlow<List<DetailActor>> = _actor.asStateFlow()
+    private val _actors = MutableStateFlow<List<DetailActor>>(emptyList())
+    val actors: StateFlow<List<DetailActor>> = _actors.asStateFlow()
 
     private val _series = MutableStateFlow<List<DetailSeries>>(emptyList())
     val series: StateFlow<List<DetailSeries>> = _series.asStateFlow()
 
-    private val _recommendation = MutableStateFlow<List<DefaultAnime>>(emptyList())
-    val recommendation: StateFlow<List<DefaultAnime>> = _recommendation.asStateFlow()
+    private val _recommendations = MutableStateFlow<List<DefaultAnime>>(emptyList())
+    val recommendations: StateFlow<List<DefaultAnime>> = _recommendations.asStateFlow()
 
     private val _myReview = MutableStateFlow<DetailMyReview?>(null)
     val myReview: StateFlow<DetailMyReview?> = _myReview.asStateFlow()
@@ -134,9 +134,9 @@ class DetailAnimeViewModel @AssistedInject constructor(
                     is Result.Success<DetailData> -> {
                         _uiState.value = DetailUiState.Success
                         _detailInfo.value = result.data.info
-                        _actor.value = result.data.actor
+                        _actors.value = result.data.actor
                         _series.value = result.data.series
-                        _recommendation.value = result.data.recommendation
+                        _recommendations.value = result.data.recommendation
                         _myReview.value = result.data.myReview
                     }
                     is Result.Error -> _uiState.value = DetailUiState.Error(result.exception.message ?: "데이터 조회 중 에러 발생")
@@ -333,7 +333,6 @@ class DetailAnimeViewModel @AssistedInject constructor(
         val clip = ClipData.newPlainText("애니메이션 링크", deepLink)
         clipboard.setPrimaryClip(clip)
     }
-
 
     @AssistedFactory
     interface Factory {

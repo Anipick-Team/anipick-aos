@@ -1,6 +1,5 @@
 package com.jparkbro.detail
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +27,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
@@ -38,7 +38,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Tab
@@ -66,7 +65,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -125,9 +123,9 @@ internal fun DetailAnime(
     val dialogData by viewModel.dialogData.collectAsState()
 
     val detailInfo by viewModel.detailInfo.collectAsState()
-    val actor by viewModel.actor.collectAsState()
+    val actors by viewModel.actors.collectAsState()
     val series by viewModel.series.collectAsState()
-    val recommendation by viewModel.recommendation.collectAsState()
+    val recommendations by viewModel.recommendations.collectAsState()
 
     val myReview by viewModel.myReview.collectAsState()
     val reviewResponse by viewModel.reviewResponse.collectAsState()
@@ -149,9 +147,9 @@ internal fun DetailAnime(
         onChangeDialogData = viewModel::updateDialogData,
         snackBarData = snackBarData,
         detailInfo = detailInfo,
-        actor = actor,
+        actors = actors,
         series = series,
-        recommendation = recommendation,
+        recommendations = recommendations,
         myReview = myReview,
         reviewResponse = reviewResponse,
         reviewItems = reviewItems,
@@ -195,9 +193,9 @@ private fun DetailAnime(
     onChangeDialogData: (DialogData?) -> Unit,
     snackBarData: SnackBarData? = null,
     detailInfo: DetailInfo?,
-    actor: List<DetailActor>,
+    actors: List<DetailActor>,
     series: List<DetailSeries>,
-    recommendation: List<DefaultAnime>,
+    recommendations: List<DefaultAnime>,
     myReview: DetailMyReview? = null,
     reviewResponse: ReviewDetailResponse? = null,
     reviewItems: List<DetailReviewItem> = emptyList(),
@@ -549,9 +547,9 @@ private fun DetailAnime(
                     when (tabIndex) {
                         DetailTab.ANIME_INFO -> AnimeInfo(
                             detailInfo = detailInfo,
-                            actor = actor,
+                            actors = actors,
                             series = series,
-                            recommendation = recommendation,
+                            recommendations = recommendations,
                             onNavigateToStudioDetail = onNavigateToStudioDetail,
                         )
 
@@ -583,7 +581,11 @@ private fun DetailAnime(
             }
         }
 
-        is DetailUiState.Error -> {} // TODO
+        is DetailUiState.Error -> {
+            Text(
+                text = "error"
+            )
+        } // TODO
     }
 
     snackBarData?.let {
@@ -610,9 +612,9 @@ private fun DetailAnime(
 @Composable
 private fun AnimeInfo(
     detailInfo: DetailInfo?,
-    actor: List<DetailActor>,
+    actors: List<DetailActor>,
     series: List<DetailSeries>,
-    recommendation: List<DefaultAnime>,
+    recommendations: List<DefaultAnime>,
     onNavigateToStudioDetail: (String, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -812,13 +814,13 @@ private fun AnimeInfo(
                 ) {
                     detailInfo?.studios?.forEach { studio ->
                         Text(
-                            text = studio.name,
+                            text = "${studio.name}",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.W500,
                             color = APColors.Secondary,
                             textDecoration = TextDecoration.Underline,
                             modifier = Modifier
-                                .clickable { onNavigateToStudioDetail(studio.name, studio.studioId) }
+                                .clickable { onNavigateToStudioDetail("${studio.name}", studio.studioId) }
                         )
                     }
                 }
@@ -829,63 +831,69 @@ private fun AnimeInfo(
             verticalArrangement = Arrangement.spacedBy(48.dp)
         ) {
             /** 캐릭터, 성우 */
-            Column(
-                verticalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                ClickableSectionTitle(
-                    title = "캐릭터/성우진",
-                    onClick = {}
-                )
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp)
+            if (actors.isNotEmpty()) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    items(10) {
-                        Row(
-                            modifier = Modifier
-                                .background(APColors.Surface, RoundedCornerShape(8.dp)),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Column {
-                                Box(
-                                    modifier = Modifier
-                                        .width(91.dp)
-                                        .height(95.dp)
-                                        .background(APColors.Gray, RoundedCornerShape(topStart = 8.dp))
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .height(46.dp)
-                                        .padding(start = 8.dp),
-                                    contentAlignment = Alignment.CenterStart
-                                ) {
-                                    Text(
-                                        text = "캐릭터명",
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        color = APColors.Black
+                    ClickableSectionTitle(
+                        title = "캐릭터/성우진",
+                        onClick = {}
+                    )
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(horizontal = 20.dp)
+                    ) {
+                        items(actors) { actor ->
+                            Row(
+                                modifier = Modifier
+                                    .background(APColors.Surface, RoundedCornerShape(8.dp)),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Column {
+                                    AsyncImage(
+                                        model = actor.character.imageUrl,
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .width(91.dp)
+                                            .height(95.dp)
+                                            .background(APColors.Gray, RoundedCornerShape(topStart = 8.dp))
                                     )
+                                    Box(
+                                        modifier = Modifier
+                                            .height(46.dp)
+                                            .padding(start = 8.dp),
+                                        contentAlignment = Alignment.CenterStart
+                                    ) {
+                                        Text(
+                                            text = "${actor.character.name}",
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.W500,
+                                            color = APColors.Black
+                                        )
+                                    }
                                 }
-                            }
-                            Column {
-                                Box(
-                                    modifier = Modifier
-                                        .width(91.dp)
-                                        .height(95.dp)
-                                        .background(APColors.Gray, RoundedCornerShape(topEnd = 8.dp))
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .height(46.dp)
-                                        .padding(start = 8.dp),
-                                    contentAlignment = Alignment.CenterStart
-                                ) {
-                                    Text(
-                                        text = "성우명",
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        color = APColors.Black
+                                Column {
+                                    AsyncImage(
+                                        model = actor.voiceActor.imageUrl,
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .width(91.dp)
+                                            .height(95.dp)
+                                            .background(APColors.Gray, RoundedCornerShape(topEnd = 8.dp))
                                     )
+                                    Box(
+                                        modifier = Modifier
+                                            .height(46.dp)
+                                            .padding(start = 8.dp),
+                                        contentAlignment = Alignment.CenterStart
+                                    ) {
+                                        Text(
+                                            text = "${actor.voiceActor.name}",
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.W500,
+                                            color = APColors.Black
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -893,60 +901,64 @@ private fun AnimeInfo(
                 }
             }
             /** 시리즈 정보 */
-            Column(
-                verticalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                ClickableSectionTitle(
-                    title = "시리즈 정보",
-                    onClick = {}
-                )
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp)
+            if (series.isNotEmpty()) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    items(10) {
-                        APCardItem(
-                            title = "내가 인기가 없는건 아무리 생각해도 너 내가 인기가 없는건 아무리 생각 해도 너",
-                            imageUrl = "",
-                            description = {
-                                Text(
-                                    text = "2025년 4분기",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.W500,
-                                    color = APColors.TextGray
-                                )
-                            },
-                            cardWidth = 115.dp,
-                            cardHeight = 162.dp,
-                            fontSize = 14.sp,
-                            maxLine = 2,
-                            onClick = { }
-                        )
+                    ClickableSectionTitle(
+                        title = "시리즈 정보",
+                        onClick = {}
+                    )
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(horizontal = 20.dp)
+                    ) {
+                        items(series) { anime ->
+                            APCardItem(
+                                title = "${anime.title}",
+                                imageUrl = anime.coverImageUrl,
+                                description = {
+                                    Text(
+                                        text = anime.airDate,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.W500,
+                                        color = APColors.TextGray
+                                    )
+                                },
+                                cardWidth = 115.dp,
+                                cardHeight = 162.dp,
+                                fontSize = 14.sp,
+                                maxLine = 2,
+                                onClick = { }
+                            )
+                        }
                     }
                 }
             }
             /** 추천 */
-            Column(
-                verticalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                ClickableSectionTitle(
-                    title = "함께 볼 만한 작품",
-                    onClick = {}
-                )
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp)
+            if (recommendations.isNotEmpty()) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    items(10) {
-                        APCardItem(
-                            title = "내가 인기가 없는건 아무리 생각해도 너 내가 인기가 없는건 아무리 생각 해도 너",
-                            imageUrl = "",
-                            cardWidth = 115.dp,
-                            cardHeight = 162.dp,
-                            fontSize = 14.sp,
-                            maxLine = 1,
-                            onClick = { }
-                        )
+                    ClickableSectionTitle(
+                        title = "함께 볼 만한 작품",
+                        onClick = {}
+                    )
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(horizontal = 20.dp)
+                    ) {
+                        items(recommendations) { anime ->
+                            APCardItem(
+                                title = "${anime.title}",
+                                imageUrl = anime.coverImageUrl,
+                                cardWidth = 115.dp,
+                                cardHeight = 162.dp,
+                                fontSize = 14.sp,
+                                maxLine = 1,
+                                onClick = { }
+                            )
+                        }
                     }
                 }
             }

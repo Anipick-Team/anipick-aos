@@ -24,7 +24,7 @@ data class DetailReviewItem(
     @SerialName("nickname")
     override val nickname: String,
     @SerialName("profileImageUrl")
-    override val profileImageUrl: String,
+    override val profileImageUrl: String?,
     @SerialName("rating")
     override val rating: Float,
     @SerialName("content")

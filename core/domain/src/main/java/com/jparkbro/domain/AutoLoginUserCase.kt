@@ -16,25 +16,33 @@ class AutoLoginUserCase @Inject constructor(
     operator fun invoke(): Flow<Result<Boolean>> = flow {
         // 1. datastore token 유무 확인
         val accessToken = userPreferenceRepository.getAccessToken().getOrNull()
-        if (accessToken == null) emit(false) // 값 없으면 로그인 화면
+        if (accessToken == null) {
+            emit(false)
+            return@flow
+        } // 값 없으면 로그인 화면
 
         // 2. access token 만료 시간 확인 (디코딩)
-        val isATExpired = isTokenExpired(accessToken.toString())
-        if (!isATExpired) emit(true) // 만료 안 됬으면 자동 로그인
+        val isATExpired = isTokenExpired(accessToken)
+        if (!isATExpired) {
+            emit(true)
+            return@flow
+        } // 만료 안 됬으면 자동 로그인
 
         // 3. refresh token 만료 시간 확인 (디코딩)
         val refreshToken = userPreferenceRepository.getRefreshToken().getOrNull()
-        if (refreshToken == null) emit(false)
+        if (refreshToken == null) {
+            emit(false)
+            return@flow
+        }
 
-        val isRTExpired = isTokenExpired(refreshToken.toString())
+        val isRTExpired = isTokenExpired(refreshToken)
         if (isRTExpired) {
             // 6. refresh token 만료 > 데이터 삭제
-            // TODO
+            userPreferenceRepository.clearAllData().getOrThrow()
             emit(false)
         } else {
             // 4. access token 만료 > 재요청
-            val authToken = userPreferenceRepository.requestToken(refreshToken.toString()).getOrThrow()
-            Log.d("decoding authToken", "$authToken")
+            val authToken = userPreferenceRepository.requestToken(refreshToken).getOrThrow()
 
             // 5. datastore token 저장
             userPreferenceRepository.saveToken(authToken).getOrThrow()

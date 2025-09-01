@@ -65,7 +65,14 @@ fun APNavHost(
         modifier = modifier
     ) {
         loginScreen(
-            onNavigateToHome = navController::navigateToHome,
+            onNavigateToHome = {
+                navController.navigateToHome(
+                    navOptions {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                )
+            },
             onNavigateToPreferenceSetup = navController::navigateToPreferenceSetup,
             onNavigateToEmailLogin = navController::navigateToEmailLogin,
             onNavigateToEmailSignup = navController::navigateToEmailSignup,

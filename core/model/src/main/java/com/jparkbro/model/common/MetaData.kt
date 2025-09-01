@@ -28,5 +28,5 @@ data class StudioMap(
     @SerialName("studioId")
     val studioId: Int,
     @SerialName("name")
-    val name: String,
+    val name: String? = "",
 )
