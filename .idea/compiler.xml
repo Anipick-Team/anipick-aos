@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="11">
+      <module name="AniPick.data" target="21" />
+      <module name="AniPick.domain" target="11" />
+      <module name="AniPick.domain.main" target="11" />
+      <module name="AniPick.domain.test" target="11" />
+      <module name="AniPick.feature.auth.find_password" target="21" />
+      <module name="AniPick.feature.explore" target="21" />
+      <module name="AniPick.feature.home" target="21" />
+      <module name="AniPick.feature.profile" target="21" />
+      <module name="AniPick.feature.ranking" target="21" />
+      <module name="AniPick.feature.test" target="11" />
+      <module name="AniPick.ui" target="21" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

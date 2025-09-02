@@ -106,7 +106,8 @@ import kotlinx.coroutines.flow.map
 internal fun DetailAnime(
     onNavigateBack: () -> Unit,
     onNavigateToReviewForm: (Int, Int?, FormType) -> Unit,
-    onNavigateToStudioDetail: (String, Int) -> Unit,
+    onNavigateToStudioDetail: (Int) -> Unit,
+    onNavigateToAnimeActors: (Int) -> Unit,
     onCheckReviewRefresh: () -> Boolean,
     onClearReviewRefresh: () -> Unit,
     onStatusRefresh: () -> Unit,
@@ -175,6 +176,7 @@ internal fun DetailAnime(
         onNavigateBack = onNavigateBack,
         onNavigateToReviewForm = onNavigateToReviewForm,
         onNavigateToStudioDetail = onNavigateToStudioDetail,
+        onNavigateToAnimeActors = onNavigateToAnimeActors,
         onCheckReviewRefresh = onCheckReviewRefresh,
         onClearReviewRefresh = onClearReviewRefresh,
         onStatusRefresh = onStatusRefresh,
@@ -220,7 +222,8 @@ private fun DetailAnime(
     onBlockUser: (Int) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToReviewForm: (Int, Int?, FormType) -> Unit,
-    onNavigateToStudioDetail: (String, Int) -> Unit,
+    onNavigateToStudioDetail: (Int) -> Unit,
+    onNavigateToAnimeActors: (Int) -> Unit,
     onCheckReviewRefresh: () -> Boolean,
     onClearReviewRefresh: () -> Unit,
     onStatusRefresh: () -> Unit,
@@ -353,8 +356,11 @@ private fun DetailAnime(
                                         title = "${detailInfo?.title}",
                                         isLiked = detailInfo?.isLiked == true,
                                         onChangeLikeState = { onLikeAnime(detailInfo?.isLiked == true) },
-                                        enabled = !isLikeLoading
+                                        enabled = !isLikeLoading,
+                                        modifier = Modifier
+                                            .weight(1f)
                                     )
+                                    Spacer(modifier = Modifier.width(12.dp))
                                     Icon(
                                         painter = painterResource(R.drawable.ic_share),
                                         contentDescription = null,
@@ -484,7 +490,8 @@ private fun DetailAnime(
                             )
                             TitleFavorite(
                                 modifier = Modifier
-                                    .align(Alignment.Center),
+                                    .align(Alignment.Center)
+                                    .padding(horizontal = 48.dp),
                                 title = "${detailInfo?.title}",
                                 isLiked = detailInfo?.isLiked == true,
                                 onChangeLikeState = { onLikeAnime(detailInfo?.isLiked == true) },
@@ -551,6 +558,7 @@ private fun DetailAnime(
                             series = series,
                             recommendations = recommendations,
                             onNavigateToStudioDetail = onNavigateToStudioDetail,
+                            onNavigateToAnimeActors = onNavigateToAnimeActors,
                         )
 
                         DetailTab.REVIEWS -> AnimeReview(
@@ -615,7 +623,8 @@ private fun AnimeInfo(
     actors: List<DetailActor>,
     series: List<DetailSeries>,
     recommendations: List<DefaultAnime>,
-    onNavigateToStudioDetail: (String, Int) -> Unit,
+    onNavigateToStudioDetail: (Int) -> Unit,
+    onNavigateToAnimeActors: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -820,7 +829,7 @@ private fun AnimeInfo(
                             color = APColors.Secondary,
                             textDecoration = TextDecoration.Underline,
                             modifier = Modifier
-                                .clickable { onNavigateToStudioDetail("${studio.name}", studio.studioId) }
+                                .clickable { onNavigateToStudioDetail(studio.studioId) }
                         )
                     }
                 }
@@ -837,7 +846,7 @@ private fun AnimeInfo(
                 ) {
                     ClickableSectionTitle(
                         title = "캐릭터/성우진",
-                        onClick = {}
+                        onClick = { onNavigateToAnimeActors(detailInfo?.animeId ?: 0) }
                     )
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -856,7 +865,9 @@ private fun AnimeInfo(
                                         modifier = Modifier
                                             .width(91.dp)
                                             .height(95.dp)
-                                            .background(APColors.Gray, RoundedCornerShape(topStart = 8.dp))
+                                            .clip(RoundedCornerShape(topStart = 8.dp))
+                                            .background(APColors.Gray, RoundedCornerShape(topStart = 8.dp)),
+//                                        contentScale = ContentScale.Crop
                                     )
                                     Box(
                                         modifier = Modifier
@@ -879,7 +890,9 @@ private fun AnimeInfo(
                                         modifier = Modifier
                                             .width(91.dp)
                                             .height(95.dp)
-                                            .background(APColors.Gray, RoundedCornerShape(topEnd = 8.dp))
+                                            .clip(RoundedCornerShape(topEnd = 8.dp))
+                                            .background(APColors.Gray, RoundedCornerShape(topEnd = 8.dp)),
+//                                        contentScale = ContentScale.Crop
                                     )
                                     Box(
                                         modifier = Modifier

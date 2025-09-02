@@ -10,7 +10,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
+import com.jparkbro.detail.navigation.actorDetailScreen
+import com.jparkbro.detail.navigation.animeActorsScreen
 import com.jparkbro.detail.navigation.detailAnimeScreen
+import com.jparkbro.detail.navigation.navigateToActorDetail
+import com.jparkbro.detail.navigation.navigateToAnimeActors
 import com.jparkbro.detail.navigation.navigateToAnimeDetail
 import com.jparkbro.detail.navigation.navigateToStudioDetail
 import com.jparkbro.detail.navigation.studioDetailScreen
@@ -156,12 +160,22 @@ fun APNavHost(
             onNavigateBack = navController::navigateUp,
             onNavigateToReviewForm = navController::navigateToReviewForm,
             onNavigateToStudioDetail = navController::navigateToStudioDetail,
+            onNavigateToAnimeActors = navController::navigateToAnimeActors,
             onCheckReviewRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("review_refresh") ?: false },
             onClearReviewRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("review_refresh", false) },
-            onStatusRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("status_refresh", true) }
+            onStatusRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("status_refresh", true) },
+        )
+        animeActorsScreen(
+            onNavigateBack = navController::navigateUp,
+            onNavigateToActorDetail = navController::navigateToActorDetail,
+        )
+        actorDetailScreen(
+            onNavigateBack = navController::navigateUp,
+            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
         )
         studioDetailScreen(
-            onNavigateBack = navController::navigateUp
+            onNavigateBack = navController::navigateUp,
+            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
         )
 
         /* Setting */

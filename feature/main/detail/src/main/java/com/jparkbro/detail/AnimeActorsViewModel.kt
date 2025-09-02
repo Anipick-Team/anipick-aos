@@ -3,7 +3,8 @@ package com.jparkbro.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.detail.DetailRepository
-import com.jparkbro.detail.navigation.StudioDetail
+import com.jparkbro.model.detail.AnimeActorsResponse
+import com.jparkbro.model.detail.DetailActor
 import com.jparkbro.model.detail.DetailStudio
 import com.jparkbro.model.detail.StudioAnime
 import dagger.assisted.Assisted
@@ -14,17 +15,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-@HiltViewModel(assistedFactory = StudioDetailViewModel.Factory::class)
-class StudioDetailViewModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = AnimeActorsViewModel.Factory::class)
+class AnimeActorsViewModel @AssistedInject constructor(
     private val detailRepository: DetailRepository,
-    @Assisted val studioId: Int,
+    @Assisted val animeId: Int,
 ) : ViewModel() {
 
-    private val _studioInfo = MutableStateFlow<DetailStudio?>(null)
-    val studioInfo = _studioInfo.asStateFlow()
+    private val _response = MutableStateFlow<AnimeActorsResponse?>(null)
+    val response = _response.asStateFlow()
 
-    private val _dataList = MutableStateFlow<List<StudioAnime>>(emptyList())
-    val dataList = _dataList.asStateFlow()
+    private val _actors = MutableStateFlow<List<DetailActor>>(emptyList())
+    val actors = _actors.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
@@ -41,29 +42,30 @@ class StudioDetailViewModel @AssistedInject constructor(
         if (!init) _isLoading.value = true
 
         viewModelScope.launch {
-            detailRepository.getStudioInfo(
-                studioId = studioId,
-                cursor = _studioInfo.value?.cursor
+            detailRepository.getAnimeActors(
+                animeId = animeId,
+                cursor = _response.value?.cursor
             ).fold(
-                onSuccess ={
-                    _studioInfo.value = it
-                    _dataList.value += it.animes
+                onSuccess = {
+                    _response.value = it
+                    _actors.value += it.characters
 
-                    _hasMoreData.value = it.animes.size == 18
                     _isLoading.value = false
+                    _hasMoreData.value = it.characters.size == 18
                 },
                 onFailure = {
-                    _hasMoreData.value = true
                     _isLoading.value = false
+                    _hasMoreData.value = true
                 }
             )
         }
     }
 
+
     @AssistedFactory
     interface Factory {
         fun create(
-            studioId: Int
-        ): StudioDetailViewModel
+            animeId: Int
+        ): AnimeActorsViewModel
     }
 }

@@ -74,6 +74,8 @@ class HomeDetailViewModel @AssistedInject constructor(
 
     fun updateSort(sort: Sort) {
         _sort.value = sort
+        _items.value = emptyList()
+        loadData()
     }
 
     private val _isLoading = MutableStateFlow(false)

@@ -1,10 +1,13 @@
 package com.jparkbro.network.detail
 
 import com.jparkbro.model.common.DefaultAnime
+import com.jparkbro.model.detail.ActorDetailResponse
+import com.jparkbro.model.detail.AnimeActorsResponse
 import com.jparkbro.model.detail.DetailActor
 import com.jparkbro.model.detail.DetailInfo
 import com.jparkbro.model.detail.DetailMyReview
 import com.jparkbro.model.detail.DetailSeries
+import com.jparkbro.model.detail.DetailStudio
 import com.jparkbro.model.detail.ReviewDetailResponse
 import com.jparkbro.model.detail.WatchStatusRequest
 import com.jparkbro.model.review.ReviewRating
@@ -97,5 +100,35 @@ interface DetailApi {
     @DELETE(ApiConstants.DELETE_ANIME_RATING)
     suspend fun deleteAnimeRating(
         @Path("reviewId") reviewId: Int
+    ): Response<ApiResponse<Unit>>
+
+    @GET(ApiConstants.GET_STUDIO_INFO)
+    suspend fun getStudioInfo(
+        @Path("studioId") studioId: Int,
+        @Query("lastId") lastId: Int?,
+        @Query("lastValue") lastValue: String?
+    ): Response<ApiResponse<DetailStudio>>
+
+    @GET(ApiConstants.GET_ANIME_ACTORS)
+    suspend fun getAnimeActors(
+        @Path("animeId") animeId: Int,
+        @Query("lastId") lastId: Int?,
+        @Query("lastValue") lastValue: String?
+    ): Response<ApiResponse<AnimeActorsResponse>>
+
+    @GET(ApiConstants.GET_ACTOR_INFO)
+    suspend fun getActorInfo(
+        @Path("personId") personId: Int,
+        @Query("lastId") lastId: Int?,
+    ): Response<ApiResponse<ActorDetailResponse>>
+
+    @POST(ApiConstants.SET_LIKE_ACTOR)
+    suspend fun likeActor(
+        @Path("personId") personId: Int
+    ): Response<ApiResponse<Unit>>
+
+    @DELETE(ApiConstants.SET_LIKE_ACTOR)
+    suspend fun unLikeActor(
+        @Path("personId") personId: Int
     ): Response<ApiResponse<Unit>>
 }

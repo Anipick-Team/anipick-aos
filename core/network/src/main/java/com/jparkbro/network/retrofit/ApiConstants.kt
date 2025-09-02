@@ -93,6 +93,11 @@ object ApiConstants {
     const val UPDATE_ANIME_RATING = "rating/{reviewId}/animes"
     const val DELETE_ANIME_RATING = "rating/{reviewId}/animes"
 
+    const val GET_STUDIO_INFO = "studios/{studioId}/animes"
+    const val GET_ANIME_ACTORS = "animes/{animeId}/characters"
+    const val GET_ACTOR_INFO = "person/{personId}"
+    const val SET_LIKE_ACTOR = "persons/{personId}/like"
+
     /* Review */
     const val GET_MY_REVIEW = "reviews/{animeId}/my-review"
     const val EDIT_MY_REVEIW = "reviews/{animeId}/animes"

@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -763,27 +764,18 @@ private fun HomeDetail(
                         }
                     }
                     items(
-                        count = items.size,
-                        key = { index ->
-                            val item = items[index]
-                            when (item) {
-                                is ComingSoonItem -> item.animeId
-                                else -> item.hashCode()
-                            }
-                        }
-                    ) { index ->
-                        val item = items[index]
-                        if (item is ComingSoonItem) {
-                            APCardItem(
-                                title = "${item.title}",
-                                imageUrl = item.coverImageUrl,
-                                cardWidth = 115.dp,
-                                cardHeight = 162.dp,
-                                fontSize = 14.sp,
-                                maxLine = 1,
-                                onClick = { onNavigateToAnimeDetail(item.animeId) }
-                            )
-                        }
+                        items = items.filterIsInstance<ComingSoonItem>().filter { !(it.isAdult ?: false) || includeAdult },
+                        key = { item -> item.animeId }
+                    ) { anime ->
+                        APCardItem(
+                            title = "${anime.title}",
+                            imageUrl = anime.coverImageUrl,
+                            cardWidth = 115.dp,
+                            cardHeight = 162.dp,
+                            fontSize = 14.sp,
+                            maxLine = 1,
+                            onClick = { onNavigateToAnimeDetail(anime.animeId) }
+                        )
                     }
                     if (isLoading) {
                         item(span = { GridItemSpan(3) }) {
