@@ -1,7 +1,6 @@
 package com.jparkbro.mypage
 
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,7 +43,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -56,13 +54,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
-import coil3.util.MimeTypeMap
-import com.jparkbro.model.common.FormType
 import com.jparkbro.model.mypage.ContentType
 import com.jparkbro.model.mypage.LikedAnime
 import com.jparkbro.model.mypage.LikedPerson
 import com.jparkbro.ui.theme.APColors
-import com.jparkbro.ui.util.extension.toFullImageUrl
 
 @Composable
 internal fun MyPage(
@@ -77,15 +72,15 @@ internal fun MyPage(
     onClearStatusRefresh: () -> Unit,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
-    // TODO 리렌더링 필요 ( 좋아요 , Watch Status , 닉네임 , 프로필 이미지 )
-
 
     val uiState by viewModel.uiState.collectAsState()
-    val profileImage by viewModel.profileImage.collectAsState()
+//    val profileImageId by viewModel.profileImageId.collectAsState()
+    val isUploadLoading by viewModel.isUploadLoading.collectAsState()
 
     MyPage(
         uiState = uiState,
-        profileImage = profileImage,
+//        profileImageId = profileImageId,
+        isUploadLoading = isUploadLoading,
         bottomNav = bottomNav,
         onChangeProfileImage = viewModel::editProfileImg,
         onGetInfo = viewModel::getInfo,
@@ -103,7 +98,8 @@ internal fun MyPage(
 @Composable
 private fun MyPage(
     uiState: MyPageUiState = MyPageUiState.Loading,
-    profileImage: String? = null,
+//    profileImageId: Long? = null,
+    isUploadLoading: Boolean = false,
     bottomNav: @Composable () -> Unit,
     onChangeProfileImage: (Uri) -> Unit,
     onGetInfo: () -> Unit,
@@ -163,175 +159,199 @@ private fun MyPage(
         },
         bottomBar = { bottomNav() },
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            when (uiState) {
-                is MyPageUiState.Loading -> {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = APColors.Primary)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .padding(innerPadding)
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                when (uiState) {
+                    is MyPageUiState.Loading -> {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = APColors.Primary)
+                        }
                     }
-                }
-                is MyPageUiState.Success -> {
-                    val data = uiState.data
+                    is MyPageUiState.Success -> {
+                        val data = uiState.data
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(24.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        ProfileImage(
-                            profileImageUrl = "${profileImage?.toFullImageUrl()}",
-                            onChangeProfileImage = onChangeProfileImage
-                        )
-                        Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(24.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            ProfileImage(
+                                profileImageBytes = data.profileImageBytes,
+                                onChangeProfileImage = onChangeProfileImage
+                            )
+                            Column {
+                                Text(
+                                    text = buildAnnotatedString {
+                                        withStyle(style = SpanStyle(color = APColors.Primary)) {
+                                            append(data.nickname)
+                                        }
+                                        withStyle(style = SpanStyle(color = APColors.Black)) {
+                                            append(" 님, 애니픽과 함께")
+                                        }
+                                    },
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.W700,
+                                )
+                                Text(
+                                    text = "행복한 애니메이션 생활 즐기세요!",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.W700,
+                                    color = APColors.Black,
+                                )
+                            }
+                        }
+                        Row(
+                            modifier = Modifier
+                                .padding(vertical = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .background(APColors.Surface, RoundedCornerShape(8.dp))
+                                    .size(width = 120.dp, height = 80.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .clickable { onNavigateToUserContent(ContentType.WATCHLIST) },
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "볼 애니",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W500,
+                                    color = APColors.Black
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "${data.watchCounts.watchList}개",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W500,
+                                    color = APColors.Primary
+                                )
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .background(APColors.Surface, RoundedCornerShape(8.dp))
+                                    .size(width = 120.dp, height = 80.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .clickable { onNavigateToUserContent(ContentType.WATCHING) },
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "보는 중",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W500,
+                                    color = APColors.Black
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "${data.watchCounts.watching}개",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W500,
+                                    color = APColors.Primary
+                                )
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .background(APColors.Surface, RoundedCornerShape(8.dp))
+                                    .size(width = 120.dp, height = 80.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .clickable { onNavigateToUserContent(ContentType.FINISHED) },
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "다 본 애니",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W500,
+                                    color = APColors.Black
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "${data.watchCounts.finished}개",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W500,
+                                    color = APColors.Primary
+                                )
+                            }
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
-                                text = buildAnnotatedString {
-                                    withStyle(style = SpanStyle(color = APColors.Primary)) {
-                                        append(data.nickname)
-                                    }
-                                    withStyle(style = SpanStyle(color = APColors.Black)) {
-                                        append(" 님, 애니픽과 함께")
-                                    }
-                                },
+                                text = "평가한 작품",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.W700,
-                            )
-                            Text(
-                                text = "행복한 애니메이션 생활 즐기세요!",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.W700,
-                                color = APColors.Black,
-                            )
-                        }
-                    }
-                    Row(
-                        modifier = Modifier
-                            .padding(vertical = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .background(APColors.Surface, RoundedCornerShape(8.dp))
-                                .size(width = 120.dp, height = 80.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable { onNavigateToUserContent(ContentType.WATCHLIST) },
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "볼 애니",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.W500,
                                 color = APColors.Black
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "${data.watchCounts.watchList}개",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W500,
-                                color = APColors.Primary
+                            Icon(
+                                painter = painterResource(R.drawable.ic_chevron_right),
+                                contentDescription = null,
+                                tint = APColors.TextGray,
+                                modifier = Modifier
+                                    .clickable { onNavigateToMyRatings() }
                             )
                         }
-                        Column(
-                            modifier = Modifier
-                                .background(APColors.Surface, RoundedCornerShape(8.dp))
-                                .size(width = 120.dp, height = 80.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable { onNavigateToUserContent(ContentType.WATCHING) },
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "보는 중",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.W500,
-                                color = APColors.Black
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "${data.watchCounts.watching}개",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W500,
-                                color = APColors.Primary
-                            )
-                        }
-                        Column(
-                            modifier = Modifier
-                                .background(APColors.Surface, RoundedCornerShape(8.dp))
-                                .size(width = 120.dp, height = 80.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable { onNavigateToUserContent(ContentType.FINISHED) },
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "다 본 애니",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.W500,
-                                color = APColors.Black
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "${data.watchCounts.finished}개",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W500,
-                                color = APColors.Primary
-                            )
-                        }
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "평가한 작품",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.W700,
-                            color = APColors.Black
+                        LikedAnimes(
+                            items = data.likedAnimes,
+                            onNavigateToAnimeDetail = onNavigateToAnimeDetail,
+                            onNavigateToUserContent = { onNavigateToUserContent(it) }
                         )
-                        Icon(
-                            painter = painterResource(R.drawable.ic_chevron_right),
-                            contentDescription = null,
-                            tint = APColors.TextGray,
-                            modifier = Modifier
-                                .clickable { onNavigateToMyRatings() }
+                        LikedPerson(
+                            items = data.likedPersons,
+                            onNavigateToUserContent = { onNavigateToUserContent(it) }
                         )
                     }
-                    LikedAnimes(
-                        items = data.likedAnimes,
-                        onNavigateToAnimeDetail = onNavigateToAnimeDetail,
-                        onNavigateToUserContent = { onNavigateToUserContent(it) }
-                    )
-                    LikedPerson(
-                        items = data.likedPersons,
-                        onNavigateToUserContent = { onNavigateToUserContent(it) }
+                    is MyPageUiState.Error -> {} // TODO
+                }
+            }
+            if (isUploadLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(APColors.ScrimColor)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { },
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = APColors.Primary,
+                        modifier = Modifier.size(48.dp)
                     )
                 }
-                is MyPageUiState.Error -> {} // TODO
             }
         }
     }
 }
 
+
+
 @Composable
 private fun ProfileImage(
-    profileImageUrl: String? = null,
+    profileImageBytes: ByteArray? = null,
     onChangeProfileImage: (Uri) -> Unit,
 ) {
     val photoPicker = rememberLauncherForActivityResult(
@@ -355,25 +375,14 @@ private fun ProfileImage(
                 )
             ) }
     ) {
-        if (profileImageUrl == null || profileImageUrl == "default.png") {
-            Image(
-                painter = painterResource(com.jparkbro.ui.R.drawable.profile_default_img),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(96.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
-        } else {
-            AsyncImage(
-                model = profileImageUrl,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(96.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
-        }
+        AsyncImage(
+            model = profileImageBytes,
+            contentDescription = null,
+            modifier = Modifier
+                .size(96.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
         Icon(
             painter = painterResource(R.drawable.ic_edit),
             contentDescription = null,

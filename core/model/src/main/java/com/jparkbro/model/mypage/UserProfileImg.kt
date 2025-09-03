@@ -29,6 +29,6 @@ data class ProfileImgRequest(
 
 @Serializable
 data class ProfileImgResponse(
-    @SerialName("profileImageUrl")
-    val profileImageUrl: String? = null
+    @SerialName("imageId")
+    val imageId: String? = null
 )

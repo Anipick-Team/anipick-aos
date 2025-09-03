@@ -23,6 +23,16 @@ class RetrofitMyPageDataSource @Inject constructor(
         return myPageApi.getMyPageInfo().toResult(TAG, "getMyPageInfo")
     }
 
+    override suspend fun getMyProfileImage(url: String): Result<ByteArray> {
+        return try {
+            val responseBody = myPageApi.getMyProfileImage(url)
+            val bytes = responseBody.bytes()
+            Result.success(bytes)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun getWatchList(type: String, lastId: Int?): Result<UserContentResponse> {
         return myPageApi.getWatchList(type, lastId).toResult(TAG, "getWatchList")
     }

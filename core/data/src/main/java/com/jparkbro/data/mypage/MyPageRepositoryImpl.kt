@@ -27,6 +27,10 @@ class MyPageRepositoryImpl @Inject constructor(
         return myPageDataSource.getMyPageInfo()
     }
 
+    override suspend fun getMyProfileImage(url: String): Result<ByteArray> {
+        return myPageDataSource.getMyProfileImage(url)
+    }
+
     override suspend fun getUserContents(type: ContentType, lastId: Int?): Result<UserContentResponse> {
         return when (type) {
             ContentType.WATCHLIST -> myPageDataSource.getWatchList(

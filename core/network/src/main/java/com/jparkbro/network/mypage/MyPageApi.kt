@@ -7,6 +7,7 @@ import com.jparkbro.model.mypage.UserContentResponse
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -14,11 +15,17 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Query
+import retrofit2.http.Url
 
 interface MyPageApi {
     @GET(ApiConstants.MY_PAGE)
     suspend fun getMyPageInfo(
     ): Response<ApiResponse<MyPageResponse>>
+
+    @GET
+    suspend fun getMyProfileImage(
+        @Url url: String
+    ): ResponseBody
 
     @GET(ApiConstants.WATCH_LIST)
     suspend fun getWatchList(

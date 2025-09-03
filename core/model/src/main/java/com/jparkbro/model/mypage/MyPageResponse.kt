@@ -9,12 +9,14 @@ data class MyPageResponse(
     val nickname: String,
     @SerialName("profileImageUrl")
     val profileImageUrl: String,
+    @SerialName("profileImage")
+    val profileImageBytes: ByteArray? = null,
     @SerialName("watchCounts")
     val watchCounts: MyPageWatchCount,
     @SerialName("likedAnimes")
     val likedAnimes: List<LikedAnime>,
     @SerialName("likedPersons")
-    val likedPersons: List<LikedPerson>
+    val likedPersons: List<LikedPerson>,
 )
 
 @Serializable

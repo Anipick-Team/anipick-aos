@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.mypage.MyPageRepository
+import com.jparkbro.domain.MyPageInfoUseCase
+import com.jparkbro.model.common.Result
 import com.jparkbro.model.mypage.MyPageResponse
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -20,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
+    private val myPageInfoUseCase: MyPageInfoUseCase,
     private val myPageRepository: MyPageRepository,
 ) : ViewModel() {
 
@@ -28,39 +31,43 @@ class MyPageViewModel @Inject constructor(
 
     // TODO state, data 분리
 
-    private val _profileImage = MutableStateFlow<String?>(null)
-    val profileImage = _profileImage.asStateFlow()
-
     init {
         getInfo()
     }
 
     fun getInfo() {
         viewModelScope.launch {
-            _uiState.value = MyPageUiState.Loading
 
-            myPageRepository.getMyPageInfo().fold(
-                onSuccess = {
-                    _uiState.value = MyPageUiState.Success(it)
-                    _profileImage.value = it.profileImageUrl
-                },
-                onFailure = {
-                    // TODO
+            myPageInfoUseCase().collect { result ->
+                when (result) {
+                    is Result.Loading -> _uiState.value = MyPageUiState.Loading
+                    is Result.Error -> _uiState.value = MyPageUiState.Error("${result.exception.message}")
+                    is Result.Success<MyPageResponse> -> {
+                        _uiState.value = MyPageUiState.Success(result.data)
+                    }
                 }
-            )
+            }
         }
     }
 
+    private val _isUploadLoading = MutableStateFlow(false)
+    val isUploadLoading = _isUploadLoading.asStateFlow()
+
     fun editProfileImg(contentUri: Uri) {
+        if (_isUploadLoading.value) return
+
+        _isUploadLoading.value = true
+
         viewModelScope.launch {
             myPageRepository.editProfileImg(contentUri).fold(
                 onSuccess = {
-                    _profileImage.value = it.profileImageUrl
+                    getInfo()
                 },
                 onFailure = {
                     // TODO
                 }
             )
+            _isUploadLoading.value = false
         }
     }
 }

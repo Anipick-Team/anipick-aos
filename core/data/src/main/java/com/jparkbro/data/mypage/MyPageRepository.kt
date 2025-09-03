@@ -10,6 +10,7 @@ import com.jparkbro.model.mypage.UserContentResponse
 
 interface MyPageRepository {
     suspend fun getMyPageInfo(): Result<MyPageResponse>
+    suspend fun getMyProfileImage(url: String): Result<ByteArray>
 
     suspend fun getUserContents(type: ContentType, lastId: Int? = null): Result<UserContentResponse>
 

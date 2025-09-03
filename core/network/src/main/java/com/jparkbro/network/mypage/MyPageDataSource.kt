@@ -9,6 +9,7 @@ import com.jparkbro.model.mypage.UserContentResponse
 
 interface MyPageDataSource {
     suspend fun getMyPageInfo(): Result<MyPageResponse>
+    suspend fun getMyProfileImage(url: String): Result<ByteArray>
 
     suspend fun getWatchList(type: String, lastId: Int?,): Result<UserContentResponse>
     suspend fun getWatching(type: String, lastId: Int?,): Result<UserContentResponse>

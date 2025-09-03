@@ -63,7 +63,7 @@ object ApiConstants {
     const val FINISHED = "mypage/animes/finished"
     const val LIKE_ANIMES = "mypage/animes/like"
     const val LIKE_PERSONS = "mypage/persons/like"
-    const val EDIT_PROFILE_IMG = "mypage/profile-image"
+    const val EDIT_PROFILE_IMG = "image/profile-image"
 
     /* Setting */
     const val GET_USER_INFO = "setting/view"
