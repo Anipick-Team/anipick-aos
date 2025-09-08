@@ -152,6 +152,7 @@ class DetailAnimeViewModel @AssistedInject constructor(
         if (lastId == null) {
             _reviewItems.value = emptyList()
         }
+
         _isLoading.value = true
 
         viewModelScope.launch {
@@ -161,7 +162,7 @@ class DetailAnimeViewModel @AssistedInject constructor(
                     sort = _sort.value.param,
                     isSpoiler = true,
                     lastValue = _reviewResponse.value?.cursor?.lastValue,
-                    lastId = _reviewResponse.value?.cursor?.lastId,
+                    lastId = lastId,
                     size = 10
                 )
             ).fold(

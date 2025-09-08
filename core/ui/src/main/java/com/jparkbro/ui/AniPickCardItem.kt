@@ -29,11 +29,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import coil3.compose.AsyncImage
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.util.extension.toImageModel
 
 @Composable
 fun APCardItem(
     title: String = "",
-    imageUrl: String = "",
+    imageUrl: String? = null,
     description: @Composable (() -> Unit)? = null,
     rank: String? = null,
     rating: String? = null,
@@ -69,7 +70,7 @@ fun APCardItem(
                 }
             }
             AsyncImage(
-                model = imageUrl,
+                model = imageUrl?.toImageModel() ?: R.drawable.thumbnail_img,
                 contentDescription = null,
                 modifier = Modifier
                     .size(width = cardWidth, height = cardHeight)

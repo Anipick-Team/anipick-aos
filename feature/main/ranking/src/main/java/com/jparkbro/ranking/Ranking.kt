@@ -58,6 +58,7 @@ import com.jparkbro.ui.FilterType
 import com.jparkbro.ui.R
 import com.jparkbro.ui.SheetData
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.util.extension.toImageModel
 
 @Composable
 internal fun Ranking(
@@ -324,41 +325,49 @@ private fun RankingItem(
                 fontWeight = FontWeight.W600,
                 color = APColors.Black
             )
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(
-                        when (anime.trend) {
-                            RankingTrend.UP -> R.drawable.ic_ranking_up
-                            RankingTrend.DOWN -> R.drawable.ic_ranking_down
-                            RankingTrend.SAME -> R.drawable.ic_ranking_hold
-                        }
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(8.dp),
-                    tint = when (anime.trend) {
-                        RankingTrend.UP -> APColors.Point
-                        RankingTrend.DOWN -> APColors.Secondary
-                        RankingTrend.SAME -> APColors.TextGray
+            when (anime.trend) {
+                RankingTrend.UP, RankingTrend.DOWN, RankingTrend.SAME -> {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(2.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                when (anime.trend) {
+                                    RankingTrend.UP -> R.drawable.ic_ranking_up
+                                    RankingTrend.DOWN -> R.drawable.ic_ranking_down
+                                    RankingTrend.SAME -> R.drawable.ic_ranking_hold
+                                    else -> R.drawable.ic_ranking_hold
+                                }
+                            ),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(8.dp),
+                            tint = when (anime.trend) {
+                                RankingTrend.UP -> APColors.Point
+                                RankingTrend.DOWN -> APColors.Secondary
+                                RankingTrend.SAME -> APColors.TextGray
+                                else -> APColors.TextGray
+                            }
+                        )
+                        Text(
+                            text = "${anime.change}",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W500,
+                            color = when (anime.trend) {
+                                RankingTrend.UP -> APColors.Point
+                                RankingTrend.DOWN -> APColors.Secondary
+                                RankingTrend.SAME -> APColors.TextGray
+                                else -> APColors.TextGray
+                            }
+                        )
                     }
-                )
-                Text(
-                    text = "${anime.change}",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W500,
-                    color = when (anime.trend) {
-                        RankingTrend.UP -> APColors.Point
-                        RankingTrend.DOWN -> APColors.Secondary
-                        RankingTrend.SAME -> APColors.TextGray
-                    }
-                )
+                }
+                else -> {}
             }
         }
         AsyncImage(
-            model = anime.coverImageUrl,
+            model = anime.coverImageUrl.toImageModel(),
             contentDescription = null,
             modifier = Modifier
                 .size(width = 128.dp, height = 182.dp)

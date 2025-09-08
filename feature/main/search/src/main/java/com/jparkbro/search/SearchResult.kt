@@ -71,6 +71,7 @@ import com.jparkbro.model.search.SearchResultResponse
 import com.jparkbro.model.search.SearchResultStudio
 import com.jparkbro.model.search.SearchType
 import com.jparkbro.ui.APCardItem
+import com.jparkbro.ui.APEmptyContent
 import com.jparkbro.ui.APSearchFieldBackTopAppBar
 import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
@@ -82,6 +83,8 @@ import kotlinx.coroutines.flow.map
 internal fun SearchResult(
     onNavigateBack: () -> Unit,
     onNavigateToAnimeDetail: (Int) -> Unit,
+    onNavigateToActorDetail: (Int) -> Unit,
+    onNavigateToStudioDetail: (Int) -> Unit,
     viewModel: SearchResultViewModel = hiltViewModel()
 ) {
     val searchText by viewModel.searchText.collectAsState()
@@ -106,6 +109,8 @@ internal fun SearchResult(
         onSubmitAnimeLog = viewModel::submitAnimeLog,
         onNavigateBack = onNavigateBack,
         onNavigateToAnimeDetail = onNavigateToAnimeDetail,
+        onNavigateToActorDetail = onNavigateToActorDetail,
+        onNavigateToStudioDetail = onNavigateToStudioDetail,
     )
 
 }
@@ -126,6 +131,8 @@ private fun SearchResult(
     onSubmitAnimeLog: (String) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToAnimeDetail: (Int) -> Unit,
+    onNavigateToActorDetail: (Int) -> Unit,
+    onNavigateToStudioDetail: (Int) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -195,7 +202,8 @@ private fun SearchResult(
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { focusManager.clearFocus() }
+                        ) { focusManager.clearFocus() },
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     SearchTabs(
                         result = response,
@@ -230,8 +238,6 @@ private fun SearchResult(
                         columns = GridCells.Fixed(cellCount),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier
-                            .fillMaxSize(),
                         contentPadding = PaddingValues(20.dp)
                     ) {
                         item(span = { GridItemSpan(cellCount) }) {
@@ -247,64 +253,67 @@ private fun SearchResult(
                                 color = APColors.TextGray
                             )
                         }
-                        items(currentDataList) { item ->
-                            when (searchType) {
-                                SearchType.ANIMES -> {
-                                    val anime = item as SearchResultAnime
-                                    var hasLogged by rememberSaveable(anime.animeId) { mutableStateOf(false) }
-                                    LaunchedEffect(anime.animeId) {
-                                        if (!hasLogged) {
-                                            onSubmitAnimeLog(anime.impressionLog)
-                                            hasLogged = true
+                        if (currentDataList.isNotEmpty()) {
+                            items(currentDataList) { item ->
+                                when (searchType) {
+                                    SearchType.ANIMES -> {
+                                        val anime = item as SearchResultAnime
+                                        var hasLogged by rememberSaveable(anime.animeId) { mutableStateOf(false) }
+                                        LaunchedEffect(anime.animeId) {
+                                            if (!hasLogged) {
+                                                onSubmitAnimeLog(anime.impressionLog)
+                                                hasLogged = true
+                                            }
                                         }
+                                        APCardItem(
+                                            title = "${anime.title}",
+                                            imageUrl = anime.coverImageUrl,
+                                            cardWidth = 115.dp,
+                                            cardHeight = 162.dp,
+                                            fontSize = 14.sp,
+                                            maxLine = 1,
+                                            onClick = {
+                                                onSubmitAnimeLog(anime.clickLog)
+                                                onNavigateToAnimeDetail(anime.animeId)
+                                            }
+                                        )
                                     }
-                                    APCardItem(
-                                        title = "${anime.title}",
-                                        imageUrl = anime.coverImageUrl,
-                                        cardWidth = 115.dp,
-                                        cardHeight = 162.dp,
-                                        fontSize = 14.sp,
-                                        maxLine = 1,
-                                        onClick = {
-                                            onSubmitAnimeLog(anime.clickLog)
-                                            onNavigateToAnimeDetail(anime.animeId)
-                                        }
-                                    )
-                                }
-                                SearchType.PERSONS -> {
-                                    val person = item as SearchResultPerson
-                                    APCardItem(
-                                        title = "${person.name}",
-                                        imageUrl = person.profileImage,
-                                        cardWidth = 115.dp,
-                                        cardHeight = 105.dp,
-                                        fontSize = 14.sp,
-                                        maxLine = 1,
-                                        onClick = { onNavigateToAnimeDetail(person.personId) }
-                                    )
-                                }
-                                SearchType.STUDIOS -> {
-                                    val studio = item as SearchResultStudio
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 8.dp)
-                                            .clickable {},
-                                        horizontalArrangement = Arrangement.Absolute.SpaceBetween
-                                    ) {
-                                        Text(
-                                            text = "${studio.name}",
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.W500,
-                                            color = APColors.Black
+                                    SearchType.PERSONS -> {
+                                        val person = item as SearchResultPerson
+                                        APCardItem(
+                                            title = "${person.name}",
+                                            imageUrl = person.profileImage,
+                                            cardWidth = 115.dp,
+                                            cardHeight = 105.dp,
+                                            fontSize = 14.sp,
+                                            maxLine = 1,
+                                            onClick = { onNavigateToActorDetail(person.personId) }
                                         )
-                                        Icon(
-                                            painter = painterResource(R.drawable.ic_chevron_right),
-                                            contentDescription = null,
+                                    }
+                                    SearchType.STUDIOS -> {
+                                        val studio = item as SearchResultStudio
+                                        Row(
                                             modifier = Modifier
-                                                .size(18.dp),
-                                            tint = Color(0xFFC3C3CA)
-                                        )
+                                                .fillMaxWidth()
+                                                .padding(vertical = 8.dp)
+                                                .clickable { onNavigateToStudioDetail(studio.studioId) },
+                                            horizontalArrangement = Arrangement.Absolute.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically,
+                                        ) {
+                                            Text(
+                                                text = "${studio.name}",
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.W500,
+                                                color = APColors.Black
+                                            )
+                                            Icon(
+                                                painter = painterResource(R.drawable.ic_chevron_right),
+                                                contentDescription = null,
+                                                modifier = Modifier
+                                                    .size(18.dp),
+                                                tint = Color(0xFFC3C3CA)
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -321,6 +330,13 @@ private fun SearchResult(
                                 }
                             }
                         }
+                    }
+                    if (currentDataList.isEmpty()) {
+                        APEmptyContent(
+                            comment = "앗! 찾으시는 검색 결과가 없네요.",
+                            modifier = Modifier
+                                .weight(1f)
+                        )
                     }
                 }
             }

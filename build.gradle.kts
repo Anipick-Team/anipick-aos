@@ -15,8 +15,8 @@ plugins {
 buildscript {
     val targetSdk = 36
     val minSdk = 30
-    val versionCode = 3
-    val versionName = "1.0.0"
+    val versionCode = 5
+    val versionName = "1.0.0.5"
 
     extra.apply {
         set("targetSdk", targetSdk)
@@ -25,7 +25,7 @@ buildscript {
         set("versionName", versionName)
     }
 
-//    dependencies {
-//        classpath(libs.oss.licenses.plugin)
-//    }
+    dependencies {
+        classpath(libs.oss.licenses.plugin)
+    }
 }

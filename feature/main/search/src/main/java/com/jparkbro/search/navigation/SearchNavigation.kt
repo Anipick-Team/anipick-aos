@@ -36,6 +36,8 @@ fun NavController.navigateToSearchResult(searchParam: String, navOptions: NavOpt
 fun NavGraphBuilder.searchResultScreen(
     onNavigateBack: () -> Unit,
     onNavigateToAnimeDetail: (Int) -> Unit,
+    onNavigateToActorDetail: (Int) -> Unit,
+    onNavigateToStudioDetail: (Int) -> Unit,
 ) {
     composable<SearchResult> { entry ->
         val searchParam = entry.toRoute<SearchResult>().searchParam
@@ -43,6 +45,8 @@ fun NavGraphBuilder.searchResultScreen(
         SearchResult(
             onNavigateBack = onNavigateBack,
             onNavigateToAnimeDetail = onNavigateToAnimeDetail,
+            onNavigateToActorDetail = onNavigateToActorDetail,
+            onNavigateToStudioDetail = onNavigateToStudioDetail,
             viewModel = hiltViewModel<SearchResultViewModel, SearchResultViewModel.Factory>(
                 key = searchParam
             ) { factory ->

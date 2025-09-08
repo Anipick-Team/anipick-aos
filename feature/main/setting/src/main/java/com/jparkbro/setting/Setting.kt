@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.jparkbro.model.setting.ProfileEditType
 import com.jparkbro.model.setting.UserInfo
 import com.jparkbro.ui.APDialog
@@ -333,6 +334,30 @@ private fun Setting(
                         ) {
                             Text(
                                 text = "개인정보 처리방침",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.W500,
+                                color = APColors.Black
+                            )
+                            Icon(
+                                painter = painterResource(R.drawable.ic_chevron_right),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(18.dp),
+                                tint = Color(0xFF667080)
+                            )
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    OssLicensesMenuActivity.setActivityTitle("오픈소스 라이선스")
+                                    context.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
+                                },
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "오픈소스 라이선스",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.W500,
                                 color = APColors.Black

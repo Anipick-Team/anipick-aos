@@ -86,6 +86,7 @@ import com.jparkbro.ui.FilterType
 import com.jparkbro.ui.R
 import com.jparkbro.ui.SheetData
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.util.extension.toImageModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
@@ -476,7 +477,7 @@ private fun AnimeRatingCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
-                model = anime.coverImageUrl,
+                model = anime.coverImageUrl.toImageModel(),  // TODO 사이즈 수정필요
                 contentDescription = null,
                 modifier = Modifier
                     .size(width = 133.dp, height = 89.dp)

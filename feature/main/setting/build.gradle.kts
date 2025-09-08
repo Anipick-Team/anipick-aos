@@ -85,4 +85,8 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+
+    // oss-licenses
+    implementation(libs.androidx.appcompat)
+    implementation(libs.play.services.oss.licenses)
 }

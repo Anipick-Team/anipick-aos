@@ -12,6 +12,7 @@ interface RankingApi {
     suspend fun getRealTimeRanking(
         @Query("genre") genre: Int?,
         @Query("lastId") lastId: Int?,
+        @Query("lastValue") lastValue: Long?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<RankingResponse>>
 
@@ -21,6 +22,7 @@ interface RankingApi {
         @Query("season") season: Int?,
         @Query("genre") genre: Int?,
         @Query("lastId") lastId: Int?,
+        @Query("lastRank") lastRank: Long?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<RankingResponse>>
 
@@ -28,6 +30,7 @@ interface RankingApi {
     suspend fun getAllTimeRanking(
         @Query("genre") genre: Int?,
         @Query("lastId") lastId: Int?,
+        @Query("lastRank") lastRank: Long?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<RankingResponse>>
 }

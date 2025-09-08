@@ -161,6 +161,7 @@ fun APNavHost(
             onNavigateToReviewForm = navController::navigateToReviewForm,
             onNavigateToStudioDetail = navController::navigateToStudioDetail,
             onNavigateToAnimeActors = navController::navigateToAnimeActors,
+            onNavigateToActorDetail = navController::navigateToActorDetail,
             onCheckReviewRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("review_refresh") ?: false },
             onClearReviewRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("review_refresh", false) },
             onStatusRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("status_refresh", true) },
@@ -215,7 +216,9 @@ fun APNavHost(
         )
         searchResultScreen(
             onNavigateBack = navController::navigateUp,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail
+            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
+            onNavigateToActorDetail = navController::navigateToActorDetail,
+            onNavigateToStudioDetail = navController::navigateToStudioDetail,
         )
 
         /* review */

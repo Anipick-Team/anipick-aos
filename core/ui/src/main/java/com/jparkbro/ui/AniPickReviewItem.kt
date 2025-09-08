@@ -51,6 +51,7 @@ import com.jparkbro.model.common.ReviewItem
 import com.jparkbro.model.home.HomeReviewItem
 import com.jparkbro.model.mypage.MyReviewItem
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.util.extension.toImageModel
 
 @Composable
 fun <T : ReviewItem> APReviewItem(
@@ -86,7 +87,7 @@ fun <T : ReviewItem> APReviewItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
-                    model = reviewItem.animeCoverImageUrl,
+                    model = reviewItem.animeCoverImageUrl?.toImageModel(), // TODO 사이즈 수정필요
                     contentDescription = null,
                     modifier = Modifier
                         .width(79.dp)
@@ -112,7 +113,7 @@ fun <T : ReviewItem> APReviewItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
-                    model = reviewItem.coverImageUrl,
+                    model = reviewItem.coverImageUrl.toImageModel(),  // TODO 사이즈 수정필요
                     contentDescription = null,
                     modifier = Modifier
                         .width(79.dp)

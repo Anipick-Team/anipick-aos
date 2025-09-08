@@ -58,6 +58,7 @@ import com.jparkbro.model.mypage.ContentType
 import com.jparkbro.model.mypage.LikedAnime
 import com.jparkbro.model.mypage.LikedPerson
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.util.extension.toImageModel
 
 @Composable
 internal fun MyPage(
@@ -461,7 +462,7 @@ private fun LikedAnimes(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         AsyncImage(
-                            model = anime.coverImageUrl,
+                            model = anime.coverImageUrl.toImageModel(),
                             contentDescription = null,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))

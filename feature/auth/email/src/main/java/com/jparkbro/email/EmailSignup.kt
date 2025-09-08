@@ -1,5 +1,6 @@
 package com.jparkbro.email
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,6 +45,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jparkbro.ui.APSimpleBackTopAppBar
 import com.jparkbro.ui.APSurfaceTextField
@@ -111,6 +114,7 @@ internal fun EmailSignup(
     onSignupClick: () -> Unit = {},
     onNavigateToPreferenceSetup: () -> Unit = {},
 ) {
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(signupUiState) {
@@ -289,17 +293,26 @@ internal fun EmailSignup(
                         AgreementOption(
                             text = "[필수] 만 14세 이상입니다.",
                             isChecked = isAgeVerified,
-                            onCheckedChange = { onAgreementClick(AgreementType.AGE_VERIFICATION, !isAgeVerified) }
+                            onCheckedChange = { onAgreementClick(AgreementType.AGE_VERIFICATION, !isAgeVerified) },
+                            onNavigateToTerms = null
                         )
                         AgreementOption(
                             text = "[필수] 이용약관에 동의합니다.",
                             isChecked = isTermsOfServiceAccepted,
-                            onCheckedChange = { onAgreementClick(AgreementType.TERMS_OF_SERVICE, !isTermsOfServiceAccepted) }
+                            onCheckedChange = { onAgreementClick(AgreementType.TERMS_OF_SERVICE, !isTermsOfServiceAccepted) },
+                            onNavigateToTerms = {
+                                val intent = Intent(Intent.ACTION_VIEW, "https://www.notion.so/1d3b3eed42088025b329eb107cd42ae1".toUri())
+                                context.startActivity(intent)
+                            }
                         )
                         AgreementOption(
                             text = "[필수] 개인정보 처리방침에 동의합니다.",
                             isChecked = isPrivacyPolicyAccepted,
-                            onCheckedChange = { onAgreementClick(AgreementType.PRIVACY_POLICY, !isPrivacyPolicyAccepted) }
+                            onCheckedChange = { onAgreementClick(AgreementType.PRIVACY_POLICY, !isPrivacyPolicyAccepted) },
+                            onNavigateToTerms = {
+                                val intent = Intent(Intent.ACTION_VIEW, "https://www.notion.so/1d3b3eed42088077a175f63a04dc93fd".toUri())
+                                context.startActivity(intent)
+                            }
                         )
                     }
                 }
@@ -343,6 +356,7 @@ fun AgreementOption(
     text: String,
     isChecked: Boolean,
     onCheckedChange: () -> Unit,
+    onNavigateToTerms: (() -> Unit)?
 ) {
     Row(
         modifier = Modifier
@@ -370,11 +384,20 @@ fun AgreementOption(
                 color = APColors.Black
             )
         }
-        Icon(
-            painter = painterResource(R.drawable.ic_chevron_right),
-            contentDescription = "",
-            tint = Color(0xFFC3C3CA)
-        )
+        if (onNavigateToTerms != null) {
+            Icon(
+                painter = painterResource(R.drawable.ic_chevron_right),
+                contentDescription = "",
+                tint = Color(0xFFC3C3CA),
+                modifier = Modifier
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        onNavigateToTerms()
+                    }
+            )
+        }
     }
 }
 

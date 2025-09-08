@@ -126,4 +126,8 @@ dependencies {
 
     // Splash Screen
     implementation(libs.androidx.core.splashscreen)
+
+    // oss-licenses
+    implementation(libs.androidx.appcompat)
+    implementation(libs.play.services.oss.licenses)
 }

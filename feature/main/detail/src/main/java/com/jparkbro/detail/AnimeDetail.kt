@@ -99,6 +99,7 @@ import com.jparkbro.ui.R
 import com.jparkbro.ui.SnackBarData
 import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.updateRatingFromPosition
+import com.jparkbro.ui.util.extension.toImageModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
@@ -108,6 +109,7 @@ internal fun DetailAnime(
     onNavigateToReviewForm: (Int, Int?, FormType) -> Unit,
     onNavigateToStudioDetail: (Int) -> Unit,
     onNavigateToAnimeActors: (Int) -> Unit,
+    onNavigateToActorDetail: (Int) -> Unit,
     onCheckReviewRefresh: () -> Boolean,
     onClearReviewRefresh: () -> Unit,
     onStatusRefresh: () -> Unit,
@@ -177,6 +179,7 @@ internal fun DetailAnime(
         onNavigateToReviewForm = onNavigateToReviewForm,
         onNavigateToStudioDetail = onNavigateToStudioDetail,
         onNavigateToAnimeActors = onNavigateToAnimeActors,
+        onNavigateToActorDetail = onNavigateToActorDetail,
         onCheckReviewRefresh = onCheckReviewRefresh,
         onClearReviewRefresh = onClearReviewRefresh,
         onStatusRefresh = onStatusRefresh,
@@ -224,6 +227,7 @@ private fun DetailAnime(
     onNavigateToReviewForm: (Int, Int?, FormType) -> Unit,
     onNavigateToStudioDetail: (Int) -> Unit,
     onNavigateToAnimeActors: (Int) -> Unit,
+    onNavigateToActorDetail: (Int) -> Unit,
     onCheckReviewRefresh: () -> Boolean,
     onClearReviewRefresh: () -> Unit,
     onStatusRefresh: () -> Unit,
@@ -330,7 +334,7 @@ private fun DetailAnime(
                                         .clickable { onNavigateBack() }
                                 )
                                 AsyncImage(
-                                    model = detailInfo?.coverImageUrl,
+                                    model = detailInfo?.coverImageUrl?.toImageModel(),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .align(Alignment.TopEnd)
@@ -559,6 +563,7 @@ private fun DetailAnime(
                             recommendations = recommendations,
                             onNavigateToStudioDetail = onNavigateToStudioDetail,
                             onNavigateToAnimeActors = onNavigateToAnimeActors,
+                            onNavigateToActorDetail = onNavigateToActorDetail,
                         )
 
                         DetailTab.REVIEWS -> AnimeReview(
@@ -625,6 +630,7 @@ private fun AnimeInfo(
     recommendations: List<DefaultAnime>,
     onNavigateToStudioDetail: (Int) -> Unit,
     onNavigateToAnimeActors: (Int) -> Unit,
+    onNavigateToActorDetail: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -855,7 +861,8 @@ private fun AnimeInfo(
                         items(actors) { actor ->
                             Row(
                                 modifier = Modifier
-                                    .background(APColors.Surface, RoundedCornerShape(8.dp)),
+                                    .background(APColors.Surface, RoundedCornerShape(8.dp))
+                                    .clickable { onNavigateToActorDetail(actor.voiceActor.id) },
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 Column {

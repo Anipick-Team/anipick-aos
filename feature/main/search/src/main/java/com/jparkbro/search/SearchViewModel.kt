@@ -38,15 +38,7 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             _popularAnimes.value = SearchUiState.Loading
 
-            // 최근 검색어 조회 (DataStore)
-            searchRepository.loadSearchKeyword().fold(
-                onSuccess = {
-                    _recentSearches.value = it
-                },
-                onFailure = {
-                    // TODO
-                }
-            )
+            loadRecentSearchKeywords()
 
             // 인기 애니 조회 (Api)
             searchRepository.getPopularAnimes().fold(
@@ -60,24 +52,56 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun saveRecentSearch(query: String) {
+    fun loadRecentSearchKeywords() {
         viewModelScope.launch {
-            searchRepository.saveSearchKeyword(query)
-            // TODO
+            // 최근 검색어 조회 (DataStore)
+            searchRepository.loadSearchKeyword().fold(
+                onSuccess = {
+                    _recentSearches.value = it
+                },
+                onFailure = {
+                    // TODO
+                }
+            )
         }
     }
 
-    fun deleteRecentSearch(query: String) {
+    fun saveRecentSearch(query: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            searchRepository.deleteSearchKeyword(query)
-            // TODO
+            searchRepository.saveSearchKeyword(query).fold(
+                onSuccess = {
+                    onResult(true)
+                },
+                onFailure = {
+                    // TODO
+                }
+            )
         }
     }
 
-    fun deleteAllRecentSearches() {
+    fun deleteRecentSearch(query: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            searchRepository.deleteAll()
-            // TODO
+            searchRepository.deleteSearchKeyword(query).fold(
+                onSuccess = {
+                    onResult(true)
+                },
+                onFailure = {
+                    // TODO
+                }
+            )
+        }
+    }
+
+    fun deleteAllRecentSearches(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            searchRepository.deleteAll().fold(
+                onSuccess = {
+                    onResult(true)
+                },
+                onFailure = {
+                    // TODO
+                }
+            )
         }
     }
 }

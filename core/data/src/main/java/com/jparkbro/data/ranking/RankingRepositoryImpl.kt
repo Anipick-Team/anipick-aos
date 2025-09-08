@@ -12,7 +12,6 @@ class RankingRepositoryImpl @Inject constructor(
 ) : RankingRepository {
 
     override suspend fun getAnimesRank(request: RankingRequest): Result<RankingResponse> {
-        Log.d("ranking", "$request")
         return when (request.type) {
             RankingType.REAL_TIME -> rankingDataSource.getRealTimeRanking(request)
             RankingType.YEAR_SEASON -> rankingDataSource.getYearSeasonRanking(request)

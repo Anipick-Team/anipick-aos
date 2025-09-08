@@ -15,6 +15,10 @@ data class RankingRequest(
     val genre: ResponseMap? = null,
     @SerialName("lastId")
     val lastId: Int? = null,
+    @SerialName("lastValue")
+    val lastValue: Long? = null,
+    @SerialName("lastRank")
+    val lastRank: Long? = null,
     @SerialName("size")
     val size: Int? = null,
 )

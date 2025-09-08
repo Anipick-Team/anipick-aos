@@ -65,6 +65,7 @@ internal fun Search(
         onNavigateBack = onNavigateBack,
         onNavigateToAnimeDetail = onNavigateToAnimeDetail,
         onNavigateSearchResult = onNavigateSearchResult,
+        onLoadRecentSearchKeywords = viewModel::loadRecentSearchKeywords,
         onSaveRecentSearch = viewModel::saveRecentSearch,
         onDeleteRecentSearch = viewModel::deleteRecentSearch,
         onDeleteAllRecentSearches = viewModel::deleteAllRecentSearches
@@ -81,9 +82,10 @@ private fun Search(
     onNavigateBack: () -> Unit,
     onNavigateToAnimeDetail: (Int) -> Unit,
     onNavigateSearchResult: (String) -> Unit,
-    onSaveRecentSearch: (String) -> Unit,
-    onDeleteRecentSearch: (String) -> Unit,
-    onDeleteAllRecentSearches: () -> Unit,
+    onLoadRecentSearchKeywords: () -> Unit,
+    onSaveRecentSearch: (String, (Boolean) -> Unit) -> Unit,
+    onDeleteRecentSearch: (String, (Boolean) -> Unit) -> Unit,
+    onDeleteAllRecentSearches: ((Boolean) -> Unit) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -96,7 +98,7 @@ private fun Search(
                     onSearch = {
                         focusManager.clearFocus()
                         if (searchText.isNotBlank()) {
-                            onSaveRecentSearch(searchText)
+                            onSaveRecentSearch(searchText) { onLoadRecentSearchKeywords() }
                             onNavigateSearchResult(searchText)
                         }
                     }
@@ -124,7 +126,7 @@ private fun Search(
                                 .clickable {
                                     focusManager.clearFocus()
                                     if (searchText.isNotBlank()) {
-                                        onSaveRecentSearch(searchText)
+                                        onSaveRecentSearch(searchText) { onLoadRecentSearchKeywords() }
                                         onNavigateSearchResult(searchText)
                                     }
                                 }
@@ -173,7 +175,7 @@ private fun Search(
                             fontWeight = FontWeight.W500,
                             color = APColors.Gray,
                             modifier = Modifier
-                                .clickable { onDeleteAllRecentSearches() }
+                                .clickable { onDeleteAllRecentSearches { onLoadRecentSearchKeywords() } }
                         )
                     }
                     LazyRow(
@@ -206,7 +208,7 @@ private fun Search(
                                         .size(15.dp)
                                         .clip(CircleShape)
                                         .clickable {
-                                            onDeleteRecentSearch(search)
+                                            onDeleteRecentSearch(search) { onLoadRecentSearchKeywords() }
                                         }
                                 )
                             }

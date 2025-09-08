@@ -1,5 +1,7 @@
 package com.jparkbro.ui.util.extension
 
+import com.jparkbro.ui.R
+
 /**
  * 한글 문자를 필터링하는 함수
  * @return 한글이 제거된 텍스트
@@ -21,6 +23,15 @@ fun String.quarterStringToInt(): Int? {
     }
 }
 
-fun String.toFullImageUrl(baseUrl: String = "http://anipick.p-e.kr:8080"): String {
-    return this.replace("./uploads", baseUrl)
+/**
+ * URL에 default.jpg가 포함되어 있으면 기본 이미지 리소스 ID를 반환하고,
+ * 그렇지 않으면 원본 URL을 반환합니다.
+ * @return URL 문자열 또는 drawable 리소스 ID
+ */
+fun String.toImageModel(): Any {
+    return if (this.contains("default.jpg")) {
+        R.drawable.thumbnail_img
+    } else {
+        this
+    }
 }

@@ -54,6 +54,7 @@ import com.jparkbro.model.common.ResponseMap
 import com.jparkbro.model.explore.ExploreResponse
 import com.jparkbro.model.home.ComingSoonItem
 import com.jparkbro.ui.APCardItem
+import com.jparkbro.ui.APEmptyContent
 import com.jparkbro.ui.APExpireBottomSheet
 import com.jparkbro.ui.APFilterTriggerChip
 import com.jparkbro.ui.APLogoSearchTopAppBar
@@ -272,7 +273,9 @@ private fun Explore(
             }
             Column(
                 modifier = Modifier
-                    .background(Color.White)
+                    .weight(1f)
+                    .background(Color.White),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
                     modifier = Modifier
@@ -380,37 +383,45 @@ private fun Explore(
                                 }
                         }
 
-                        LazyVerticalGrid(
-                            state = gridState,
-                            columns = GridCells.Fixed(3),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier
-                                .fillMaxSize(),
-                        ) {
-                            items(animes) { anime ->
-                                APCardItem(
-                                    title = "${anime.title}",
-                                    imageUrl = anime.coverImageUrl,
-                                    cardWidth = 115.dp,
-                                    cardHeight = 162.dp,
-                                    fontSize = 14.sp,
-                                    maxLine = 1,
-                                    onClick = { onNavigateToAnimeDetail(anime.animeId) }
-                                )
-                            }
-                            if (isLoading) {
-                                item(span = { GridItemSpan(3) }) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 20.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularProgressIndicator()
+                        if (animes.isNotEmpty()) {
+                            LazyVerticalGrid(
+                                state = gridState,
+                                columns = GridCells.Fixed(3),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                            ) {
+                                items(animes) { anime ->
+                                    APCardItem(
+                                        title = "${anime.title}",
+                                        imageUrl = anime.coverImageUrl,
+                                        cardWidth = 115.dp,
+                                        cardHeight = 162.dp,
+                                        fontSize = 14.sp,
+                                        maxLine = 1,
+                                        onClick = { onNavigateToAnimeDetail(anime.animeId) }
+                                    )
+                                }
+                                if (isLoading) {
+                                    item(span = { GridItemSpan(3) }) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 20.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator()
+                                        }
                                     }
                                 }
                             }
+                        } else {
+                            APEmptyContent(
+                                comment = "앗! 해당 조건에 맞는 작품이 없네요.",
+                                modifier = Modifier
+                                    .weight(1f)
+                            )
                         }
                     }
                     is ExploreUiState.Error -> {}
