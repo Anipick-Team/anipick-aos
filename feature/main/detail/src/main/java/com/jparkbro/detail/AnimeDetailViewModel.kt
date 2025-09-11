@@ -80,6 +80,7 @@ class DetailAnimeViewModel @AssistedInject constructor(
 
     fun updateSort(sort: ReviewSort) {
         _sort.value = sort
+        getAnimeReviews()
     }
 
     private val _snackBarData = MutableStateFlow<SnackBarData?>(null)

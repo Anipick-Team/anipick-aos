@@ -7,6 +7,8 @@ import com.jparkbro.model.common.DefaultAnime
 import com.jparkbro.model.common.WatchStatus
 import com.jparkbro.model.detail.ActorDetailResponse
 import com.jparkbro.model.detail.AnimeActorsResponse
+import com.jparkbro.model.detail.AnimeRecommendsResponse
+import com.jparkbro.model.detail.AnimeSeriesResponse
 import com.jparkbro.model.detail.DetailActor
 import com.jparkbro.model.detail.DetailInfo
 import com.jparkbro.model.detail.DetailMyReview
@@ -89,6 +91,14 @@ class DetailRepositoryImpl @Inject constructor(
 
     override suspend fun getActorInfo(personId: Int, cursor: Cursor?): Result<ActorDetailResponse> {
         return detailDataSource.getActorInfo(personId, cursor)
+    }
+
+    override suspend fun getAnimeSeries(animeId: Int, cursor: Cursor?): Result<AnimeSeriesResponse> {
+        return detailDataSource.getAnimeSeries(animeId, cursor)
+    }
+
+    override suspend fun getAnimeRecommends(animeId: Int, cursor: Cursor?): Result<AnimeRecommendsResponse> {
+        return detailDataSource.getAnimeRecommends(animeId, cursor)
     }
 
     override suspend fun setLikeActor(action: ApiAction, personId: Int): Result<Unit> {

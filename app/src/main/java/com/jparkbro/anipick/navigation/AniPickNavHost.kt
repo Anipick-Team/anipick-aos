@@ -12,10 +12,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
 import com.jparkbro.detail.navigation.actorDetailScreen
 import com.jparkbro.detail.navigation.animeActorsScreen
+import com.jparkbro.detail.navigation.animeRecommendsScreen
+import com.jparkbro.detail.navigation.animeSeriesScreen
 import com.jparkbro.detail.navigation.detailAnimeScreen
 import com.jparkbro.detail.navigation.navigateToActorDetail
 import com.jparkbro.detail.navigation.navigateToAnimeActors
 import com.jparkbro.detail.navigation.navigateToAnimeDetail
+import com.jparkbro.detail.navigation.navigateToAnimeRecommends
+import com.jparkbro.detail.navigation.navigateToAnimeSeries
 import com.jparkbro.detail.navigation.navigateToStudioDetail
 import com.jparkbro.detail.navigation.studioDetailScreen
 import com.jparkbro.email.navigation.emailLoginScreen
@@ -162,6 +166,9 @@ fun APNavHost(
             onNavigateToStudioDetail = navController::navigateToStudioDetail,
             onNavigateToAnimeActors = navController::navigateToAnimeActors,
             onNavigateToActorDetail = navController::navigateToActorDetail,
+            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
+            onNavigateToAnimeSeries = navController::navigateToAnimeSeries,
+            onNavigateToAnimeRecommends = navController::navigateToAnimeRecommends,
             onCheckReviewRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("review_refresh") ?: false },
             onClearReviewRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("review_refresh", false) },
             onStatusRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("status_refresh", true) },
@@ -175,6 +182,14 @@ fun APNavHost(
             onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
         )
         studioDetailScreen(
+            onNavigateBack = navController::navigateUp,
+            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
+        )
+        animeSeriesScreen(
+            onNavigateBack = navController::navigateUp,
+            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
+        )
+        animeRecommendsScreen(
             onNavigateBack = navController::navigateUp,
             onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
         )

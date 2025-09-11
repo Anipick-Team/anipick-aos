@@ -5,6 +5,8 @@ import com.jparkbro.model.common.DefaultAnime
 import com.jparkbro.model.common.WatchStatus
 import com.jparkbro.model.detail.ActorDetailResponse
 import com.jparkbro.model.detail.AnimeActorsResponse
+import com.jparkbro.model.detail.AnimeRecommendsResponse
+import com.jparkbro.model.detail.AnimeSeriesResponse
 import com.jparkbro.model.detail.DetailActor
 import com.jparkbro.model.detail.DetailInfo
 import com.jparkbro.model.detail.DetailMyReview
@@ -116,6 +118,20 @@ class RetrofitDetailDataSource @Inject constructor(
             personId = personId,
             lastId = cursor?.lastId
         ).toResult(TAG, "getActorInfo")
+    }
+
+    override suspend fun getAnimeSeries(animeId: Int, cursor: Cursor?): Result<AnimeSeriesResponse> {
+        return detailApi.getAnimeSeries(
+            animeId = animeId,
+            lastId = cursor?.lastId
+        ).toResult(TAG, "getAnimeSeries")
+    }
+
+    override suspend fun getAnimeRecommends(animeId: Int, cursor: Cursor?): Result<AnimeRecommendsResponse> {
+        return detailApi.getAnimeRecommends(
+            animeId = animeId,
+            lastId = cursor?.lastId,
+        ).toResult(TAG, "getAnimeRecommends")
     }
 
     override suspend fun likeActor(personId: Int): Result<Unit> {

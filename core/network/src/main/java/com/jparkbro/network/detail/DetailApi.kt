@@ -3,6 +3,8 @@ package com.jparkbro.network.detail
 import com.jparkbro.model.common.DefaultAnime
 import com.jparkbro.model.detail.ActorDetailResponse
 import com.jparkbro.model.detail.AnimeActorsResponse
+import com.jparkbro.model.detail.AnimeRecommendsResponse
+import com.jparkbro.model.detail.AnimeSeriesResponse
 import com.jparkbro.model.detail.DetailActor
 import com.jparkbro.model.detail.DetailInfo
 import com.jparkbro.model.detail.DetailMyReview
@@ -121,6 +123,18 @@ interface DetailApi {
         @Path("personId") personId: Int,
         @Query("lastId") lastId: Int?,
     ): Response<ApiResponse<ActorDetailResponse>>
+
+    @GET(ApiConstants.GET_ANIME_SERIES)
+    suspend fun getAnimeSeries(
+        @Path("animeId") animeId: Int,
+        @Query("lastId") lastId: Int?
+    ): Response<ApiResponse<AnimeSeriesResponse>>
+
+    @GET(ApiConstants.GET_ANIME_RECOMMENDS)
+    suspend fun getAnimeRecommends(
+        @Path("animeId") animeId: Int,
+        @Query("lastId") lastId: Int?,
+    ): Response<ApiResponse<AnimeRecommendsResponse>>
 
     @POST(ApiConstants.SET_LIKE_ACTOR)
     suspend fun likeActor(

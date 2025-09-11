@@ -110,6 +110,9 @@ internal fun DetailAnime(
     onNavigateToStudioDetail: (Int) -> Unit,
     onNavigateToAnimeActors: (Int) -> Unit,
     onNavigateToActorDetail: (Int) -> Unit,
+    onNavigateToAnimeDetail: (Int) -> Unit,
+    onNavigateToAnimeSeries: (Int, String) -> Unit,
+    onNavigateToAnimeRecommends: (Int) -> Unit,
     onCheckReviewRefresh: () -> Boolean,
     onClearReviewRefresh: () -> Unit,
     onStatusRefresh: () -> Unit,
@@ -180,6 +183,9 @@ internal fun DetailAnime(
         onNavigateToStudioDetail = onNavigateToStudioDetail,
         onNavigateToAnimeActors = onNavigateToAnimeActors,
         onNavigateToActorDetail = onNavigateToActorDetail,
+        onNavigateToAnimeDetail = onNavigateToAnimeDetail,
+        onNavigateToAnimeSeries = onNavigateToAnimeSeries,
+        onNavigateToAnimeRecommends = onNavigateToAnimeRecommends,
         onCheckReviewRefresh = onCheckReviewRefresh,
         onClearReviewRefresh = onClearReviewRefresh,
         onStatusRefresh = onStatusRefresh,
@@ -228,6 +234,9 @@ private fun DetailAnime(
     onNavigateToStudioDetail: (Int) -> Unit,
     onNavigateToAnimeActors: (Int) -> Unit,
     onNavigateToActorDetail: (Int) -> Unit,
+    onNavigateToAnimeDetail: (Int) -> Unit,
+    onNavigateToAnimeSeries: (Int, String) -> Unit,
+    onNavigateToAnimeRecommends: (Int) -> Unit,
     onCheckReviewRefresh: () -> Boolean,
     onClearReviewRefresh: () -> Unit,
     onStatusRefresh: () -> Unit,
@@ -341,7 +350,7 @@ private fun DetailAnime(
                                         .padding(top = 44.dp, end = 20.dp)
                                         .size(width = 133.dp, height = 153.dp)
                                         .clip(RoundedCornerShape(8.dp)),
-                                    contentScale = ContentScale.Crop
+                                    contentScale = ContentScale.FillWidth
                                 )
                             }
                             Column(
@@ -564,6 +573,9 @@ private fun DetailAnime(
                             onNavigateToStudioDetail = onNavigateToStudioDetail,
                             onNavigateToAnimeActors = onNavigateToAnimeActors,
                             onNavigateToActorDetail = onNavigateToActorDetail,
+                            onNavigateToAnimeDetail = onNavigateToAnimeDetail,
+                            onNavigateToAnimeSeries = onNavigateToAnimeSeries,
+                            onNavigateToAnimeRecommends = onNavigateToAnimeRecommends,
                         )
 
                         DetailTab.REVIEWS -> AnimeReview(
@@ -631,6 +643,9 @@ private fun AnimeInfo(
     onNavigateToStudioDetail: (Int) -> Unit,
     onNavigateToAnimeActors: (Int) -> Unit,
     onNavigateToActorDetail: (Int) -> Unit,
+    onNavigateToAnimeDetail: (Int) -> Unit,
+    onNavigateToAnimeSeries: (Int, String) -> Unit,
+    onNavigateToAnimeRecommends: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -870,11 +885,11 @@ private fun AnimeInfo(
                                         model = actor.character.imageUrl,
                                         contentDescription = null,
                                         modifier = Modifier
-                                            .width(91.dp)
+                                            .width(65.dp)
                                             .height(95.dp)
                                             .clip(RoundedCornerShape(topStart = 8.dp))
                                             .background(APColors.Gray, RoundedCornerShape(topStart = 8.dp)),
-//                                        contentScale = ContentScale.Crop
+                                        contentScale = ContentScale.Crop
                                     )
                                     Box(
                                         modifier = Modifier
@@ -895,11 +910,11 @@ private fun AnimeInfo(
                                         model = actor.voiceActor.imageUrl,
                                         contentDescription = null,
                                         modifier = Modifier
-                                            .width(91.dp)
+                                            .width(65.dp)
                                             .height(95.dp)
                                             .clip(RoundedCornerShape(topEnd = 8.dp))
                                             .background(APColors.Gray, RoundedCornerShape(topEnd = 8.dp)),
-//                                        contentScale = ContentScale.Crop
+                                        contentScale = ContentScale.Crop
                                     )
                                     Box(
                                         modifier = Modifier
@@ -927,7 +942,7 @@ private fun AnimeInfo(
                 ) {
                     ClickableSectionTitle(
                         title = "시리즈 정보",
-                        onClick = {}
+                        onClick = { onNavigateToAnimeSeries(detailInfo?.animeId ?: 0, detailInfo?.title ?: "") }
                     )
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -949,7 +964,7 @@ private fun AnimeInfo(
                                 cardHeight = 162.dp,
                                 fontSize = 14.sp,
                                 maxLine = 2,
-                                onClick = { }
+                                onClick = { onNavigateToAnimeDetail(detailInfo?.animeId ?: 0) }
                             )
                         }
                     }
@@ -962,7 +977,7 @@ private fun AnimeInfo(
                 ) {
                     ClickableSectionTitle(
                         title = "함께 볼 만한 작품",
-                        onClick = {}
+                        onClick = { onNavigateToAnimeRecommends(detailInfo?.animeId ?: 0) }
                     )
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -976,7 +991,7 @@ private fun AnimeInfo(
                                 cardHeight = 162.dp,
                                 fontSize = 14.sp,
                                 maxLine = 1,
-                                onClick = { }
+                                onClick = { onNavigateToAnimeDetail(detailInfo?.animeId ?: 0) }
                             )
                         }
                     }

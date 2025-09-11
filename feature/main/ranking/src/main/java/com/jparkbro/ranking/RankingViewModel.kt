@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.ranking.RankingRepository
 import com.jparkbro.model.common.ResponseMap
+import com.jparkbro.model.ranking.RankingItem
 import com.jparkbro.model.ranking.RankingRequest
 import com.jparkbro.model.ranking.RankingResponse
 import com.jparkbro.model.ranking.RankingType
@@ -22,11 +23,19 @@ class RankingViewModel @Inject constructor(
     private val rankingRepository: RankingRepository
 ) : ViewModel() {
 
+    private val _response = MutableStateFlow<RankingResponse?>(null)
+    val response = _response.asStateFlow()
+
+    private val _animeList = MutableStateFlow<List<RankingItem>>(emptyList())
+    val animeList = _animeList.asStateFlow()
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
+    private val _hasMoreData = MutableStateFlow(true)
+
     private val _params = MutableStateFlow(RankingRequest(type = RankingType.REAL_TIME, genre = ResponseMap()))
     val params: StateFlow<RankingRequest> = _params.asStateFlow()
-
-    private val _uiState = MutableStateFlow<RankingUiState>(RankingUiState.Loading)
-    val uiState: StateFlow<RankingUiState> = _uiState.asStateFlow()
 
     private val _bottomSheetData = MutableStateFlow<SheetData?>(null)
     val bottomSheetData: StateFlow<SheetData?> = _bottomSheetData.asStateFlow()
@@ -36,47 +45,60 @@ class RankingViewModel @Inject constructor(
     }
 
     init {
-        getAnimesRank(RankingRequest(type = RankingType.REAL_TIME))
+        getAnimesRank()
     }
 
     fun updateFilter(request: RankingRequest) {
-        val newParams = when (request.type) {
-            RankingType.YEAR_SEASON -> {
-                _params.value.copy(
-                    type = request.type,
-                    year = sanitizeYear(request.year),
-                    season = sanitizeSeason(request.year, request.season),
-                    genre = request.genre ?: _params.value.genre,
-                    lastId = null,
-                    size = null
-                )
-            }
-            else -> {
-                _params.value.copy(
-                    type = request.type,
-                    year = null,
-                    season = null,
-                    genre = request.genre ?: _params.value.genre,
-                    lastId = null,
-                    size = null
-                )
-            }
-        }
-        _params.value = newParams
-
-        getAnimesRank(_params.value)
+        _response.value = null
+        _params.value = createRankingParams(request)
+        getAnimesRank()
     }
 
-    private fun getAnimesRank(request: RankingRequest) {
-        viewModelScope.launch {
-            _uiState.value = RankingUiState.Loading
+    private fun createRankingParams(request: RankingRequest): RankingRequest {
+        val baseParams = _params.value.copy(
+            type = request.type,
+            genre = request.genre ?: _params.value.genre
+        )
 
-            rankingRepository.getAnimesRank(request).fold(
+        return when (request.type) {
+            RankingType.YEAR_SEASON -> baseParams.copy(
+                year = sanitizeYear(request.year),
+                season = sanitizeSeason(request.year, request.season)
+            )
+            else -> baseParams.copy(
+                year = null,
+                season = null
+            )
+        }
+    }
+
+    fun getAnimesRank() {
+        if (_isLoading.value || !_hasMoreData.value) return
+
+        _isLoading.value = true
+
+        if (_response.value?.cursor?.lastId == null) {
+            _animeList.value = emptyList()
+        }
+
+        viewModelScope.launch {
+            rankingRepository.getAnimesRank(
+                request = _params.value.copy(
+                    lastId = _animeList.value.lastOrNull()?.popularity,
+                    lastValue = _animeList.value.lastOrNull()?.trending,
+                    lastRank = _animeList.value.lastOrNull()?.rank,
+                )
+            ).fold(
                 onSuccess = {
-                    _uiState.value = RankingUiState.Success(it)
+                    _response.value = it
+                    _animeList.value += it.animes
+
+                    _isLoading.value = false
+                    _hasMoreData.value = it.animes.size == 20
                 },
                 onFailure = {
-                    // TODO
+                    _isLoading.value = false
+                    _hasMoreData.value = true
                 }
             )
         }
@@ -100,10 +122,4 @@ class RankingViewModel @Inject constructor(
             else -> season
         }
     }
-}
-
-sealed interface RankingUiState {
-    data object Loading: RankingUiState
-    data class Success(val item: RankingResponse): RankingUiState
-    data class Error(val msg: String): RankingUiState
 }

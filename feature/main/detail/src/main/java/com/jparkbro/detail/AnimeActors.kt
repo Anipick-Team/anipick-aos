@@ -128,7 +128,7 @@ private fun AnimeActors(
                             model = actor.character.imageUrl,
                             contentDescription = null,
                             modifier = Modifier
-                                .width(91.dp)
+                                .width(65.dp)
                                 .height(95.dp)
                                 .clip(RoundedCornerShape(topStart = 8.dp))
                                 .background(APColors.Gray, RoundedCornerShape(topStart = 8.dp)),
@@ -154,7 +154,7 @@ private fun AnimeActors(
                             model = actor.voiceActor.imageUrl,
                             contentDescription = null,
                             modifier = Modifier
-                                .width(91.dp)
+                                .width(65.dp)
                                 .height(95.dp)
                                 .clip(RoundedCornerShape(topEnd = 8.dp))
                                 .background(APColors.Gray, RoundedCornerShape(topEnd = 8.dp)),

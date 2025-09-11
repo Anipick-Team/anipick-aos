@@ -14,15 +14,15 @@ data class RankingItem(
     @SerialName("rank")
     val rank: Int,
     @SerialName("change")
-    val change: String? = null,
+    val change: String? = null, // 'N' : "NEW"
     @SerialName("trend")
     val trend: RankingTrend? = null,
     @SerialName("genres")
     val genres: List<String>,
     @SerialName("popularity")
-    val popularity: Long,
+    val popularity: Int,
     @SerialName("trending")
-    val trending: Long? = null,
+    val trending: Int? = null,
 )
 
 @Serializable

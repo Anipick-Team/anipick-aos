@@ -1,9 +1,7 @@
 package com.jparkbro.mypage
 
 import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
+import com.jparkbro.ui.util.rememberPhotoPickerWithPermission
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -75,12 +73,10 @@ internal fun MyPage(
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
-//    val profileImageId by viewModel.profileImageId.collectAsState()
     val isUploadLoading by viewModel.isUploadLoading.collectAsState()
 
     MyPage(
         uiState = uiState,
-//        profileImageId = profileImageId,
         isUploadLoading = isUploadLoading,
         bottomNav = bottomNav,
         onChangeProfileImage = viewModel::editProfileImg,
@@ -99,7 +95,6 @@ internal fun MyPage(
 @Composable
 private fun MyPage(
     uiState: MyPageUiState = MyPageUiState.Loading,
-//    profileImageId: Long? = null,
     isUploadLoading: Boolean = false,
     bottomNav: @Composable () -> Unit,
     onChangeProfileImage: (Uri) -> Unit,
@@ -355,26 +350,20 @@ private fun ProfileImage(
     profileImageBytes: ByteArray? = null,
     onChangeProfileImage: (Uri) -> Unit,
 ) {
-    val photoPicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia()
-    ) { contentUri ->
-        if (contentUri == null) {
-            return@rememberLauncherForActivityResult
-        }
+    // 권한 처리가 포함된 Photo Picker 사용
+    val launchPhotoPicker = rememberPhotoPickerWithPermission(
+        onImageSelected = onChangeProfileImage
+    )
 
-        onChangeProfileImage(contentUri)
-    }
     Box(
         modifier = Modifier
             .size(102.dp)
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
-            ) { photoPicker.launch(
-                PickVisualMediaRequest(
-                    mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                )
-            ) }
+            ) {
+                launchPhotoPicker()
+            }
     ) {
         AsyncImage(
             model = profileImageBytes,

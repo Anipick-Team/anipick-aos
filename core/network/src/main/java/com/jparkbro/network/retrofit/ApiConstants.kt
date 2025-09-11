@@ -96,6 +96,9 @@ object ApiConstants {
     const val GET_STUDIO_INFO = "studios/{studioId}/animes"
     const val GET_ANIME_ACTORS = "animes/{animeId}/characters"
     const val GET_ACTOR_INFO = "person/{personId}"
+    const val GET_ANIME_SERIES = "animes/{animeId}/series"
+    const val GET_ANIME_RECOMMENDS = "animes/{animeId}/recommendations"
+
     const val SET_LIKE_ACTOR = "persons/{personId}/like"
 
     /* Review */

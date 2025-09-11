@@ -1,6 +1,7 @@
 package com.jparkbro.detail.navigation
 
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -10,6 +11,10 @@ import com.jparkbro.detail.ActorDetail
 import com.jparkbro.detail.ActorDetailViewModel
 import com.jparkbro.detail.AnimeActors
 import com.jparkbro.detail.AnimeActorsViewModel
+import com.jparkbro.detail.AnimeRecommends
+import com.jparkbro.detail.AnimeRecommendsViewModel
+import com.jparkbro.detail.AnimeSeries
+import com.jparkbro.detail.AnimeSeriesViewModel
 import com.jparkbro.detail.DetailAnime
 import com.jparkbro.detail.DetailAnimeViewModel
 import com.jparkbro.detail.StudioDetail
@@ -25,6 +30,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable data class ActorDetail(val actorId: Int)
 
+@Serializable data class AnimeRecommends(val animeId: Int)
+
+@Serializable data class AnimeSeries(val animeId: Int, val title: String)
+
 fun NavController.navigateToAnimeDetail(animeId: Int, navOptions: NavOptions? = null) = navigate(AnimeDetail(animeId), navOptions)
 
 fun NavGraphBuilder.detailAnimeScreen(
@@ -33,6 +42,9 @@ fun NavGraphBuilder.detailAnimeScreen(
     onNavigateToStudioDetail: (Int) -> Unit,
     onNavigateToAnimeActors: (Int) -> Unit,
     onNavigateToActorDetail: (Int) -> Unit,
+    onNavigateToAnimeDetail: (Int) -> Unit,
+    onNavigateToAnimeSeries: (Int, String) -> Unit,
+    onNavigateToAnimeRecommends: (Int) -> Unit,
     onCheckReviewRefresh: () -> Boolean,
     onClearReviewRefresh: () -> Unit,
     onStatusRefresh: () -> Unit,
@@ -46,6 +58,9 @@ fun NavGraphBuilder.detailAnimeScreen(
             onNavigateToStudioDetail = onNavigateToStudioDetail,
             onNavigateToAnimeActors = onNavigateToAnimeActors,
             onNavigateToActorDetail = onNavigateToActorDetail,
+            onNavigateToAnimeDetail = onNavigateToAnimeDetail,
+            onNavigateToAnimeSeries = onNavigateToAnimeSeries,
+            onNavigateToAnimeRecommends = onNavigateToAnimeRecommends,
             onCheckReviewRefresh = onCheckReviewRefresh,
             onClearReviewRefresh = onClearReviewRefresh,
             onStatusRefresh = onStatusRefresh,
@@ -118,6 +133,50 @@ fun NavGraphBuilder.actorDetailScreen(
                 key = "${route.actorId}"
             ) { factory ->
                 factory.create(route.actorId)
+            }
+        )
+    }
+}
+
+fun NavController.navigateToAnimeRecommends(animeId: Int, navOptions: NavOptions? = null) = navigate(AnimeRecommends(animeId), navOptions)
+
+fun NavGraphBuilder.animeRecommendsScreen(
+    onNavigateBack: () -> Unit,
+    onNavigateToAnimeDetail: (Int) -> Unit,
+) {
+    composable<AnimeRecommends> { entry ->
+        val route = entry.toRoute<AnimeRecommends>()
+
+        AnimeRecommends(
+            onNavigateBack = onNavigateBack,
+            onNavigateToAnimeDetail = onNavigateToAnimeDetail,
+            viewModel = hiltViewModel<AnimeRecommendsViewModel, AnimeRecommendsViewModel.Factory>(
+                key = "${route.animeId}"
+            ) { factory ->
+                factory.create(route.animeId)
+            }
+        )
+    }
+}
+
+fun NavController.navigateToAnimeSeries(animeId: Int, title: String, navOptions: NavOptions? = null) = navigate(AnimeSeries(animeId, title), navOptions)
+
+fun NavGraphBuilder.animeSeriesScreen(
+    onNavigateBack: () -> Unit,
+    onNavigateToAnimeDetail: (Int) -> Unit
+) {
+    composable<AnimeSeries> { entry ->
+        val route = entry.toRoute<AnimeSeries>()
+
+        val initData = AnimeSeries(route.animeId, route.title)
+
+        AnimeSeries(
+            onNavigateBack = onNavigateBack,
+            onNavigateToAnimeDetail = onNavigateToAnimeDetail,
+            viewModel = hiltViewModel<AnimeSeriesViewModel, AnimeSeriesViewModel.Factory>(
+                key = "${route.animeId}"
+            ) { factory ->
+                factory.create(initData)
             }
         )
     }

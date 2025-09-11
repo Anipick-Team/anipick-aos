@@ -10,9 +10,9 @@ import retrofit2.http.Query
 interface RankingApi {
     @GET(ApiConstants.RANK_REAL_TIME)
     suspend fun getRealTimeRanking(
-        @Query("genre") genre: Int?,
+        @Query("genre") genre: String?,
         @Query("lastId") lastId: Int?,
-        @Query("lastValue") lastValue: Long?,
+        @Query("lastValue") lastValue: Int?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<RankingResponse>>
 
@@ -20,17 +20,17 @@ interface RankingApi {
     suspend fun getYearSeasonRanking(
         @Query("year") year: String?,
         @Query("season") season: Int?,
-        @Query("genre") genre: Int?,
+        @Query("genre") genre: String?,
         @Query("lastId") lastId: Int?,
-        @Query("lastRank") lastRank: Long?,
+        @Query("lastRank") lastRank: Int?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<RankingResponse>>
 
     @GET(ApiConstants.RANK_ALL_TIME)
     suspend fun getAllTimeRanking(
-        @Query("genre") genre: Int?,
+        @Query("genre") genre: String?,
         @Query("lastId") lastId: Int?,
-        @Query("lastRank") lastRank: Long?,
+        @Query("lastRank") lastRank: Int?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<RankingResponse>>
 }

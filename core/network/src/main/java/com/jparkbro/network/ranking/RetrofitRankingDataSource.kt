@@ -16,7 +16,7 @@ class RetrofitRankingDataSource @Inject constructor(
 
     override suspend fun getRealTimeRanking(request: RankingRequest): Result<RankingResponse> {
         return rankingApi.getRealTimeRanking(
-            genre = if (request.genre?.id != -1) request.genre?.id else null,
+            genre = if (request.genre?.id != -1) request.genre?.name else null,
             lastId = request.lastId,
             lastValue = request.lastValue,
             size = request.size,
@@ -33,7 +33,7 @@ class RetrofitRankingDataSource @Inject constructor(
                 "4분기" -> 4
                 else -> null
             },
-            genre = if (request.genre?.id != -1) request.genre?.id else null,
+            genre = if (request.genre?.id != -1) request.genre?.name else null,
             lastId = request.lastId,
             lastRank = request.lastRank,
             size = request.size,
@@ -42,7 +42,7 @@ class RetrofitRankingDataSource @Inject constructor(
 
     override suspend fun getAllTimeRanking(request: RankingRequest): Result<RankingResponse> {
         return rankingApi.getAllTimeRanking(
-            genre = if (request.genre?.id != -1) request.genre?.id else null,
+            genre = if (request.genre?.id != -1) request.genre?.name else null,
             lastId = request.lastId,
             lastRank = request.lastRank,
             size = request.size,

@@ -16,9 +16,9 @@ data class RankingRequest(
     @SerialName("lastId")
     val lastId: Int? = null,
     @SerialName("lastValue")
-    val lastValue: Long? = null,
+    val lastValue: Int? = null,
     @SerialName("lastRank")
-    val lastRank: Long? = null,
+    val lastRank: Int? = null,
     @SerialName("size")
     val size: Int? = null,
 )

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,9 +29,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +52,7 @@ import com.jparkbro.model.common.MetaData
 import com.jparkbro.model.common.ResponseMap
 import com.jparkbro.model.ranking.RankingItem
 import com.jparkbro.model.ranking.RankingRequest
+import com.jparkbro.model.ranking.RankingResponse
 import com.jparkbro.model.ranking.RankingTrend
 import com.jparkbro.model.ranking.RankingType
 import com.jparkbro.ui.APExpireBottomSheet
@@ -59,6 +63,8 @@ import com.jparkbro.ui.R
 import com.jparkbro.ui.SheetData
 import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.util.extension.toImageModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 @Composable
 internal fun Ranking(
@@ -71,17 +77,22 @@ internal fun Ranking(
     val params by viewModel.params.collectAsState()
     val bottomSheetData by viewModel.bottomSheetData.collectAsState()
 
-    val uiState by viewModel.uiState.collectAsState()
+    val response by viewModel.response.collectAsState()
+    val animeList by viewModel.animeList.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     Ranking(
-        uiState = uiState,
         metaData = metaData,
         bottomNav = bottomNav,
         onNavigateToSearch = onNavigateToSearch,
         params = params,
+        response = response,
+        animeList = animeList,
+        isLoading = isLoading,
         onChangeFilter = viewModel::updateFilter,
         bottomSheetData = bottomSheetData,
         onChangeSheetData = viewModel::updateBottomSheetData,
+        onLoadMoreData = viewModel::getAnimesRank,
         onNavigateToAnimeDetail = onNavigateToAnimeDetail
     )
 }
@@ -89,14 +100,17 @@ internal fun Ranking(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Ranking(
-    uiState: RankingUiState = RankingUiState.Loading,
     metaData: MetaData,
     bottomNav: @Composable () -> Unit,
     onNavigateToSearch: () -> Unit,
     params: RankingRequest,
+    response: RankingResponse? = null,
+    animeList: List<RankingItem> = emptyList(),
+    isLoading: Boolean = false,
     onChangeFilter: (RankingRequest) -> Unit = {},
     bottomSheetData: SheetData? = null,
     onChangeSheetData: (SheetData?) -> Unit,
+    onLoadMoreData: () -> Unit,
     onNavigateToAnimeDetail: (Int) -> Unit,
 ) {
     Scaffold(
@@ -250,37 +264,41 @@ private fun Ranking(
                     color = APColors.Surface
                 )
             }
-            when (uiState) {
-                is RankingUiState.Loading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(APColors.White),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
 
-                is RankingUiState.Success -> {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(APColors.White)
-                            .padding(horizontal = 20.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        contentPadding = PaddingValues(top = 20.dp)
-                    ) {
-                        items(uiState.item.animes) { anime ->
-                            RankingItem(
-                                anime = anime,
-                                onClick = { onNavigateToAnimeDetail(it) }
-                            )
+            val listState = rememberLazyListState()
+            LaunchedEffect(listState, animeList.size) {
+                snapshotFlow { listState.layoutInfo }
+                    .map { layoutInfo ->
+                        val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                        val totalItemsCount = layoutInfo.totalItemsCount
+
+                        lastVisibleItemIndex >= totalItemsCount - 2
+                    }
+                    .distinctUntilChanged()
+                    .collect { shouldLoadMore ->
+                        if (shouldLoadMore && !isLoading && animeList.isNotEmpty()) {
+                            val lastId = response?.cursor?.lastId
+                            if (lastId != null) {
+                                onLoadMoreData()
+                            }
                         }
                     }
+            }
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(APColors.White)
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(top = 20.dp)
+            ) {
+                items(animeList) { anime ->
+                    RankingItem(
+                        anime = anime,
+                        onClick = { onNavigateToAnimeDetail(it) }
+                    )
                 }
-
-                is RankingUiState.Error -> {}
             }
         }
     }
