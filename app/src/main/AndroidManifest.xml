@@ -12,7 +12,6 @@
     
     <!-- API 33(Android 13) 이상에서 미디어 파일 접근을 위한 세분화된 권한 -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 
     <queries>
