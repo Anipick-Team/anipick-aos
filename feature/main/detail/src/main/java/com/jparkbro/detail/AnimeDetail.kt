@@ -964,7 +964,7 @@ private fun AnimeInfo(
                                 cardHeight = 162.dp,
                                 fontSize = 14.sp,
                                 maxLine = 2,
-                                onClick = { onNavigateToAnimeDetail(detailInfo?.animeId ?: 0) }
+                                onClick = { onNavigateToAnimeDetail(anime.animeId) }
                             )
                         }
                     }
@@ -991,7 +991,7 @@ private fun AnimeInfo(
                                 cardHeight = 162.dp,
                                 fontSize = 14.sp,
                                 maxLine = 1,
-                                onClick = { onNavigateToAnimeDetail(detailInfo?.animeId ?: 0) }
+                                onClick = { onNavigateToAnimeDetail(anime.animeId) }
                             )
                         }
                     }

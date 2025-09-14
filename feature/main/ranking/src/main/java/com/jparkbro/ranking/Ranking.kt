@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -272,7 +273,7 @@ private fun Ranking(
                         val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
                         val totalItemsCount = layoutInfo.totalItemsCount
 
-                        lastVisibleItemIndex >= totalItemsCount - 2
+                        lastVisibleItemIndex >= totalItemsCount - 4
                     }
                     .distinctUntilChanged()
                     .collect { shouldLoadMore ->
@@ -298,6 +299,18 @@ private fun Ranking(
                         anime = anime,
                         onClick = { onNavigateToAnimeDetail(it) }
                     )
+                }
+                if (isLoading) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 20.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
                 }
             }
         }
@@ -335,7 +348,7 @@ private fun RankingItem(
         Column(
             modifier = Modifier
                 .width(40.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
                 text = "${anime.rank}",
@@ -369,7 +382,7 @@ private fun RankingItem(
                             }
                         )
                         Text(
-                            text = "${anime.change}",
+                            text = if (anime.change == "N") "NEW" else "${anime.change}",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.W500,
                             color = when (anime.trend) {

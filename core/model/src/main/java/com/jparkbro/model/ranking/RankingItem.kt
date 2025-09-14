@@ -13,14 +13,15 @@ data class RankingItem(
     val coverImageUrl: String,
     @SerialName("rank")
     val rank: Int,
-    @SerialName("change")
-    val change: String? = null, // 'N' : "NEW"
-    @SerialName("trend")
-    val trend: RankingTrend? = null,
     @SerialName("genres")
     val genres: List<String>,
     @SerialName("popularity")
     val popularity: Int,
+
+    @SerialName("change")
+    val change: String? = null, // 'N' : "NEW"
+    @SerialName("trend")
+    val trend: RankingTrend? = null,
     @SerialName("trending")
     val trending: Int? = null,
 )
