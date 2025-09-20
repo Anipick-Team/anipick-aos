@@ -42,9 +42,13 @@ class AutoLoginUserCase @Inject constructor(
             emit(false)
         } else {
             // 4. access token 만료 > 재요청
-            val authToken = userPreferenceRepository.requestToken(refreshToken).getOrThrow()
+            val authToken = userPreferenceRepository.requestToken(refreshToken).getOrNull()
 
             // 5. datastore token 저장
+            if (authToken == null) {
+                emit(false)
+                return@flow
+            }
             userPreferenceRepository.saveToken(authToken).getOrThrow()
             emit(true)
         }
