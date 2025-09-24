@@ -18,9 +18,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 import javax.inject.Singleton
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "anipick_preferences")
+private val Context.jwtDataStore: DataStore<Preferences> by preferencesDataStore(name = "jwt_tokens_secure")
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -53,6 +55,15 @@ abstract class DataStoreModule {
             @ApplicationContext context: Context
         ): DataStore<Preferences> {
             return context.dataStore
+        }
+        
+        @Provides
+        @Singleton
+        @Named("jwt")
+        fun provideJwtDataStore(
+            @ApplicationContext context: Context
+        ): DataStore<Preferences> {
+            return context.jwtDataStore
         }
     }
 }

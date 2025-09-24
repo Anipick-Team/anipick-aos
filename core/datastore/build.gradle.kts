@@ -38,7 +38,6 @@ dependencies {
 
     // datastore
     implementation(libs.androidx.datastore)
-    implementation(libs.androidx.security.crypto)
     implementation(libs.androidx.datastore.preferences)
 
     // Hilt
