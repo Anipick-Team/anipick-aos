@@ -246,7 +246,7 @@ private fun PreferenceSetup(
                             text = "평가한 작품 ${ratedAnimes.size}",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.W500,
-                            color = APColors.Gray
+                            color = if (ratedAnimes.isEmpty()) APColors.Gray else APColors.Point
                         )
                         APBaseTextField(
                             value = searchText,
@@ -496,7 +496,9 @@ private fun AnimeRatingCard(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.W500,
                         color = APColors.Black,
-                        overflow = TextOverflow.Ellipsis
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
                     )
                     if (initRating != 0f) {
                         TextButton(
@@ -508,10 +510,10 @@ private fun AnimeRatingCard(
                                 disabledContainerColor = APColors.Gray
                             ),
                             enabled = rating != 0f,
-                            contentPadding = PaddingValues(horizontal = 11.dp, vertical = 5.dp)
+                            contentPadding = PaddingValues(horizontal = 11.dp, vertical = 5.dp),
                         ) {
                             Text(
-                                text = "평가취소",
+                                text = "취소",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.W500,
                             )
@@ -519,16 +521,12 @@ private fun AnimeRatingCard(
                     }
                 }
                 if (anime.genres.isNotEmpty()) {
-                    Row {
-                        anime.genres.forEach { genre ->
-                            Text(
-                                text = genre,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.W500,
-                                color = APColors.TextGray
-                            )
-                        }
-                    }
+                    Text(
+                        text = anime.genres.joinToString(", "),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        color = APColors.TextGray
+                    )
                 }
                 if (initRating != 0f) {
                     Spacer(modifier = Modifier.height(8.dp))
@@ -629,7 +627,7 @@ private fun AnimeRatingCard(
                     enabled = rating != 0f
                 ) {
                     Text(
-                        text = "평가하기",
+                        text = "평가",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.W500
                     )

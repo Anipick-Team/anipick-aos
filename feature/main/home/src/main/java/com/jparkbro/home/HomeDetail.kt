@@ -642,124 +642,105 @@ private fun HomeDetail(
                             .background(APColors.Surface))
                     }
                     item(span = { GridItemSpan(3) }) {
-                        Row(
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            contentAlignment = Alignment.CenterEnd
                         ) {
                             Row(
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .clickable { onChangeSortDropdown() },
                                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "19세",
-                                    fontSize = 16.sp,
+                                    text = sort.displayName,
+                                    fontSize = 14.sp,
                                     fontWeight = FontWeight.W500,
-                                    color = APColors.Point
+                                    color = APColors.TextGray
                                 )
-                                APToggleSwitch(
-                                    checked = includeAdult,
-                                    checkedColor = APColors.Point,
-                                    unCheckedColor = Color(0x4D667080),
-                                    onCheckedChange = { onChangeIncludeAdult() }
+                                Icon(
+                                    painter = painterResource(if (showSortDropdown) R.drawable.ic_chevron_up else R.drawable.ic_chevron_down),
+                                    contentDescription = null,
+                                    tint = APColors.TextGray,
+                                    modifier = Modifier
+                                        .size(15.dp)
                                 )
                             }
-                            Box {
-                                Row(
+                            DropdownMenu(
+                                expanded = showSortDropdown,
+                                onDismissRequest = { onChangeSortDropdown() },
+                                offset = DpOffset(x = 0.dp, y = 8.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                containerColor = APColors.White,
+                                shadowElevation = 2.dp,
+                            ) {
+                                Text(
+                                    text = Sort.LATEST.displayName,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W500,
+                                    color = if (sort == Sort.LATEST) APColors.Black else APColors.TextGray,
+                                    textAlign = TextAlign.Center,
                                     modifier = Modifier
-                                        .clip(CircleShape)
-                                        .clickable { onChangeSortDropdown() },
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = sort.displayName,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        color = APColors.TextGray
-                                    )
-                                    Icon(
-                                        painter = painterResource(if (showSortDropdown) R.drawable.ic_chevron_up else R.drawable.ic_chevron_down),
-                                        contentDescription = null,
-                                        tint = APColors.TextGray,
-                                        modifier = Modifier
-                                            .size(15.dp)
-                                    )
-                                }
-                                DropdownMenu(
-                                    expanded = showSortDropdown,
-                                    onDismissRequest = { onChangeSortDropdown() },
-                                    offset = DpOffset(x = 0.dp, y = 8.dp),
-                                    shape = RoundedCornerShape(8.dp),
-                                    containerColor = APColors.White,
-                                    shadowElevation = 2.dp,
-                                ) {
-                                    Text(
-                                        text = Sort.LATEST.displayName,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        color = if (sort == Sort.LATEST) APColors.Black else APColors.TextGray,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable(
-                                                indication = null,
-                                                interactionSource = remember { MutableInteractionSource() }
-                                            ) {
-                                                onChangeSortDropdown()
-                                                onChangeSort(Sort.LATEST)
-                                            }
-                                            .padding(14.dp)
-                                    )
-                                    HorizontalDivider(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 15.dp),
-                                        thickness = 1.dp,
-                                        color = APColors.Surface
-                                    )
-                                    Text(
-                                        text = Sort.POPULARITY.displayName,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        color = if (sort == Sort.POPULARITY) APColors.Black else APColors.TextGray,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable(
-                                                indication = null,
-                                                interactionSource = remember { MutableInteractionSource() }
-                                            ) {
-                                                onChangeSortDropdown()
-                                                onChangeSort(Sort.POPULARITY)
-                                            }
-                                            .padding(14.dp)
-                                    )
-                                    HorizontalDivider(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 15.dp),
-                                        thickness = 1.dp,
-                                        color = APColors.Surface
-                                    )
-                                    Text(
-                                        text = Sort.START_DATE.displayName,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        color = if (sort == Sort.START_DATE) APColors.Black else APColors.TextGray,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable(
-                                                indication = null,
-                                                interactionSource = remember { MutableInteractionSource() }
-                                            ) {
-                                                onChangeSortDropdown()
-                                                onChangeSort(Sort.START_DATE)
-                                            }
-                                            .padding(14.dp)
-                                    )
-                                }
+                                        .fillMaxWidth()
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            onChangeSortDropdown()
+                                            onChangeSort(Sort.LATEST)
+                                        }
+                                        .padding(14.dp)
+                                )
+                                HorizontalDivider(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 15.dp),
+                                    thickness = 1.dp,
+                                    color = APColors.Surface
+                                )
+                                Text(
+                                    text = Sort.POPULARITY.displayName,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W500,
+                                    color = if (sort == Sort.POPULARITY) APColors.Black else APColors.TextGray,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            onChangeSortDropdown()
+                                            onChangeSort(Sort.POPULARITY)
+                                        }
+                                        .padding(14.dp)
+                                )
+                                HorizontalDivider(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 15.dp),
+                                    thickness = 1.dp,
+                                    color = APColors.Surface
+                                )
+                                Text(
+                                    text = Sort.START_DATE.displayName,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W500,
+                                    color = if (sort == Sort.START_DATE) APColors.Black else APColors.TextGray,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            onChangeSortDropdown()
+                                            onChangeSort(Sort.START_DATE)
+                                        }
+                                        .padding(14.dp)
+                                )
                             }
                         }
                     }

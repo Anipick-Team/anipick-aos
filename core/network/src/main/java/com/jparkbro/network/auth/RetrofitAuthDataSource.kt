@@ -13,7 +13,6 @@ import com.jparkbro.model.auth.SignupRequest
 import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.auth.SocialLoginRequest
 import com.jparkbro.model.auth.VerifyCode
-import com.jparkbro.network.util.toResult
 import com.jparkbro.network.util.toUnitResult
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -92,8 +91,8 @@ internal class RetrofitAuthDataSource @Inject constructor(
 
                 // value = fail, result == null
                 else -> {
-                    Log.e(TAG, "emailSignup() API error - code: ${apiResponse?.code}")
-                    Result.failure<AuthToken>(Exception("${apiResponse?.code}"))
+                    Log.e(TAG, "emailSignup() API error - code: ${apiResponse?.code}, reason: ${apiResponse?.errorReason}")
+                    Result.failure(Exception(apiResponse?.errorValue))
                 }
             }
         } catch (e: Exception) {

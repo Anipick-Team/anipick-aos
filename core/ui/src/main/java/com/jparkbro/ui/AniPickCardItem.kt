@@ -75,7 +75,7 @@ fun APCardItem(
                 modifier = Modifier
                     .size(width = cardWidth, height = cardHeight)
                     .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.FillWidth
+                contentScale = ContentScale.Crop
             )
         }
         Text(

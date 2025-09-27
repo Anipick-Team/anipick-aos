@@ -211,25 +211,12 @@ fun APSearchFieldBackTopAppBar(
                 value = value,
                 onValueChange = { onValueChange(it) },
                 placeholder = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_search_outline),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(end = 8.dp)
-                                .size(16.dp),
-                            tint = APColors.TextGray
-                        )
-                        Text(
-                            text = "무엇을 검색할까요?",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W500,
-                            color = APColors.TextGray,
-                        )
-                    }
+                    Text(
+                        text = "무엇을 검색할까요?",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W500,
+                        color = APColors.TextGray,
+                    )
                 },
                 keyboardActions = keyboardActions,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),

@@ -3,7 +3,6 @@ package com.jparkbro.login
 import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jparkbro.model.common.Result
 import com.jparkbro.domain.GoogleLoginUseCase
 import com.jparkbro.domain.KakaoLoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,17 +35,22 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun socialLoginProceed(socialLogin: () -> Flow<Result<Boolean>>) {
+        _uiState.value = LoginUiState.Loading
+        
         viewModelScope.launch {
             try {
                 socialLogin().collect { result ->
-                    _uiState.value = when (result) {
-                        is Result.Loading -> LoginUiState.Loading
-                        is Result.Success<Boolean> -> LoginUiState.Success(result.data)
-                        is Result.Error -> LoginUiState.Error(result.exception.message ?: "로그인 중 에러 발생")
-                    }
+                    _uiState.value = result.fold(
+                        onSuccess = { reviewCompletedYn ->
+                            LoginUiState.Success(reviewCompletedYn)
+                        },
+                        onFailure = { exception ->
+                            LoginUiState.Error(exception.message ?: "로그인 중 에러 발생")
+                        }
+                    )
                 }
             } catch (e: Exception) {
-                // TODO Error
+                _uiState.value = LoginUiState.Error(e.message ?: "예상치 못한 오류가 발생했습니다")
             }
         }
     }

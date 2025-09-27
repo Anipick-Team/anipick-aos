@@ -24,7 +24,8 @@ fun TitleFavorite(
     title: String,
     isLiked: Boolean,
     onChangeLikeState: (Boolean) -> Unit,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    edgeToEdge: Boolean = true
 ) {
     Row(
         modifier = modifier,
@@ -32,7 +33,7 @@ fun TitleFavorite(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
-            modifier = Modifier.weight(1f),
+            modifier = if (edgeToEdge) Modifier.weight(1f) else Modifier,
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {

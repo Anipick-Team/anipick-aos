@@ -29,6 +29,7 @@ fun NavGraphBuilder.myPageScreen(
     onNavigateToUserContent: (ContentType) -> Unit,
     onNavigateToMyRatings: () -> Unit,
     onNavigateToSetting: () -> Unit,
+    onNavigateToActorDetail: (Int) -> Unit,
     onCheckSettingRefresh: () -> Boolean,
     onClearSettingRefresh: () -> Unit,
     onCheckStatusRefresh: () -> Boolean,
@@ -41,6 +42,7 @@ fun NavGraphBuilder.myPageScreen(
             onNavigateToUserContent = onNavigateToUserContent,
             onNavigateToMyRatings = onNavigateToMyRatings,
             onNavigateToSetting = onNavigateToSetting,
+            onNavigateToActorDetail = onNavigateToActorDetail,
             onCheckSettingRefresh = onCheckSettingRefresh,
             onClearSettingRefresh = onClearSettingRefresh,
             onCheckStatusRefresh = onCheckStatusRefresh,
@@ -54,6 +56,7 @@ fun NavController.navigateToUserContent(type: ContentType, navOptions: NavOption
 fun NavGraphBuilder.userContentScreen(
     onNavigateBack: () -> Unit,
     onNavigateToAnimeDetail: (Int) -> Unit,
+    onNavigateToActorDetail: (Int) -> Unit,
     onCheckStatusRefresh: () -> Boolean,
     onStatusRefresh: () -> Unit,
 ) {
@@ -63,6 +66,7 @@ fun NavGraphBuilder.userContentScreen(
         UserContent(
             onNavigateBack = onNavigateBack,
             onNavigateToAnimeDetail = onNavigateToAnimeDetail,
+            onNavigateToActorDetail = onNavigateToActorDetail,
             onCheckStatusRefresh = onCheckStatusRefresh,
             onStatusRefresh = onStatusRefresh,
             viewModel = hiltViewModel<UserContentViewModel, UserContentViewModel.Factory>(

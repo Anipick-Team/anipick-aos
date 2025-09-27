@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -49,6 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
@@ -65,6 +67,7 @@ internal fun MyPage(
     onNavigateToUserContent: (ContentType) -> Unit,
     onNavigateToMyRatings: () -> Unit,
     onNavigateToSetting: () -> Unit,
+    onNavigateToActorDetail: (Int) -> Unit,
     onCheckSettingRefresh: () -> Boolean,
     onClearSettingRefresh: () -> Unit,
     onCheckStatusRefresh: () -> Boolean,
@@ -85,6 +88,7 @@ internal fun MyPage(
         onNavigateToUserContent = onNavigateToUserContent,
         onNavigateToMyRatings = onNavigateToMyRatings,
         onNavigateToSetting = onNavigateToSetting,
+        onNavigateToActorDetail = onNavigateToActorDetail,
         onCheckSettingRefresh = onCheckSettingRefresh,
         onClearSettingRefresh = onClearSettingRefresh,
         onCheckStatusRefresh = onCheckStatusRefresh,
@@ -103,6 +107,7 @@ private fun MyPage(
     onNavigateToUserContent: (ContentType) -> Unit,
     onNavigateToMyRatings: () -> Unit,
     onNavigateToSetting: () -> Unit,
+    onNavigateToActorDetail: (Int) -> Unit,
     onCheckSettingRefresh: () -> Boolean,
     onClearSettingRefresh: () -> Unit,
     onCheckStatusRefresh: () -> Boolean,
@@ -215,13 +220,16 @@ private fun MyPage(
                         }
                         Row(
                             modifier = Modifier
+                                .fillMaxWidth()
                                 .padding(vertical = 16.dp),
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Column(
                                 modifier = Modifier
                                     .background(APColors.Surface, RoundedCornerShape(8.dp))
-                                    .size(width = 120.dp, height = 80.dp)
+                                    .height(80.dp)
+                                    .widthIn(max = 120.dp)
+                                    .weight(1f)
                                     .clip(RoundedCornerShape(8.dp))
                                     .clickable { onNavigateToUserContent(ContentType.WATCHLIST) },
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -244,7 +252,9 @@ private fun MyPage(
                             Column(
                                 modifier = Modifier
                                     .background(APColors.Surface, RoundedCornerShape(8.dp))
-                                    .size(width = 120.dp, height = 80.dp)
+                                    .height(80.dp)
+                                    .widthIn(max = 120.dp)
+                                    .weight(1f)
                                     .clip(RoundedCornerShape(8.dp))
                                     .clickable { onNavigateToUserContent(ContentType.WATCHING) },
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -267,7 +277,9 @@ private fun MyPage(
                             Column(
                                 modifier = Modifier
                                     .background(APColors.Surface, RoundedCornerShape(8.dp))
-                                    .size(width = 120.dp, height = 80.dp)
+                                    .height(80.dp)
+                                    .widthIn(max = 120.dp)
+                                    .weight(1f)
                                     .clip(RoundedCornerShape(8.dp))
                                     .clickable { onNavigateToUserContent(ContentType.FINISHED) },
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -312,11 +324,12 @@ private fun MyPage(
                         LikedAnimes(
                             items = data.likedAnimes,
                             onNavigateToAnimeDetail = onNavigateToAnimeDetail,
-                            onNavigateToUserContent = { onNavigateToUserContent(it) }
+                            onNavigateToUserContent = onNavigateToUserContent,
                         )
                         LikedPerson(
                             items = data.likedPersons,
-                            onNavigateToUserContent = { onNavigateToUserContent(it) }
+                            onNavigateToUserContent = onNavigateToUserContent,
+                            onNavigateToActorDetail = onNavigateToActorDetail,
                         )
                     }
                     is MyPageUiState.Error -> {} // TODO
@@ -477,6 +490,7 @@ private fun LikedAnimes(
 private fun LikedPerson(
     items: List<LikedPerson> = emptyList(),
     onNavigateToUserContent: (ContentType) -> Unit,
+    onNavigateToActorDetail: (Int) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -535,7 +549,10 @@ private fun LikedPerson(
                 items(items) { person ->
                     Column(
                         modifier = Modifier
-                            .width(116.dp),
+                            .width(116.dp)
+                            .clickable {
+                                onNavigateToActorDetail(person.personId)
+                            },
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         AsyncImage(
@@ -573,6 +590,7 @@ private fun ProfilePreview() {
         onNavigateToMyRatings = {},
         onNavigateToUserContent = {},
         onNavigateToSetting = {},
+        onNavigateToActorDetail = {},
         onCheckSettingRefresh = { false },
         onClearSettingRefresh = {},
         onCheckStatusRefresh = { false },

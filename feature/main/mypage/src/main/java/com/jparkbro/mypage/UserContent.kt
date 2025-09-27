@@ -63,6 +63,7 @@ import kotlinx.coroutines.flow.map
 internal fun UserContent(
     onNavigateBack: () -> Unit,
     onNavigateToAnimeDetail: (Int) -> Unit,
+    onNavigateToActorDetail: (Int) -> Unit,
     onCheckStatusRefresh: () -> Boolean,
     onStatusRefresh: () -> Unit,
     viewModel: UserContentViewModel = hiltViewModel()
@@ -84,6 +85,7 @@ internal fun UserContent(
         onRefreshData = viewModel::refreshData,
         onNavigateBack = onNavigateBack,
         onNavigateToAnimeDetail = onNavigateToAnimeDetail,
+        onNavigateToActorDetail = onNavigateToActorDetail,
         onCheckStatusRefresh = onCheckStatusRefresh,
         onStatusRefresh = onStatusRefresh,
     )
@@ -101,6 +103,7 @@ private fun UserContent(
     onRefreshData: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     onNavigateToAnimeDetail: (Int) -> Unit = {},
+    onNavigateToActorDetail: (Int) -> Unit = {},
     onCheckStatusRefresh: () -> Boolean = { false },
     onStatusRefresh: () -> Unit,
 ) {
@@ -197,7 +200,7 @@ private fun UserContent(
                             cardHeight = 105.dp,
                             fontSize = 14.sp,
                             maxLine = 1,
-                            onClick = {}
+                            onClick = { onNavigateToActorDetail(person.personId) }
                         )
                     }
                     else -> {

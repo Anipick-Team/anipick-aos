@@ -508,7 +508,8 @@ private fun DetailAnime(
                                 title = "${detailInfo?.title}",
                                 isLiked = detailInfo?.isLiked == true,
                                 onChangeLikeState = { onLikeAnime(detailInfo?.isLiked == true) },
-                                enabled = !isLikeLoading
+                                enabled = !isLikeLoading,
+                                edgeToEdge = false
                             )
                         }
                     }
@@ -697,13 +698,14 @@ private fun AnimeInfo(
         HorizontalDivider(modifier = Modifier.padding(top = 19.dp, bottom = 33.dp), thickness = 3.dp, color = APColors.LightGray)
         Column(
             modifier = Modifier
-                .padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 20.dp)
+                .height(240.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(26.dp),
+                    .weight(1f),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -723,7 +725,7 @@ private fun AnimeInfo(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(26.dp),
+                    .weight(1f),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -753,7 +755,7 @@ private fun AnimeInfo(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(26.dp),
+                    .weight(1f),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -788,7 +790,7 @@ private fun AnimeInfo(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(26.dp),
+                    .weight(1f),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -808,7 +810,7 @@ private fun AnimeInfo(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(26.dp),
+                    .weight(1f),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -828,7 +830,7 @@ private fun AnimeInfo(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(26.dp),
+                    .weight(1f),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -1502,7 +1504,8 @@ private fun MyReviewContainer(
                 colors = ButtonDefaults.textButtonColors(
                     containerColor = APColors.Primary,
                     disabledContainerColor = APColors.Gray,
-                    contentColor = APColors.White
+                    contentColor = APColors.White,
+                    disabledContentColor = APColors.White
                 )
             ) {
                 Text(

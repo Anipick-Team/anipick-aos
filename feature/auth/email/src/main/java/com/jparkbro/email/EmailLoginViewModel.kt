@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.domain.EmailLoginUseCase
-import com.jparkbro.model.common.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.jparkbro.ui.util.extension.filterKorean
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,21 +42,28 @@ internal class EmailLoginViewModel @Inject constructor(
     }
 
     fun login() {
+        _uiState.value = EmailLoginUiState.Loading
+        
         viewModelScope.launch {
             try {
                 emailLoginUseCase(
                     email = _emailText.value,
                     password = _passwordText.value,
                 ).collect { result ->
-                    _uiState.value = when (result) {
-                        is Result.Loading -> EmailLoginUiState.Loading
-                        is Result.Success<Boolean> -> EmailLoginUiState.Success(result.data)
-                        is Result.Error -> EmailLoginUiState.Error("${result.exception.message}")
-                    }
-                    // TODO 예외처리
+                    _uiState.value = result.fold(
+                        onSuccess = { reviewCompletedYn ->
+                            Log.d("EmailLoginViewModel", "Login success: $reviewCompletedYn")
+                            EmailLoginUiState.Success(reviewCompletedYn)
+                        },
+                        onFailure = { exception ->
+                            Log.e("EmailLoginViewModel", "Login failed", exception)
+                            EmailLoginUiState.Error(exception.message ?: "로그인에 실패했습니다")
+                        }
+                    )
                 }
             } catch (e: Exception) {
-                _uiState.value = EmailLoginUiState.Error("${e.message}")
+                Log.e("EmailLoginViewModel", "Unexpected error during login", e)
+                _uiState.value = EmailLoginUiState.Error(e.message ?: "예상치 못한 오류가 발생했습니다")
             }
         }
     }

@@ -26,7 +26,7 @@ fun <T> Response<ApiResponse<T>>.toResult(tag: String, methodName: String): Resu
 
             else -> {
                 Log.e(tag, "$methodName() API error - $apiResponse")
-                Result.failure(Exception("$apiResponse"))
+                Result.failure(Exception(apiResponse?.errorValue))
             }
         }
     } catch (e: Exception) {
@@ -56,7 +56,7 @@ fun Response<ApiResponse<Unit>>.toUnitResult(tag: String, methodName: String): R
 
             else -> {
                 Log.e(tag, "$methodName() API error - code: ${apiResponse?.code}")
-                Result.failure(Exception("${apiResponse?.code}"))
+                Result.failure(Exception(apiResponse?.errorValue))
             }
         }
     } catch (e: Exception) {

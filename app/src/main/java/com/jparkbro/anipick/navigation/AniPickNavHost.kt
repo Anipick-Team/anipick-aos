@@ -143,6 +143,7 @@ fun APNavHost(
             onNavigateToUserContent = navController::navigateToUserContent,
             onNavigateToMyRatings = navController::navigateToMyRatings,
             onNavigateToSetting = navController::navigateToSetting,
+            onNavigateToActorDetail = navController::navigateToActorDetail,
             onCheckSettingRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("setting_refresh") ?: false },
             onClearSettingRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("setting_refresh", false) },
             onCheckStatusRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("status_refresh") ?: false },
@@ -151,6 +152,7 @@ fun APNavHost(
         userContentScreen(
             onNavigateBack = navController::navigateUp,
             onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
+            onNavigateToActorDetail = navController::navigateToActorDetail,
             onCheckStatusRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("status_refresh") ?: false },
             onStatusRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("status_refresh", true) }
         )

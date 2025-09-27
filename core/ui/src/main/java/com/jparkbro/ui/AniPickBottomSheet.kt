@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import com.jparkbro.model.common.MetaData
 import com.jparkbro.model.common.ResponseMap
@@ -85,7 +87,7 @@ fun APExpireBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(345.dp),
+                .heightIn(max = 380.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(

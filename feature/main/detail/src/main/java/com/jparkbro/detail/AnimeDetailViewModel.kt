@@ -13,7 +13,7 @@ import com.jparkbro.data.review.ReviewRepository
 import com.jparkbro.domain.DetailDataUseCase
 import com.jparkbro.model.common.ApiAction
 import com.jparkbro.model.common.DefaultAnime
-import com.jparkbro.model.common.Result
+
 import com.jparkbro.model.common.WatchStatus
 import com.jparkbro.model.detail.DetailActor
 import com.jparkbro.model.detail.DetailData
@@ -128,22 +128,31 @@ class DetailAnimeViewModel @AssistedInject constructor(
     }
 
     fun getInitData() {
+        _uiState.value = DetailUiState.Loading
+        
         viewModelScope.launch {
-            detailDataUseCase(animeId).collect { result ->
-                when (result) {
-                    is Result.Loading -> _uiState.value = DetailUiState.Loading
-                    is Result.Success<DetailData> -> {
-                        _uiState.value = DetailUiState.Success
-                        _detailInfo.value = result.data.info
-                        _actors.value = result.data.actor
-                        _series.value = result.data.series
-                        _recommendations.value = result.data.recommendation
-                        _myReview.value = result.data.myReview
-                    }
-                    is Result.Error -> _uiState.value = DetailUiState.Error(result.exception.message ?: "데이터 조회 중 에러 발생")
+            try {
+                detailDataUseCase(animeId).collect { result ->
+                    result.fold(
+                        onSuccess = { detailData ->
+                            _uiState.value = DetailUiState.Success
+                            _detailInfo.value = detailData.info
+                            _actors.value = detailData.actor
+                            _series.value = detailData.series
+                            _recommendations.value = detailData.recommendation
+                            _myReview.value = detailData.myReview
+                        },
+                        onFailure = { exception ->
+                            Log.e("AnimeDetailViewModel", "Failed to get detail data", exception)
+                            _uiState.value = DetailUiState.Error(exception.message ?: "데이터 조회 중 에러 발생")
+                        }
+                    )
                 }
+                getAnimeReviews()
+            } catch (e: Exception) {
+                Log.e("AnimeDetailViewModel", "Unexpected error in getInitData", e)
+                _uiState.value = DetailUiState.Error(e.message ?: "예상치 못한 오류가 발생했습니다")
             }
-            getAnimeReviews()
         }
     }
 
@@ -293,33 +302,61 @@ class DetailAnimeViewModel @AssistedInject constructor(
             reviewRepository.updateReviewLike(
                 action = if (liked) ApiAction.CREATE else ApiAction.DELETE,
                 reviewId = reviewId
-            ).getOrThrow()
-
-            onResult(true)
-            _isReviewLikedLoading.value = false
+            ).fold(
+                onSuccess = {
+                    onResult(true)
+                    _isReviewLikedLoading.value = false
+                },
+                onFailure = { exception ->
+                    Log.e("AnimeDetailViewModel", "Failed to update review like", exception)
+                    onResult(false)
+                    _isReviewLikedLoading.value = false
+                }
+            )
         }
     }
 
     fun deleteReview(reviewId: Int) {
-        // TODO Loading 추가
-
         viewModelScope.launch {
-            reviewRepository.deleteReview(reviewId).getOrThrow()
-            getInitData()
+            reviewRepository.deleteReview(reviewId).fold(
+                onSuccess = {
+                    getInitData()
+                },
+                onFailure = { exception ->
+                    Log.e("AnimeDetailViewModel", "Failed to delete review", exception)
+                    _uiState.value = DetailUiState.Error(exception.message ?: "리뷰 삭제에 실패했습니다")
+                }
+            )
         }
     }
 
     fun reportReview(reviewId: Int, reason: String) {
         viewModelScope.launch {
-            reviewRepository.reportReview(reviewId, ReportReviewRequest(message = reason)).getOrThrow()
-            getInitData()
+            reviewRepository.reportReview(reviewId, ReportReviewRequest(message = reason)).fold(
+                onSuccess = {
+                    getInitData()
+                    updateSnackBarData(SnackBarData("리뷰가 신고되었습니다"))
+                },
+                onFailure = { exception ->
+                    Log.e("AnimeDetailViewModel", "Failed to report review", exception)
+                    updateSnackBarData(SnackBarData("리뷰 신고에 실패했습니다"))
+                }
+            )
         }
     }
 
     fun blockUser(userId: Int) {
         viewModelScope.launch {
-            reviewRepository.blockUser(userId).getOrThrow()
-            getInitData()
+            reviewRepository.blockUser(userId).fold(
+                onSuccess = {
+                    getInitData()
+                    updateSnackBarData(SnackBarData("사용자가 차단되었습니다"))
+                },
+                onFailure = { exception ->
+                    Log.e("AnimeDetailViewModel", "Failed to block user", exception)
+                    updateSnackBarData(SnackBarData("사용자 차단에 실패했습니다"))
+                }
+            )
         }
     }
 

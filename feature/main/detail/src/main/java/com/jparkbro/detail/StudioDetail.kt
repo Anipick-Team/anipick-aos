@@ -91,6 +91,7 @@ private fun StudioDetail(
                 handleBackNavigation = { onNavigateBack() },
             )
         },
+        containerColor = APColors.Surface,
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

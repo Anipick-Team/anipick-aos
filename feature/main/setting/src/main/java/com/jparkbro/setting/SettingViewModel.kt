@@ -1,11 +1,11 @@
 package com.jparkbro.setting
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.setting.SettingRepository
 import com.jparkbro.domain.LogoutUseCase
 import com.jparkbro.domain.UpdateUserUseCase
-import com.jparkbro.model.common.Result
 import com.jparkbro.model.setting.ProfileEditType
 import com.jparkbro.model.setting.UpdateUserRequest
 import com.jparkbro.model.setting.UserInfo
@@ -24,7 +24,7 @@ class SettingViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(SettingUiState.Loading)
+    private val _uiState = MutableStateFlow<SettingUiState>(SettingUiState.Loading)
     val uiState: StateFlow<SettingUiState> = _uiState.asStateFlow()
 
     private val _userInfo = MutableStateFlow<UserInfo?>(null)
@@ -79,14 +79,22 @@ class SettingViewModel @Inject constructor(
 
     fun getUserInfo() {
         viewModelScope.launch {
-            settingRepository.getUserInfo().fold(
-                onSuccess = {
-                    _userInfo.value = it
-                },
-                onFailure = {
-                    // TODO
-                }
-            )
+            try {
+                settingRepository.getUserInfo().fold(
+                    onSuccess = { userInfo ->
+                        Log.d("SettingViewModel", "Successfully loaded user info")
+                        _userInfo.value = userInfo
+                        _uiState.value = SettingUiState.Success("사용자 정보 로드 완료")
+                    },
+                    onFailure = { exception ->
+                        Log.e("SettingViewModel", "Failed to load user info", exception)
+                        _uiState.value = SettingUiState.Error(exception.message ?: "사용자 정보를 불러오는데 실패했습니다")
+                    }
+                )
+            } catch (e: Exception) {
+                Log.e("SettingViewModel", "Unexpected error in getUserInfo", e)
+                _uiState.value = SettingUiState.Error(e.message ?: "예상치 못한 오류가 발생했습니다")
+            }
         }
     }
 
@@ -100,33 +108,55 @@ class SettingViewModel @Inject constructor(
 
     fun updateUserInfo(type: ProfileEditType, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            updateUserUseCase(
-                type = type,
-                request = UpdateUserRequest(
-                    nickname = _newNickname.value,
-                    email = _newEmail.value,
-                    currentPassword = _currentPassword.value,
-                    newPassword = _newPassword.value,
-                    newPasswordConfirm = _newPasswordConfirm.value
-                )
-            ).collect { result ->
-                when (result) {
-                    is Result.Loading -> {}
-                    is Result.Error -> { onResult(false) }
-                    is Result.Success<Unit> -> { onResult(true) }
+            try {
+                updateUserUseCase(
+                    type = type,
+                    request = UpdateUserRequest(
+                        nickname = _newNickname.value,
+                        email = _newEmail.value,
+                        currentPassword = _currentPassword.value,
+                        newPassword = _newPassword.value,
+                        newPasswordConfirm = _newPasswordConfirm.value
+                    )
+                ).collect { result ->
+                    result.fold(
+                        onSuccess = {
+                            Log.d("SettingViewModel", "Successfully updated user info: $type")
+                            clearNewTextFiled()
+                            getUserInfo() // 업데이트 후 정보 새로고침
+                            onResult(true)
+                        },
+                        onFailure = { exception ->
+                            Log.e("SettingViewModel", "Failed to update user info: $type", exception)
+                            onResult(false)
+                        }
+                    )
                 }
+            } catch (e: Exception) {
+                Log.e("SettingViewModel", "Unexpected error in updateUserInfo", e)
+                onResult(false)
             }
         }
     }
 
     fun logout(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            logoutUseCase().collect { result ->
-                when (result) {
-                    is Result.Loading -> {}
-                    is Result.Error -> onResult(false)
-                    is Result.Success<Unit> -> onResult(true)
+            try {
+                logoutUseCase().collect { result ->
+                    result.fold(
+                        onSuccess = {
+                            Log.d("SettingViewModel", "Successfully logged out")
+                            onResult(true)
+                        },
+                        onFailure = { exception ->
+                            Log.e("SettingViewModel", "Failed to logout", exception)
+                            onResult(false)
+                        }
+                    )
                 }
+            } catch (e: Exception) {
+                Log.e("SettingViewModel", "Unexpected error in logout", e)
+                onResult(false)
             }
         }
     }
@@ -135,4 +165,5 @@ class SettingViewModel @Inject constructor(
 sealed interface SettingUiState {
     data object Loading: SettingUiState
     data class Success(val data: String): SettingUiState
+    data class Error(val message: String): SettingUiState
 }

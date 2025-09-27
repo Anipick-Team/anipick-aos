@@ -1,9 +1,9 @@
 package com.jparkbro.email
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.domain.EmailSignupUseCase
-import com.jparkbro.model.common.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.jparkbro.ui.util.EmailValidator
 import com.jparkbro.ui.util.PasswordValidator
@@ -103,11 +103,18 @@ internal class EmailSignupViewModel @Inject constructor(
                     password = _passwordText.value,
                     termsAndConditions = _isAllAgreed.value,
                 ).collect { result ->
-                    _signupUiState.value = when (result) {
-                        is Result.Success -> SignupUiState.Success
-                        is Result.Error -> SignupUiState.Error(result.exception.message ?: "서버와 연결이 실패했습니다.")
-                        is Result.Loading -> SignupUiState.Loading
-                    }
+                    Log.d("EmailSignupViewModel", "Result: $result")
+
+                    _signupUiState.value = result.fold(
+                        onSuccess = { isCompleted ->
+                            Log.d("EmailSignupViewModel", "Signup success: $isCompleted")
+                            SignupUiState.Success
+                        },
+                        onFailure = { exception ->
+                            Log.e("EmailSignupViewModel", "Signup failed", exception)
+                            SignupUiState.Error(exception.message ?: "서버와 연결이 실패했습니다.")
+                        }
+                    )
                 }
             }
         } else {
