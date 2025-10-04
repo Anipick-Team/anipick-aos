@@ -43,6 +43,7 @@ import com.jparkbro.ui.APCardItem
 import com.jparkbro.ui.APSearchFieldBackTopAppBar
 import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.util.calculateCardWidth
 import com.jparkbro.ui.util.calculateItemSpacing
 
 @Composable
@@ -246,10 +247,12 @@ private fun Search(
                             fontWeight = FontWeight.W600,
                             color = APColors.Black
                         )
+                        val cardWidth = calculateCardWidth(maxWidth = 115.dp)
+                        val spacing = calculateItemSpacing(itemWidth = cardWidth)
                         FlowRow(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(calculateItemSpacing()),
+                            horizontalArrangement = Arrangement.spacedBy(spacing),
                             verticalArrangement = Arrangement.spacedBy(27.dp),
                             maxItemsInEachRow = 3
                         ) {
@@ -257,8 +260,8 @@ private fun Search(
                                 APCardItem(
                                     title = "${anime.title}",
                                     imageUrl = anime.coverImageUrl,
-                                    cardWidth = 115.dp,
-                                    cardHeight = 162.dp,
+                                    cardWidth = cardWidth,
+                                    cardHeight = cardWidth * 1.41f,
                                     fontSize = 14.sp,
                                     maxLine = 1,
                                     onClick = { onNavigateToAnimeDetail(anime.animeId) }

@@ -76,6 +76,7 @@ import com.jparkbro.ui.APToggleSwitch
 import com.jparkbro.ui.DialogData
 import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.util.calculateCardWidth
 import com.jparkbro.ui.util.calculateItemSpacing
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -92,7 +93,6 @@ internal fun HomeDetail(
 
     val sort by viewModel.sort.collectAsState()
     val showSortDropdown by viewModel.showSortDropdown.collectAsState()
-    val includeAdult by viewModel.includeAdult.collectAsState()
     val dialogData by viewModel.dialogData.collectAsState()
 
     val uiState by viewModel.uiState.collectAsState()
@@ -107,7 +107,6 @@ internal fun HomeDetail(
         nickname = nickname,
         sort = sort,
         showSortDropdown = showSortDropdown,
-        includeAdult = includeAdult,
         dialogData = dialogData,
         onChangeDialogData = viewModel::updateDialogData,
         uiState = uiState,
@@ -115,7 +114,6 @@ internal fun HomeDetail(
         items = items,
         isLoading = isLoading,
         isLikedLoading = isLikedLoading,
-        onChangeIncludeAdult = viewModel::toggleIncludeAdult,
         onChangeSort = viewModel::updateSort,
         onChangeSortDropdown = viewModel::changeDropdownState,
         onLoadMoreData = viewModel::loadData,
@@ -137,7 +135,6 @@ private fun HomeDetail(
     nickname: String,
     sort: Sort = Sort.LATEST,
     showSortDropdown: Boolean = false,
-    includeAdult: Boolean = false,
     dialogData: DialogData? = null,
     onChangeDialogData: (DialogData?) -> Unit,
     uiState: HomeDetailUiState = HomeDetailUiState.Loading,
@@ -145,7 +142,6 @@ private fun HomeDetail(
     items: List<Any> = emptyList(),
     isLoading: Boolean = false,
     isLikedLoading: Boolean = false,
-    onChangeIncludeAdult: () -> Unit,
     onChangeSort: (Sort) -> Unit,
     onChangeSortDropdown: () -> Unit,
     onLoadMoreData: (Int?) -> Unit,
@@ -335,6 +331,8 @@ private fun HomeDetail(
                         }
                 }
 
+                val cardWidth = calculateCardWidth(maxWidth = 115.dp)
+                val spacing = calculateItemSpacing(itemWidth = cardWidth)
                 LazyVerticalGrid(
                     state = gridState,
                     columns = GridCells.Fixed(3),
@@ -343,7 +341,7 @@ private fun HomeDetail(
                         .padding(innerPadding),
                     contentPadding = PaddingValues(horizontal = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(calculateItemSpacing()),
+                    horizontalArrangement = Arrangement.spacedBy(spacing),
                 ) {
                     item(span = { GridItemSpan(3) }) {
                         Spacer(modifier = Modifier
@@ -452,8 +450,8 @@ private fun HomeDetail(
                             APCardItem(
                                 title = "${item.title}",
                                 imageUrl = item.coverImageUrl,
-                                cardWidth = 115.dp,
-                                cardHeight = 162.dp,
+                                cardWidth = cardWidth,
+                                cardHeight = cardWidth * 1.41f,
                                 fontSize = 14.sp,
                                 maxLine = 1,
                                 onClick = { onNavigateToAnimeDetail(item.animeId) }
@@ -496,6 +494,8 @@ private fun HomeDetail(
                         }
                 }
 
+                val cardWidth = calculateCardWidth(maxWidth = 115.dp)
+                val spacing = calculateItemSpacing(itemWidth = cardWidth)
                 LazyVerticalGrid(
                     state = gridState,
                     columns = GridCells.Fixed(3),
@@ -504,7 +504,7 @@ private fun HomeDetail(
                         .padding(innerPadding),
                     contentPadding = PaddingValues(horizontal = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(calculateItemSpacing()),
+                    horizontalArrangement = Arrangement.spacedBy(spacing),
                 ) {
                     item(span = { GridItemSpan(3) }) {
                         Spacer(modifier = Modifier
@@ -582,8 +582,8 @@ private fun HomeDetail(
                             APCardItem(
                                 title = "${item.title}",
                                 imageUrl = item.coverImageUrl,
-                                cardWidth = 115.dp,
-                                cardHeight = 162.dp,
+                                cardWidth = cardWidth,
+                                cardHeight = cardWidth * 1.41f,
                                 fontSize = 14.sp,
                                 maxLine = 1,
                                 onClick = { onNavigateToAnimeDetail(item.animeId) }
@@ -625,6 +625,9 @@ private fun HomeDetail(
                             }
                         }
                 }
+
+                val cardWidth = calculateCardWidth(maxWidth = 115.dp)
+                val spacing = calculateItemSpacing(itemWidth = cardWidth)
                 LazyVerticalGrid(
                     state = gridState,
                     columns = GridCells.Fixed(3),
@@ -633,7 +636,7 @@ private fun HomeDetail(
                         .padding(innerPadding),
                     contentPadding = PaddingValues(horizontal = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(calculateItemSpacing()),
+                    horizontalArrangement = Arrangement.spacedBy(spacing),
                 ) {
                     item(span = { GridItemSpan(3) }) {
                         Spacer(modifier = Modifier
@@ -643,116 +646,126 @@ private fun HomeDetail(
                     }
                     item(span = { GridItemSpan(3) }) {
                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            contentAlignment = Alignment.CenterEnd
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .clickable { onChangeSortDropdown() },
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                            Box(
+                                modifier = Modifier.align(Alignment.CenterEnd)
                             ) {
-                                Text(
-                                    text = sort.displayName,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.W500,
-                                    color = APColors.TextGray
-                                )
-                                Icon(
-                                    painter = painterResource(if (showSortDropdown) R.drawable.ic_chevron_up else R.drawable.ic_chevron_down),
-                                    contentDescription = null,
-                                    tint = APColors.TextGray,
+                                Row(
                                     modifier = Modifier
-                                        .size(15.dp)
-                                )
-                            }
-                            DropdownMenu(
-                                expanded = showSortDropdown,
-                                onDismissRequest = { onChangeSortDropdown() },
-                                offset = DpOffset(x = 0.dp, y = 8.dp),
-                                shape = RoundedCornerShape(8.dp),
-                                containerColor = APColors.White,
-                                shadowElevation = 2.dp,
-                            ) {
-                                Text(
-                                    text = Sort.LATEST.displayName,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.W500,
-                                    color = if (sort == Sort.LATEST) APColors.Black else APColors.TextGray,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable(
-                                            indication = null,
-                                            interactionSource = remember { MutableInteractionSource() }
-                                        ) {
-                                            onChangeSortDropdown()
-                                            onChangeSort(Sort.LATEST)
-                                        }
-                                        .padding(14.dp)
-                                )
-                                HorizontalDivider(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 15.dp),
-                                    thickness = 1.dp,
-                                    color = APColors.Surface
-                                )
-                                Text(
-                                    text = Sort.POPULARITY.displayName,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.W500,
-                                    color = if (sort == Sort.POPULARITY) APColors.Black else APColors.TextGray,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable(
-                                            indication = null,
-                                            interactionSource = remember { MutableInteractionSource() }
-                                        ) {
-                                            onChangeSortDropdown()
-                                            onChangeSort(Sort.POPULARITY)
-                                        }
-                                        .padding(14.dp)
-                                )
-                                HorizontalDivider(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 15.dp),
-                                    thickness = 1.dp,
-                                    color = APColors.Surface
-                                )
-                                Text(
-                                    text = Sort.START_DATE.displayName,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.W500,
-                                    color = if (sort == Sort.START_DATE) APColors.Black else APColors.TextGray,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable(
-                                            indication = null,
-                                            interactionSource = remember { MutableInteractionSource() }
-                                        ) {
-                                            onChangeSortDropdown()
-                                            onChangeSort(Sort.START_DATE)
-                                        }
-                                        .padding(14.dp)
-                                )
+                                        .clip(CircleShape)
+                                        .clickable { onChangeSortDropdown() },
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = sort.displayName,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        color = APColors.TextGray
+                                    )
+                                    Icon(
+                                        painter = painterResource(if (showSortDropdown) R.drawable.ic_chevron_up else R.drawable.ic_chevron_down),
+                                        contentDescription = null,
+                                        tint = APColors.TextGray,
+                                        modifier = Modifier
+                                            .size(15.dp)
+                                    )
+                                }
+                                DropdownMenu(
+                                    expanded = showSortDropdown,
+                                    onDismissRequest = { onChangeSortDropdown() },
+                                    offset = DpOffset(x = 0.dp, y = 8.dp),
+                                    shape = RoundedCornerShape(8.dp),
+                                    containerColor = APColors.White,
+                                    shadowElevation = 2.dp,
+                                ) {
+                                    Text(
+                                        text = Sort.LATEST.displayName,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        color = if (sort == Sort.LATEST) APColors.Black else APColors.TextGray,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable(
+                                                indication = null,
+                                                interactionSource = remember { MutableInteractionSource() }
+                                            ) {
+                                                onChangeSortDropdown()
+                                                onChangeSort(Sort.LATEST)
+                                            }
+                                            .padding(14.dp)
+                                    )
+                                    HorizontalDivider(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 15.dp),
+                                        thickness = 1.dp,
+                                        color = APColors.Surface
+                                    )
+                                    Text(
+                                        text = Sort.POPULARITY.displayName,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        color = if (sort == Sort.POPULARITY) APColors.Black else APColors.TextGray,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable(
+                                                indication = null,
+                                                interactionSource = remember { MutableInteractionSource() }
+                                            ) {
+                                                onChangeSortDropdown()
+                                                onChangeSort(Sort.POPULARITY)
+                                            }
+                                            .padding(14.dp)
+                                    )
+                                    HorizontalDivider(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 15.dp),
+                                        thickness = 1.dp,
+                                        color = APColors.Surface
+                                    )
+                                    Text(
+                                        text = Sort.START_DATE.displayName,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        color = if (sort == Sort.START_DATE) APColors.Black else APColors.TextGray,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable(
+                                                indication = null,
+                                                interactionSource = remember { MutableInteractionSource() }
+                                            ) {
+                                                onChangeSortDropdown()
+                                                onChangeSort(Sort.START_DATE)
+                                            }
+                                            .padding(14.dp)
+                                    )
+                                }
                             }
                         }
                     }
                     items(
-                        items = items.filterIsInstance<ComingSoonItem>().filter { !(it.isAdult ?: false) || includeAdult },
+                        items = items.filterIsInstance<ComingSoonItem>(),
                         key = { item -> item.animeId }
                     ) { anime ->
                         APCardItem(
                             title = "${anime.title}",
                             imageUrl = anime.coverImageUrl,
-                            cardWidth = 115.dp,
-                            cardHeight = 162.dp,
+                            description = {
+                                Text(
+                                    text = "${anime.releaseDate}",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W500,
+                                    color = APColors.TextGray,
+                                )
+                            },
+                            cardWidth = cardWidth,
+                            cardHeight = cardWidth * 1.41f,
                             fontSize = 14.sp,
                             maxLine = 1,
                             onClick = { onNavigateToAnimeDetail(anime.animeId) }

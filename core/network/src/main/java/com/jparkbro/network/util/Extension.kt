@@ -1,6 +1,7 @@
 package com.jparkbro.network.util
 
 import android.util.Log
+import com.jparkbro.model.exception.ApiException
 import com.jparkbro.network.model.ApiResponse
 import retrofit2.HttpException
 import retrofit2.Response
@@ -26,7 +27,7 @@ fun <T> Response<ApiResponse<T>>.toResult(tag: String, methodName: String): Resu
 
             else -> {
                 Log.e(tag, "$methodName() API error - $apiResponse")
-                Result.failure(Exception(apiResponse?.errorValue))
+                Result.failure(ApiException(apiResponse?.code ?: 0, apiResponse?.errorValue ?: ""))
             }
         }
     } catch (e: Exception) {
@@ -56,7 +57,7 @@ fun Response<ApiResponse<Unit>>.toUnitResult(tag: String, methodName: String): R
 
             else -> {
                 Log.e(tag, "$methodName() API error - code: ${apiResponse?.code}")
-                Result.failure(Exception(apiResponse?.errorValue))
+                Result.failure(ApiException(apiResponse?.code ?: 0, apiResponse?.errorValue ?: ""))
             }
         }
     } catch (e: Exception) {

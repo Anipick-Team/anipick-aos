@@ -65,7 +65,6 @@ interface HomeApi {
         @Query("sort") sort: String,
         @Query("lastId") lastId: Int?,
         @Query("lastValue") lastValue: String?,
-        @Query("includeAdult") includeAdult: Boolean,
         @Query("size") size: Int?,
     ): Response<ApiResponse<HomeDetailResponse>>
 }

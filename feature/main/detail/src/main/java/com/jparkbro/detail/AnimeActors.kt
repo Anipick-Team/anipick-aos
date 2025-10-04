@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -37,6 +36,8 @@ import com.jparkbro.model.detail.AnimeActorsResponse
 import com.jparkbro.model.detail.DetailActor
 import com.jparkbro.ui.APTitledBackTopAppBar
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.util.calculateCardWidth
+import com.jparkbro.ui.util.calculateItemSpacing
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 

@@ -55,6 +55,7 @@ import com.jparkbro.ui.APCardItem
 import com.jparkbro.ui.APTitledBackTopAppBar
 import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.util.calculateCardWidth
 import com.jparkbro.ui.util.calculateItemSpacing
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -144,6 +145,8 @@ private fun UserContent(
                 }
         }
 
+        val cardWidth = calculateCardWidth(maxWidth = 115.dp)
+        val spacing = calculateItemSpacing(itemWidth = cardWidth)
         LazyVerticalGrid(
             state = gridState,
             columns = GridCells.Fixed(3),
@@ -153,7 +156,7 @@ private fun UserContent(
                 .background(APColors.White),
             contentPadding = PaddingValues(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(27.dp),
-            horizontalArrangement = Arrangement.spacedBy(calculateItemSpacing()),
+            horizontalArrangement = Arrangement.spacedBy(spacing),
         ) {
             item(span = { GridItemSpan(3) }) {
                 Spacer(
@@ -196,8 +199,8 @@ private fun UserContent(
                         APCardItem(
                             title = "${person.name}",
                             imageUrl = person.imageUrl,
-                            cardWidth = 115.dp,
-                            cardHeight = 105.dp,
+                            cardWidth = cardWidth,
+                            cardHeight = cardWidth * 0.91f,
                             fontSize = 14.sp,
                             maxLine = 1,
                             onClick = { onNavigateToActorDetail(person.personId) }
@@ -209,8 +212,8 @@ private fun UserContent(
                             title = "${anime.title}",
                             imageUrl = anime.imageUrl,
                             rating = anime.myRating?.let { "$it" },
-                            cardWidth = 115.dp,
-                            cardHeight = 162.dp,
+                            cardWidth = cardWidth,
+                            cardHeight = cardWidth * 1.41f,
                             fontSize = 14.sp,
                             maxLine = 2,
                             onClick = { onNavigateToAnimeDetail(anime.animeId) },

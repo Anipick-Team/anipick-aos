@@ -13,6 +13,4 @@ data class ComingSoonItem(
     val coverImageUrl: String,
     @SerialName("releaseDate")
     val releaseDate: String? = null,
-    @SerialName("isAdult")
-    val isAdult: Boolean? = null,
 )

@@ -98,7 +98,15 @@ fun APNavHost(
         )
         passwordVerificationScreen(
             onNavigateBack = navController::navigateUp,
-            onNavigateToPasswordReset = navController::navigateToPasswordReset
+            onNavigateToPasswordReset = navController::navigateToPasswordReset,
+            onNavigateToLogin = {
+                navController.navigateToLogin(
+                    navOptions {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                )
+            },
         )
         passwordResetScreen(
             onNavigateBack = navController::navigateUp,

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.setting.SettingRepository
 import com.jparkbro.domain.LogoutUseCase
 import com.jparkbro.domain.UpdateUserUseCase
+import com.jparkbro.model.exception.ApiException
 import com.jparkbro.model.setting.ProfileEditType
 import com.jparkbro.model.setting.UpdateUserRequest
 import com.jparkbro.model.setting.UserInfo
@@ -32,6 +33,9 @@ class SettingViewModel @Inject constructor(
 
     private val _dialogData = MutableStateFlow<DialogData?>(null)
     val dialogData = _dialogData.asStateFlow()
+
+    private val _errorException = MutableStateFlow<ApiException?>(null)
+    val errorException = _errorException.asStateFlow()
 
     fun updateDialogData(data: DialogData? = null) {
         _dialogData.value = data
@@ -104,6 +108,7 @@ class SettingViewModel @Inject constructor(
         _currentPassword.value = ""
         _newPassword.value = ""
         _newPasswordConfirm.value = ""
+        _errorException.value = null
     }
 
     fun updateUserInfo(type: ProfileEditType, onResult: (Boolean) -> Unit) {
@@ -127,7 +132,9 @@ class SettingViewModel @Inject constructor(
                             onResult(true)
                         },
                         onFailure = { exception ->
-                            Log.e("SettingViewModel", "Failed to update user info: $type", exception)
+                            when (exception) {
+                                is ApiException -> _errorException.value = exception
+                            }
                             onResult(false)
                         }
                     )

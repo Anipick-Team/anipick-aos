@@ -75,6 +75,7 @@ import com.jparkbro.ui.APEmptyContent
 import com.jparkbro.ui.APSearchFieldBackTopAppBar
 import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.util.calculateCardWidth
 import com.jparkbro.ui.util.calculateItemSpacing
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -233,10 +234,12 @@ private fun SearchResult(
                             }
                     }
                     val cellCount = if (searchType == SearchType.STUDIOS) 1 else 3
+                    val cardWidth = calculateCardWidth(maxWidth = 115.dp)
+                    val spacing = calculateItemSpacing(itemWidth = cardWidth)
                     LazyVerticalGrid(
                         state = gridState,
                         columns = GridCells.Fixed(cellCount),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.spacedBy(spacing),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         contentPadding = PaddingValues(20.dp)
                     ) {
@@ -268,8 +271,8 @@ private fun SearchResult(
                                         APCardItem(
                                             title = "${anime.title}",
                                             imageUrl = anime.coverImageUrl,
-                                            cardWidth = 115.dp,
-                                            cardHeight = 162.dp,
+                                            cardWidth = cardWidth,
+                                            cardHeight = cardWidth * 1.41f,
                                             fontSize = 14.sp,
                                             maxLine = 1,
                                             onClick = {
@@ -283,8 +286,8 @@ private fun SearchResult(
                                         APCardItem(
                                             title = "${person.name}",
                                             imageUrl = person.profileImage,
-                                            cardWidth = 115.dp,
-                                            cardHeight = 105.dp,
+                                            cardWidth = cardWidth,
+                                            cardHeight = cardWidth * 0.91f,
                                             fontSize = 14.sp,
                                             maxLine = 1,
                                             onClick = { onNavigateToActorDetail(person.personId) }

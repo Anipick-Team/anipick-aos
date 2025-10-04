@@ -48,6 +48,8 @@ import com.jparkbro.ui.APCardItem
 import com.jparkbro.ui.APTitledBackTopAppBar
 import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.util.calculateCardWidth
+import com.jparkbro.ui.util.calculateItemSpacing
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
@@ -194,11 +196,12 @@ private fun ActorDetail(
                 }
             }
             items(workList) { work ->
+                val cardWidth = calculateCardWidth(maxWidth = 115.dp)
                 APCardItem(
                     title = "${work.characterName}",
                     imageUrl = "${work.characterImageUrl}",
-                    cardWidth = 115.dp,
-                    cardHeight = 105.dp,
+                    cardWidth = cardWidth,
+                    cardHeight = cardWidth * 1.25f,
                     fontSize = 14.sp,
                     description = {
                         Text(

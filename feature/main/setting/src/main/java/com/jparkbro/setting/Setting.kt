@@ -4,6 +4,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.setting.ProfileEditType
 import com.jparkbro.model.setting.UserInfo
 import com.jparkbro.ui.APDialog
@@ -132,7 +135,10 @@ private fun Setting(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onNavigateToProfileEdit(ProfileEditType.NICKNAME) },
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) { onNavigateToProfileEdit(ProfileEditType.NICKNAME) },
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -164,7 +170,14 @@ private fun Setting(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onNavigateToProfileEdit(ProfileEditType.EMAIL) },
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
+                                    if (userInfo?.provider == LoginProvider.Local) {
+                                        onNavigateToProfileEdit(ProfileEditType.EMAIL)
+                                    }
+                                },
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -189,14 +202,21 @@ private fun Setting(
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(18.dp),
-                                    tint = Color(0xFF667080)
+                                    tint = if (userInfo?.provider == LoginProvider.Local) Color(0xFF667080) else APColors.LightGray
                                 )
                             }
                         }
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onNavigateToProfileEdit(ProfileEditType.PASSWORD) },
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
+                                    if (userInfo?.provider == LoginProvider.Local) {
+                                        onNavigateToProfileEdit(ProfileEditType.PASSWORD)
+                                    }
+                                },
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -206,13 +226,26 @@ private fun Setting(
                                 fontWeight = FontWeight.W500,
                                 color = APColors.Black
                             )
-                            Icon(
-                                painter = painterResource(R.drawable.ic_chevron_right),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(18.dp),
-                                tint = Color(0xFF667080)
-                            )
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (userInfo?.provider != LoginProvider.Local) {
+                                    Text(
+                                        text = "sns 간편가입된 계정입니다.",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        color = APColors.Gray
+                                    )
+                                }
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_chevron_right),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(18.dp),
+                                    tint = if (userInfo?.provider == LoginProvider.Local) Color(0xFF667080) else APColors.LightGray
+                                )
+                            }
                         }
                         Row(
                             modifier = Modifier
@@ -422,19 +455,25 @@ private fun Setting(
                             fontWeight = FontWeight.W500,
                             color = Color(0xFFEA4335),
                             modifier = Modifier
-                                .clickable { onChangeDialogData(
-                                    DialogData(
-                                        title = "로그아웃",
-                                        subTitle = "로그아웃 하시겠습니까?",
-                                        dismiss = "취소",
-                                        confirm = "로그아웃",
-                                        onDismiss = { onChangeDialogData(null) },
-                                        onConfirm = {
-                                            onChangeDialogData(null)
-                                            onLogout { result -> if (result) { onNavigateToLogin() } }
-                                        },
+                                .clickable {
+                                    onChangeDialogData(
+                                        DialogData(
+                                            title = "로그아웃",
+                                            subTitle = "로그아웃 하시겠습니까?",
+                                            dismiss = "취소",
+                                            confirm = "로그아웃",
+                                            onDismiss = { onChangeDialogData(null) },
+                                            onConfirm = {
+                                                onChangeDialogData(null)
+                                                onLogout { result ->
+                                                    if (result) {
+                                                        onNavigateToLogin()
+                                                    }
+                                                }
+                                            },
+                                        )
                                     )
-                                ) },
+                                },
                         )
                         Text(
                             text = "회원 탈퇴",

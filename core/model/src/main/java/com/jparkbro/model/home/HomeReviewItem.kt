@@ -27,12 +27,11 @@ data class HomeReviewItem(
     @SerialName("likeCount")
     override val likeCount: Int = 0,
     @SerialName("likedByCurrentUser")
-    val likedByCurrentUser: Boolean? = null,
+    override val isLiked: Boolean = false,
     @SerialName("isMine")
     override val isMine: Boolean = false,
     @SerialName("profileImageUrl")
     override val profileImageUrl: String? = null,
 ) : ReviewItem {
     override val content: String? get() = reviewContent
-    override val isLiked: Boolean get() = false
 }

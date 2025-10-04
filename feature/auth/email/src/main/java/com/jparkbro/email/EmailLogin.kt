@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,8 +45,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.jparkbro.ui.APSimpleBackTopAppBar
 import com.jparkbro.ui.APSurfaceTextField
 import com.jparkbro.ui.APSurfaceTextFieldWithTrailing
-import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.R
+import com.jparkbro.ui.theme.APColors
 
 @Composable
 internal fun EmailLogin(
@@ -64,12 +64,17 @@ internal fun EmailLogin(
     val passwordText by viewModel.passwordText.collectAsState()
     val isVisibility by viewModel.isVisibility.collectAsState()
 
+    val emailErrorMessage by viewModel.emailErrorMessage.collectAsState()
+    val loginFailMessage by viewModel.loginFailMessage.collectAsState()
+
     EmailLogin(
         modifier = modifier,
         uiState = uiState,
         emailText = emailText,
         passwordText = passwordText,
         isVisibility = isVisibility,
+        emailErrorMessage = emailErrorMessage,
+        loginFailMessage = loginFailMessage,
         onEmailChange = viewModel::updateEmail,
         onPasswordChange = viewModel::updatePassword,
         onVisibilityClick = viewModel::togglePasswordVisibility,
@@ -78,7 +83,7 @@ internal fun EmailLogin(
         onNavigateToFindPassword = onNavigateToFindPassword,
         onNavigateToHome = onNavigateToHome,
         onNavigateToPreferenceSetup = onNavigateToPreferenceSetup,
-        onLogin = viewModel::login
+        onLogin = viewModel::emailValid
     )
 }
 
@@ -90,6 +95,8 @@ internal fun EmailLogin(
     emailText: String,
     passwordText: String,
     isVisibility: Boolean = false,
+    emailErrorMessage: String? = null,
+    loginFailMessage: String? = null,
     onEmailChange: (String) -> Unit = {},
     onPasswordChange: (String) -> Unit = {},
     onVisibilityClick: () -> Unit = {},
@@ -149,21 +156,33 @@ internal fun EmailLogin(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(40.dp)
                 ) {
-                    APSurfaceTextField(
-                        label = "이메일",
-                        value = emailText,
-                        onValueChange = { onEmailChange(it) },
-                        placeholder = "이메일을 입력해주세요",
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Email,
-                            imeAction = ImeAction.Next
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = {
-                                focusManager.moveFocus(FocusDirection.Down)
-                            }
-                        ),
-                    )
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        APSurfaceTextField(
+                            label = "이메일",
+                            value = emailText,
+                            onValueChange = { onEmailChange(it) },
+                            placeholder = "이메일을 입력해주세요",
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Email,
+                                imeAction = ImeAction.Next
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = {
+                                    focusManager.moveFocus(FocusDirection.Down)
+                                }
+                            ),
+                        )
+                        if (emailErrorMessage != null) {
+                            Text(
+                                text = emailErrorMessage,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W500,
+                                color = APColors.Point
+                            )
+                        }
+                    }
                     APSurfaceTextFieldWithTrailing(
                         label = "비밀번호",
                         value = passwordText,
@@ -217,6 +236,17 @@ internal fun EmailLogin(
                             modifier = Modifier
                                 .clickable { onNavigateToFindPassword() }
 
+                        )
+                    }
+                    if (loginFailMessage != null) {
+                        Text(
+                            text = loginFailMessage,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W500,
+                            color = APColors.Point,
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
@@ -274,7 +304,7 @@ internal fun EmailLogin(
             }
         }
         is EmailLoginUiState.Error -> {
-
+            // TODO 통신에러 처리
         }
     }
 }

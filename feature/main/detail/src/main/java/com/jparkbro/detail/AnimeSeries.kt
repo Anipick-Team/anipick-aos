@@ -42,6 +42,7 @@ import com.jparkbro.ui.APCardItem
 import com.jparkbro.ui.APTitledBackTopAppBar
 import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.util.calculateCardWidth
 import com.jparkbro.ui.util.calculateItemSpacing
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -109,6 +110,8 @@ private fun AnimeSeries(
                 }
         }
 
+        val cardWidth = calculateCardWidth(maxWidth = 115.dp)
+        val spacing = calculateItemSpacing(itemWidth = cardWidth)
         LazyVerticalGrid(
             state = gridState,
             columns = GridCells.Fixed(3),
@@ -117,7 +120,7 @@ private fun AnimeSeries(
                 .padding(innerPadding),
             contentPadding = PaddingValues(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp),
-            horizontalArrangement = Arrangement.spacedBy(calculateItemSpacing()),
+            horizontalArrangement = Arrangement.spacedBy(spacing),
         ) {
             item(span = { GridItemSpan(3) }) {
                 Spacer(modifier = Modifier
@@ -172,8 +175,8 @@ private fun AnimeSeries(
                 APCardItem(
                     title = "${anime.title}",
                     imageUrl = anime.coverImageUrl,
-                    cardWidth = 115.dp,
-                    cardHeight = 162.dp,
+                    cardWidth = cardWidth,
+                    cardHeight = cardWidth * 1.41f,
                     fontSize = 14.sp,
                     maxLine = 1,
                     onClick = { onNavigateToAnimeDetail(anime.animeId) }

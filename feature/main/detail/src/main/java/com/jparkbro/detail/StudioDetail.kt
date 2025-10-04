@@ -30,6 +30,7 @@ import com.jparkbro.model.detail.StudioAnime
 import com.jparkbro.ui.APCardItem
 import com.jparkbro.ui.APTitledBackTopAppBar
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.util.calculateCardWidth
 import com.jparkbro.ui.util.calculateItemSpacing
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -144,10 +145,13 @@ private fun LazyListScope.animeByYearSection(
                         .background(color = APColors.LightGray, CircleShape)
                         .padding(horizontal = 8.dp, vertical = 2.dp)
                 )
+
+                val cardWidth = calculateCardWidth(maxWidth = 115.dp)
+                val spacing = calculateItemSpacing(itemWidth = cardWidth)
                 FlowRow(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(calculateItemSpacing()),
+                    horizontalArrangement = Arrangement.spacedBy(spacing),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     maxItemsInEachRow = 3
                 ) {
@@ -155,8 +159,8 @@ private fun LazyListScope.animeByYearSection(
                         APCardItem(
                             title = "${anime.title}",
                             imageUrl = "${anime.coverImageUrl}",
-                            cardWidth = 115.dp,
-                            cardHeight = 162.dp,
+                            cardWidth = cardWidth,
+                            cardHeight = cardWidth * 1.41f,
                             fontSize = 14.sp,
                             maxLine = 2,
                             onClick = { onNavigateToAnimeDetail(anime.animeId) }

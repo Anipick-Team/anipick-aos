@@ -49,14 +49,17 @@ import com.jparkbro.ui.theme.APColors
 internal fun PasswordVerification(
     onNavigateBack: () -> Unit,
     onNavigateToPasswordReset: (String) -> Unit,
+    onNavigateToLogin: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PasswordVerificationViewModel = hiltViewModel(),
 ) {
     val emailText by viewModel.emailText.collectAsState()
     val emailErrorText by viewModel.emailErrorText.collectAsState()
     val verificationCodeText by viewModel.verificationCodeText.collectAsState()
+    val verificationCodeMessage by viewModel.verificationCodeMessage.collectAsState()
     val requestCodeButtonState by viewModel.requestCodeButtonState.collectAsState()
     val verifyButtonState by viewModel.verifyButtonState.collectAsState()
+    val showDialog by viewModel.showDialog.collectAsState()
 
     PasswordVerification(
         modifier = modifier,
@@ -65,11 +68,15 @@ internal fun PasswordVerification(
         requestCodeButtonState = requestCodeButtonState,
         verifyButtonState = verifyButtonState,
         verificationCodeText = verificationCodeText,
+        verificationCodeMessage = verificationCodeMessage,
+        showDialog = showDialog,
+        dismissDialog = viewModel::dismissDialog,
         onEmailChange = viewModel::updateEmail,
         onVerificationCodeChange = viewModel::updateVerificationCode,
         onRequestCodeClick = viewModel::requestVerificationCode,
         onNavigateBack = onNavigateBack,
         onNavigateToPasswordReset = onNavigateToPasswordReset,
+        onNavigateToLogin = onNavigateToLogin,
         onVerifyCode = viewModel::verifyCode
     )
 }
@@ -81,19 +88,22 @@ internal fun PasswordVerification(
     emailText: String = "",
     emailErrorText: String? = null,
     verificationCodeText: String = "",
+    verificationCodeMessage: String? = null,
+    showDialog: Boolean = false,
+    dismissDialog: () -> Unit = {},
     requestCodeButtonState: RequestCodeButtonUiState = RequestCodeButtonUiState.Initial,
-    verifyButtonState: VerifyButtonUiState = VerifyButtonUiState.Active,
+    verifyButtonState: VerifyButtonUiState = VerifyButtonUiState.Inactive,
     onEmailChange: (String) -> Unit = {},
     onVerificationCodeChange: (String) -> Unit = {},
-    onRequestCodeClick: () -> Unit = {},
+    onRequestCodeClick: (onValid: (Boolean) -> Unit) -> Unit = {},
     onNavigateBack: () -> Unit = {},
     onNavigateToPasswordReset: (String) -> Unit = {},
+    onNavigateToLogin: () -> Unit,
     onVerifyCode: (() -> Unit) -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
 
     // viewmodel 로 수정
-    var showDialog by remember { mutableStateOf(false) }
     var showSnackbar by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -139,7 +149,7 @@ internal fun PasswordVerification(
                     )
                 }
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(39.dp)
+                    verticalArrangement = Arrangement.spacedBy(40.dp)
                 ) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -156,9 +166,12 @@ internal fun PasswordVerification(
                             trailingComponent = {
                                 Button(
                                     onClick = {
-                                        onRequestCodeClick()
-                                        focusManager.clearFocus() // TODO 통과시
-                                        showSnackbar = true // TODO 제약조건 통과시로 수정
+                                        onRequestCodeClick { valid ->
+                                            if (valid) {
+                                                focusManager.clearFocus()
+                                                showSnackbar = true
+                                            }
+                                        }
                                     },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = APColors.Primary,
@@ -170,6 +183,7 @@ internal fun PasswordVerification(
                                     shape = RoundedCornerShape(8.dp),
                                     enabled = when (requestCodeButtonState) {
                                         is RequestCodeButtonUiState.Initial -> true
+                                        is RequestCodeButtonUiState.Loading -> false
                                         is RequestCodeButtonUiState.Counting -> false
                                         is RequestCodeButtonUiState.Ready -> true
                                     },
@@ -183,6 +197,7 @@ internal fun PasswordVerification(
                                     Text(
                                         text = when (requestCodeButtonState) {
                                             is RequestCodeButtonUiState.Initial -> "인증번호 받기"
+                                            is RequestCodeButtonUiState.Loading -> "전송중..."
                                             is RequestCodeButtonUiState.Counting -> "전송됨 ${requestCodeButtonState.formatTime()}"
                                             is RequestCodeButtonUiState.Ready -> "재발송하기"
                                         },
@@ -198,51 +213,49 @@ internal fun PasswordVerification(
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.W500,
                                 color = APColors.Point,
-                                modifier = Modifier
-                                    .padding(top = 8.dp, bottom = 12.dp)
                             )
                         }
                     }
-                    APSurfaceTextField(
-                        label = "인증번호",
-                        value = verificationCodeText,
-                        onValueChange = { onVerificationCodeChange(it) },
-                        placeholder = "인증번호를 입력해주세요",
-                        enabled = when (verifyButtonState) {
-                            is VerifyButtonUiState.Active -> false
-                            is VerifyButtonUiState.Counting -> true
-                            is VerifyButtonUiState.Success -> false
-                        },
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                focusManager.clearFocus()
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        APSurfaceTextField(
+                            label = "인증번호",
+                            value = verificationCodeText,
+                            onValueChange = { onVerificationCodeChange(it) },
+                            placeholder = "인증번호를 입력해주세요",
+                            enabled = when (verifyButtonState) {
+                                is VerifyButtonUiState.Counting -> true
+                                else -> false
+                            },
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    focusManager.clearFocus()
+                                }
+                            ),
+                            trailingButton = {
+                                if (verifyButtonState is VerifyButtonUiState.Counting) {
+                                    Text(
+                                        text = verifyButtonState.formatTime(),
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.W600,
+                                        color = APColors.Point,
+                                        modifier = Modifier.padding(end = 4.dp)
+                                    )
+                                } else {
+                                    null
+                                }
                             }
-                        ),
-                        trailingButton = {
-                            if (verifyButtonState is VerifyButtonUiState.Counting) {
-                                Text(
-                                    text = verifyButtonState.formatTime(),
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W600,
-                                    color = APColors.Point,
-                                    modifier = Modifier.padding(end = 4.dp)
-                                )
-                            } else {
-                                null
-                            }
+                        )
+                        if (verificationCodeMessage != null) {
+                            Text(
+                                text = verificationCodeMessage,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W500,
+                                color = APColors.Point,
+                            )
                         }
-                    )
-                    // TODO 인증번호 errorText 부분
-//                if (emailErrorText != null) {
-//                    Text(
-//                        text = emailErrorText,
-//                        fontSize = 14.sp,
-//                        fontWeight = FontWeight.W500,
-//                        color = APColors.Point,
-//                        modifier = Modifier
-//                            .padding(top = 8.dp)
-//                    )
-//                }
+                    }
                 }
             }
             Column(
@@ -282,8 +295,11 @@ internal fun PasswordVerification(
         subTitle = "SNS로 로그인해주세요.",
         dismiss = "닫기",
         confirm = "SNS로그인",
-        onDismiss = { showDialog = false },
-        onConfirm = { showDialog = false },
+        onDismiss = dismissDialog,
+        onConfirm = {
+            dismissDialog()
+            onNavigateToLogin()
+        },
     )
     APSnackBar(
         snackBarData = SnackBarData(text = "전송이 완료되었어요."),
@@ -300,5 +316,6 @@ private fun FindPasswordPreview() {
         onNavigateBack = {},
         onNavigateToPasswordReset = {},
         onVerificationCodeChange = {},
+        onNavigateToLogin = {}
     )
 }

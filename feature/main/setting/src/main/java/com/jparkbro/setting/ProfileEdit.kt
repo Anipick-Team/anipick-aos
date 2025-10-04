@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.jparkbro.model.exception.ApiException
 import com.jparkbro.model.setting.ProfileEditType
 import com.jparkbro.model.setting.UserInfo
 import com.jparkbro.ui.APDialog
@@ -67,6 +68,8 @@ internal fun ProfileEdit(
     val newPassword by viewModel.newPassword.collectAsState()
     val newPasswordConfirm by viewModel.newPasswordConfirm.collectAsState()
 
+    val errorException by viewModel.errorException.collectAsState()
+
     ProfileEdit(
         type = type,
         dialogData = dialogData,
@@ -83,6 +86,7 @@ internal fun ProfileEdit(
         onChangeNewPasswordConfirm = viewModel::updateNewPasswordConfirm,
         userInfo = userInfo,
         onChangeUserInfo = viewModel::updateUserInfo,
+        errorException = errorException,
         onNavigateBack = onNavigateBack,
         onNavigateToLogin = onNavigateToLogin,
         onPopBackWithRefresh = onPopBackWithRefresh,
@@ -108,6 +112,7 @@ private fun ProfileEdit(
     onChangeNewPasswordConfirm: (String) -> Unit,
     userInfo: UserInfo?,
     onChangeUserInfo: (ProfileEditType, (Boolean) -> Unit) -> Unit,
+    errorException: ApiException? = null,
     onNavigateBack: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onPopBackWithRefresh: () -> Unit,
@@ -147,6 +152,7 @@ private fun ProfileEdit(
                         userInfo = userInfo,
                         newNickname = newNickname,
                         onChangeNewNickname = onChangeNewNickname,
+                        errorException = errorException,
                     )
                 }
                 ProfileEditType.PASSWORD -> {
@@ -157,6 +163,7 @@ private fun ProfileEdit(
                         onChangeCurrentPassword = onChangeCurrentPassword,
                         onChangeNewPassword = onChangeNewPassword,
                         onChangeNewPasswordConfirm = onChangeNewPasswordConfirm,
+                        errorException = errorException,
                     )
                 }
                 ProfileEditType.EMAIL -> {
@@ -165,7 +172,8 @@ private fun ProfileEdit(
                         newEmail = newEmail,
                         onChangeNewEmail = onChangeNewEmail,
                         currentPassword = currentPassword,
-                        onChangeCurrentPassword = onChangeCurrentPassword
+                        onChangeCurrentPassword = onChangeCurrentPassword,
+                        errorException = errorException,
                     )
                 }
                 ProfileEditType.WITHDRAWAL -> {
@@ -251,7 +259,8 @@ private fun ProfileEdit(
 private fun ColumnScope.NicknameEditForm(
     userInfo: UserInfo?,
     newNickname: String,
-    onChangeNewNickname: (String) -> Unit
+    onChangeNewNickname: (String) -> Unit,
+    errorException: ApiException? = null,
 ) {
     Column(
         modifier = Modifier
@@ -266,14 +275,23 @@ private fun ColumnScope.NicknameEditForm(
             placeholder = "",
             enabled = false,
         )
-        Column {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             APLabelTextField(
                 label = "새 닉네임",
                 value = newNickname,
                 onValueChange = { onChangeNewNickname(it) },
                 placeholder = "새 닉네임 입력",
             )
-            // TODO api 통신 후 에러 처리
+            if (errorException != null && (errorException.errorCode == 117 || errorException.errorCode == 118)) {
+                Text(
+                    text = errorException.errorValue,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    color = APColors.Point
+                )
+            }
         }
     }
 }
@@ -285,7 +303,8 @@ private fun ColumnScope.PasswordEditForm(
     newPasswordConfirm: String,
     onChangeCurrentPassword: (String) -> Unit,
     onChangeNewPassword: (String) -> Unit,
-    onChangeNewPasswordConfirm: (String) -> Unit
+    onChangeNewPasswordConfirm: (String) -> Unit,
+    errorException: ApiException? = null
 ) {
     var isCurrentVisibility by remember { mutableStateOf(false) }
     var isNewVisibility by remember { mutableStateOf(false) }
@@ -297,66 +316,102 @@ private fun ColumnScope.PasswordEditForm(
             .padding(horizontal = 20.dp, vertical = 36.dp),
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
-        APSurfaceTextFieldWithTrailing(
-            label = "현재 비밀번호",
-            value = currentPassword,
-            onValueChange = { onChangeCurrentPassword(it) },
-            placeholder = "현재 비밀번호",
-            isVisibility = isCurrentVisibility,
-            trailingButton = {
-                IconButton(
-                    onClick = { isCurrentVisibility = !isCurrentVisibility }
-                ) {
-                    Image(
-                        painter = if (!isCurrentVisibility) painterResource(R.drawable.ic_visibility_off) else painterResource(R.drawable.ic_visibility_on),
-                        contentDescription = "",
-                    )
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password
-            ),
-        )
-        APSurfaceTextFieldWithTrailing(
-            label = "새 비밀번호",
-            value = newPassword,
-            onValueChange = { onChangeNewPassword(it) },
-            placeholder = "8~16자의 영문 대/소문자, 숫자, 특수문자 조합",
-            isVisibility = isNewVisibility,
-            trailingButton = {
-                IconButton(
-                    onClick = { isNewVisibility = !isNewVisibility }
-                ) {
-                    Image(
-                        painter = if (!isNewVisibility) painterResource(R.drawable.ic_visibility_off) else painterResource(R.drawable.ic_visibility_on),
-                        contentDescription = "",
-                    )
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password
-            ),
-        )
-        APSurfaceTextFieldWithTrailing(
-            label = "새 비밀번호 확인",
-            value = newPasswordConfirm,
-            onValueChange = { onChangeNewPasswordConfirm(it) },
-            placeholder = "새 비밀번호 확인",
-            isVisibility = isConfirmVisibility,
-            trailingButton = {
-                IconButton(
-                    onClick = { isConfirmVisibility = !isConfirmVisibility }
-                ) {
-                    Image(
-                        painter = if (!isConfirmVisibility) painterResource(R.drawable.ic_visibility_off) else painterResource(R.drawable.ic_visibility_on),
-                        contentDescription = "",
-                    )
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password
-            ),
-        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            APSurfaceTextFieldWithTrailing(
+                label = "현재 비밀번호",
+                value = currentPassword,
+                onValueChange = { onChangeCurrentPassword(it) },
+                placeholder = "현재 비밀번호",
+                isVisibility = isCurrentVisibility,
+                trailingButton = {
+                    IconButton(
+                        onClick = { isCurrentVisibility = !isCurrentVisibility }
+                    ) {
+                        Image(
+                            painter = if (!isCurrentVisibility) painterResource(R.drawable.ic_visibility_off) else painterResource(R.drawable.ic_visibility_on),
+                            contentDescription = "",
+                        )
+                    }
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password
+                ),
+            )
+            if (errorException != null && errorException.errorCode == 107) {
+                Text(
+                    text = errorException.errorValue,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    color = APColors.Point
+                )
+            }
+        }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            APSurfaceTextFieldWithTrailing(
+                label = "새 비밀번호",
+                value = newPassword,
+                onValueChange = { onChangeNewPassword(it) },
+                placeholder = "8~16자의 영문 대/소문자, 숫자, 특수문자 조합",
+                isVisibility = isNewVisibility,
+                trailingButton = {
+                    IconButton(
+                        onClick = { isNewVisibility = !isNewVisibility }
+                    ) {
+                        Image(
+                            painter = if (!isNewVisibility) painterResource(R.drawable.ic_visibility_off) else painterResource(R.drawable.ic_visibility_on),
+                            contentDescription = "",
+                        )
+                    }
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password
+                ),
+            )
+            if (errorException != null && errorException.errorCode == 110) {
+                Text(
+                    text = errorException.errorValue,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    color = APColors.Point
+                )
+            }
+        }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            APSurfaceTextFieldWithTrailing(
+                label = "새 비밀번호 확인",
+                value = newPasswordConfirm,
+                onValueChange = { onChangeNewPasswordConfirm(it) },
+                placeholder = "새 비밀번호 확인",
+                isVisibility = isConfirmVisibility,
+                trailingButton = {
+                    IconButton(
+                        onClick = { isConfirmVisibility = !isConfirmVisibility }
+                    ) {
+                        Image(
+                            painter = if (!isConfirmVisibility) painterResource(R.drawable.ic_visibility_off) else painterResource(R.drawable.ic_visibility_on),
+                            contentDescription = "",
+                        )
+                    }
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password
+                ),
+            )
+            if (errorException != null && errorException.errorCode == 108) {
+                Text(
+                    text = errorException.errorValue,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    color = APColors.Point
+                )
+            }
+        }
     }
 }
 
@@ -366,7 +421,8 @@ private fun ColumnScope.EmailEditForm(
     newEmail: String,
     onChangeNewEmail: (String) -> Unit,
     currentPassword: String,
-    onChangeCurrentPassword: (String) -> Unit
+    onChangeCurrentPassword: (String) -> Unit,
+    errorException: ApiException? = null
 ) {
     var isPasswordVisibility by remember { mutableStateOf(false) }
 
@@ -384,32 +440,56 @@ private fun ColumnScope.EmailEditForm(
             modifier = Modifier,
             enabled = false,
         )
-        APLabelTextField(
-            label = "새 이메일",
-            value = newEmail,
-            onValueChange = { onChangeNewEmail(it) },
-            placeholder = "새 이메일 입력",
-        )
-        APSurfaceTextFieldWithTrailing(
-            label = "비밀번호",
-            value = currentPassword,
-            onValueChange = { onChangeCurrentPassword(it) },
-            placeholder = "비밀번호 입력",
-            isVisibility = isPasswordVisibility,
-            trailingButton = {
-                IconButton(
-                    onClick = { isPasswordVisibility = !isPasswordVisibility }
-                ) {
-                    Image(
-                        painter = if (!isPasswordVisibility) painterResource(R.drawable.ic_visibility_off) else painterResource(R.drawable.ic_visibility_on),
-                        contentDescription = "",
-                    )
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password
-            ),
-        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            APLabelTextField(
+                label = "새 이메일",
+                value = newEmail,
+                onValueChange = { onChangeNewEmail(it) },
+                placeholder = "새 이메일 입력",
+            )
+            if (errorException != null && (errorException.errorCode == 102 || errorException.errorCode == 103 || errorException.errorCode == 109)) {
+                Text(
+                    text = errorException.errorValue,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    color = APColors.Point
+                )
+            }
+        }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            APSurfaceTextFieldWithTrailing(
+                label = "비밀번호",
+                value = currentPassword,
+                onValueChange = { onChangeCurrentPassword(it) },
+                placeholder = "비밀번호 입력",
+                isVisibility = isPasswordVisibility,
+                trailingButton = {
+                    IconButton(
+                        onClick = { isPasswordVisibility = !isPasswordVisibility }
+                    ) {
+                        Image(
+                            painter = if (!isPasswordVisibility) painterResource(R.drawable.ic_visibility_off) else painterResource(R.drawable.ic_visibility_on),
+                            contentDescription = "",
+                        )
+                    }
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password
+                ),
+            )
+            if (errorException != null && (errorException.errorCode == 105 || errorException.errorCode == 107)) {
+                Text(
+                    text = errorException.errorValue,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    color = APColors.Point
+                )
+            }
+        }
         Column {
             val guideTextStyle = TextStyle(
                 fontSize = 14.sp,

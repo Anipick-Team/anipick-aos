@@ -70,7 +70,6 @@ class RetrofitHomeDataSource @Inject constructor(
             sort = request.sort,
             lastId = request.lastId,
             lastValue = request.lastValue,
-            includeAdult = request.includeAdult,
             size = request.size
         ).toResult(TAG, "getDetailComingSoon")
     }

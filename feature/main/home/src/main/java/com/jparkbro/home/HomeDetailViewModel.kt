@@ -45,9 +45,6 @@ class HomeDetailViewModel @AssistedInject constructor(
     private val _showSortDropdown = MutableStateFlow(false)
     val showSortDropdown: StateFlow<Boolean> = _showSortDropdown.asStateFlow()
 
-    private val _includeAdult = MutableStateFlow(false)
-    val includeAdult: StateFlow<Boolean> = _includeAdult.asStateFlow()
-
     private val _dialogData = MutableStateFlow<DialogData?>(null)
     val dialogData = _dialogData.asStateFlow()
 
@@ -63,10 +60,6 @@ class HomeDetailViewModel @AssistedInject constructor(
 
     private val _items = MutableStateFlow<List<Any>>(emptyList())
     val items: StateFlow<List<Any>> = _items.asStateFlow()
-
-    fun toggleIncludeAdult() {
-        _includeAdult.value = !_includeAdult.value
-    }
 
     fun changeDropdownState() {
         _showSortDropdown.value = !_showSortDropdown.value
@@ -111,7 +104,6 @@ class HomeDetailViewModel @AssistedInject constructor(
                     lastId = _responseData.value?.cursor?.lastId,
                     lastValue = _responseData.value?.cursor?.lastValue,
                     sort = _sort.value.param,
-                    includeAdult = _includeAdult.value,
                     size = 18
                 ),
             ).fold(

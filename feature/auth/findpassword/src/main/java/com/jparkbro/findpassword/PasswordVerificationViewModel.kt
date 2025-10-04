@@ -7,6 +7,8 @@ import com.jparkbro.findpassword.util.RequestCodeButtonUiState
 import com.jparkbro.findpassword.util.VerifyButtonUiState
 import com.jparkbro.model.auth.RequestCode
 import com.jparkbro.model.auth.VerifyCode
+import com.jparkbro.model.exception.ApiException
+import com.jparkbro.ui.DialogData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.jparkbro.ui.util.EmailValidator
 import kotlinx.coroutines.Job
@@ -22,25 +24,33 @@ class PasswordVerificationViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _emailText = MutableStateFlow<String>("")
-    val emailText: StateFlow<String> = _emailText.asStateFlow()
+    /** email TextField */
+    private val _emailText = MutableStateFlow("")
+    val emailText = _emailText.asStateFlow()
 
-    private val _verificationCodeText = MutableStateFlow<String>("")
-    val verificationCodeText: StateFlow<String> = _verificationCodeText.asStateFlow()
+    /** code TextField */
+    private val _verificationCodeText = MutableStateFlow("")
+    val verificationCodeText = _verificationCodeText.asStateFlow()
 
+    /** email error message */
     private val _emailErrorText = MutableStateFlow<String?>(null)
-    val emailErrorText: StateFlow<String?> = _emailErrorText.asStateFlow()
+    val emailErrorText = _emailErrorText.asStateFlow()
 
-    private val _verificationCodeErrorText = MutableStateFlow<String?>(null)
-    val verificationCodeErrorText: StateFlow<String?> = _verificationCodeErrorText.asStateFlow()
+    /** verification code message */
+    private val _verificationCodeMessage = MutableStateFlow<String?>(null)
+    val verificationCodeMessage = _verificationCodeMessage.asStateFlow()
+
+    /** dialog */
+    private val _showDialog = MutableStateFlow(false)
+    val showDialog = _showDialog.asStateFlow()
 
     private val _requestCodeButtonState = MutableStateFlow<RequestCodeButtonUiState>(RequestCodeButtonUiState.Initial)
-    val requestCodeButtonState: StateFlow<RequestCodeButtonUiState> = _requestCodeButtonState.asStateFlow()
+    val requestCodeButtonState = _requestCodeButtonState.asStateFlow()
     // 타이머 Job (인증번호받기 버튼용)
     private var requestCodeTimerJob: Job? = null
 
-    private val _verifyButtonState = MutableStateFlow<VerifyButtonUiState>(VerifyButtonUiState.Active)
-    val verifyButtonState: StateFlow<VerifyButtonUiState> = _verifyButtonState.asStateFlow()
+    private val _verifyButtonState = MutableStateFlow<VerifyButtonUiState>(VerifyButtonUiState.Inactive)
+    val verifyButtonState = _verifyButtonState.asStateFlow()
     // 타이머 Job (인증하기 버튼용)
     private var verifyTimerJob: Job? = null
 
@@ -52,29 +62,51 @@ class PasswordVerificationViewModel @Inject constructor(
         _verificationCodeText.value = verificationCode
     }
 
-    fun requestVerificationCode() {
-        _emailErrorText.value = EmailValidator.getErrorMessage(_emailText.value)
-        if (!EmailValidator.validate(_emailText.value)) {
+    fun dismissDialog() {
+        _showDialog.value = false
+    }
+
+    fun requestVerificationCode(onValid: (Boolean) -> Unit) {
+        /* 1. 이메일 유효성 검증 */
+        val emailErrorMessage = EmailValidator.getErrorMessage(_emailText.value)
+        if (emailErrorMessage != null) {
+            _emailErrorText.value = emailErrorMessage
+            onValid(false)
             return
         }
-        // 1. API 요청
+
+        _emailErrorText.value = null
+        onValid(true)
+
+        /* 2. 버튼 비활성화 (API 요청 시작) */
+        _requestCodeButtonState.value = RequestCodeButtonUiState.Loading
+
+        /* 3. 인증코드 발송 API */
         viewModelScope.launch {
             authRepository.requestResetCode(
                 RequestCode(_emailText.value)
             ).fold(
                 onSuccess = {
-
+                    _verificationCodeMessage.value = "수신하신 인증번호를 입력해 주세요."
+                    startRequestCodeCountDown()
+                    startVerifyCountdown()
                 },
-                onFailure = {
-
+                onFailure = { exception ->
+                    _requestCodeButtonState.value = RequestCodeButtonUiState.Initial
+                    when (exception) {
+                        is ApiException -> {
+                            if (exception.errorCode == 122) {
+                                _showDialog.value = true
+                            } else {
+                                _emailErrorText.value = exception.errorValue
+                            }
+                        }
+                        else -> {
+                            // TODO Api 통신에러
+                        }
+                    }
                 }
             )
-        }
-
-        startRequestCodeCountDown()
-
-        if (_verifyButtonState.value !is VerifyButtonUiState.Counting) {
-            startVerifyCountdown()
         }
     }
 
@@ -99,13 +131,13 @@ class PasswordVerificationViewModel @Inject constructor(
                 delay(1000)
             }
 
-            _verifyButtonState.value = VerifyButtonUiState.Active
+            _verifyButtonState.value = VerifyButtonUiState.Expired
+            _verificationCodeMessage.value = "유효 시간이 만료되었습니다. 재발송 후 다시 시도해주세요."
         }
     }
 
     fun verifyCode(onSuccess: () -> Unit) {
         viewModelScope.launch {
-            // TODO 인증번호 확인 API
             authRepository.verifyResetCode(
                 VerifyCode(
                     email = _emailText.value,
@@ -113,17 +145,21 @@ class PasswordVerificationViewModel @Inject constructor(
                 )
             ).fold(
                 onSuccess = {
-                    // TODO
                     verifyTimerJob?.cancel()
                     _verifyButtonState.value = VerifyButtonUiState.Success
                     onSuccess()
                 },
-                onFailure = {
-                    // TODO
+                onFailure = { exception ->
+                    when (exception) {
+                        is ApiException -> {
+                            _verificationCodeMessage.value = exception.errorValue
+                        }
+                        else -> {
+
+                        }
+                    }
                 }
             )
-
-            // TODO _verificationCodeErrorText
         }
     }
 }

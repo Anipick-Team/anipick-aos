@@ -29,21 +29,25 @@ private val Context.jwtDataStore: DataStore<Preferences> by preferencesDataStore
 abstract class DataStoreModule {
 
     @Binds
+    @Singleton
     internal abstract fun bindsJwtTokenDataStore(
         jwtTokenDataStoreImpl: JwtTokenDataStoreImpl
     ): JwtTokenDataStore
 
     @Binds
+    @Singleton
     internal abstract fun bindsUserDataStore(
         userDataStoreImpl: UserDataStoreImpl
     ): UserDataStore
 
     @Binds
+    @Singleton
     internal abstract fun bindsRecentAnimeDataStore(
         recentAnimeDataStoreImpl: RecentAnimeDataStoreImpl
     ): RecentAnimeDataStore
 
     @Binds
+    @Singleton
     internal abstract fun bindsSearchDataStore(
         searchDataStoreImpl: SearchDataStoreImpl
     ): SearchDataStore

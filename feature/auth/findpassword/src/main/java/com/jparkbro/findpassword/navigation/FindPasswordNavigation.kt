@@ -20,11 +20,13 @@ fun NavController.navigateToPasswordVerification(navOptions: NavOptions? = null)
 fun NavGraphBuilder.passwordVerificationScreen(
     onNavigateBack: () -> Unit,
     onNavigateToPasswordReset: (String) -> Unit,
+    onNavigateToLogin: () -> Unit,
 ) {
     composable<PasswordVerification> {
         PasswordVerification(
             onNavigateBack = onNavigateBack,
             onNavigateToPasswordReset = onNavigateToPasswordReset,
+            onNavigateToLogin = onNavigateToLogin,
         )
     }
 }

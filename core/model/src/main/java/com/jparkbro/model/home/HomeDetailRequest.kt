@@ -13,8 +13,6 @@ data class HomeDetailRequest(
     val lastValue: String? = null,
     @SerialName("sort")
     val sort: String = Sort.LATEST.param,
-    @SerialName("includeAdult")
-    val includeAdult: Boolean = false,
     @SerialName("size")
     val size: Int = 18,
 )

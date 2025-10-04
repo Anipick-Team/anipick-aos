@@ -87,8 +87,6 @@ private fun Login(
 ) {
     val context = LocalContext.current
 
-    // TODO uistate 처리
-
     Box(
         modifier = modifier
             .fillMaxSize()
