@@ -36,15 +36,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.jparkbro.model.common.DefaultAnime
+import com.jparkbro.search.SearchUiState
 import com.jparkbro.ui.APCardItem
 import com.jparkbro.ui.APSearchFieldBackTopAppBar
 import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.util.calculateCardWidth
 import com.jparkbro.ui.util.calculateItemSpacing
+import kotlinx.serialization.SerialName
 
 @Composable
 internal fun Search(
@@ -259,7 +263,7 @@ private fun Search(
                             popularAnimes.data.forEach { anime ->
                                 APCardItem(
                                     title = "${anime.title}",
-                                    imageUrl = anime.coverImageUrl,
+                                    imageUrl = null,
                                     cardWidth = cardWidth,
                                     cardHeight = cardWidth * 1.41f,
                                     fontSize = 14.sp,

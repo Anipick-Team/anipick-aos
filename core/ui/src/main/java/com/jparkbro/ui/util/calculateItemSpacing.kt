@@ -23,11 +23,14 @@ fun calculateCardWidth(
 fun calculateItemSpacing(
     itemWidth: Dp = 115.dp,
     itemsPerRow: Int = 3,
-    horizontalPadding: Dp = 20.dp
+    horizontalPadding: Dp = 20.dp,
+    minSpacing: Dp = 8.dp
 ): Dp {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val availableWidth = screenWidth - (horizontalPadding * 2)
     val totalItemWidth = itemWidth * itemsPerRow
-    return ((availableWidth - totalItemWidth) / (itemsPerRow - 1)) - 1.dp
+    val calculatedSpacing = (availableWidth - totalItemWidth) / (itemsPerRow - 1)
+
+    return if (calculatedSpacing < minSpacing) minSpacing else calculatedSpacing
 }
 
