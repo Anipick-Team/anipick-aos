@@ -373,7 +373,7 @@ private fun DetailAnime(
                                         modifier = Modifier
                                             .weight(1f)
                                     )
-                                    Spacer(modifier = Modifier.width(12.dp))
+                                    /*Spacer(modifier = Modifier.width(12.dp))
                                     Icon(
                                         painter = painterResource(R.drawable.ic_share),
                                         contentDescription = null,
@@ -387,7 +387,7 @@ private fun DetailAnime(
                                                 onShareAnimeLink()
                                                 onChangeSnackBarData(SnackBarData(text = "링크가 복사되었습니다."))
                                               },
-                                    )
+                                    )*/
                                 }
                                 Row(
                                     modifier = Modifier

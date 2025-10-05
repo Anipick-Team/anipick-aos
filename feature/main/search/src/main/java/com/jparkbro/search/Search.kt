@@ -256,14 +256,14 @@ private fun Search(
                         FlowRow(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(spacing),
+                            horizontalArrangement = Arrangement.spacedBy(spacing - 1.dp),
                             verticalArrangement = Arrangement.spacedBy(27.dp),
                             maxItemsInEachRow = 3
                         ) {
                             popularAnimes.data.forEach { anime ->
                                 APCardItem(
                                     title = "${anime.title}",
-                                    imageUrl = null,
+                                    imageUrl = anime.coverImageUrl,
                                     cardWidth = cardWidth,
                                     cardHeight = cardWidth * 1.41f,
                                     fontSize = 14.sp,

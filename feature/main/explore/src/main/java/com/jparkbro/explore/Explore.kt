@@ -395,6 +395,7 @@ private fun Explore(
                                 verticalArrangement = Arrangement.spacedBy(12.dp),
                                 modifier = Modifier
                                     .fillMaxSize(),
+                                contentPadding = PaddingValues(horizontal = 20.dp)
                             ) {
                                 items(animes) { anime ->
                                     APCardItem(
