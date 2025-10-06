@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.jparkbro.ui.APDialog
 import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.R
 
@@ -50,6 +51,7 @@ internal fun Login(
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val showDialog by viewModel.showDialog.collectAsState()
 
     LaunchedEffect(uiState) {
         val currentState = uiState
@@ -74,6 +76,20 @@ internal fun Login(
         signInWithKakao = viewModel::signInWithKakao,
         signInWithGoogle = viewModel::signInWithGoogle,
     )
+
+    if (showDialog) {
+        APDialog(
+            title = "이미 가입된 이메일 주소입니다.",
+            subTitle = "이메일 로그인을 시도해주세요.",
+            dismiss = "닫기",
+            confirm = "이메일 로그인",
+            onDismiss = { viewModel.dismissDialog() },
+            onConfirm = {
+                viewModel.dismissDialog()
+                onNavigateToEmailLogin()
+            },
+        )
+    }
 }
 
 @Composable

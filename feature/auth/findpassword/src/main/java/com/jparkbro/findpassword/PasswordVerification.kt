@@ -301,11 +301,13 @@ internal fun PasswordVerification(
             onNavigateToLogin()
         },
     )
-    APSnackBar(
-        snackBarData = SnackBarData(text = "전송이 완료되었어요."),
-        visible = showSnackbar,
-        onDismiss = { showSnackbar = false }
-    )
+    if (requestCodeButtonState is RequestCodeButtonUiState.Counting) {
+        APSnackBar(
+            snackBarData = SnackBarData(text = "전송이 완료되었어요."),
+            visible = showSnackbar,
+            onDismiss = { showSnackbar = false }
+        )
+    }
 }
 
 @Preview(showBackground = true)

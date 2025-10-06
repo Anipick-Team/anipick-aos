@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.domain.GoogleLoginUseCase
 import com.jparkbro.domain.KakaoLoginUseCase
+import com.jparkbro.model.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,13 @@ class LoginViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+
+    private val _showDialog = MutableStateFlow(false)
+    val showDialog = _showDialog.asStateFlow()
+
+    fun dismissDialog() {
+        _showDialog.value = false
+    }
 
     fun signInWithGoogle(activity: Activity) {
         socialLoginProceed {
@@ -45,6 +53,9 @@ class LoginViewModel @Inject constructor(
                             LoginUiState.Success(reviewCompletedYn)
                         },
                         onFailure = { exception ->
+                            if (exception is ApiException && exception.errorCode == 133) {
+                                _showDialog.value = true
+                            }
                             LoginUiState.Error(exception.message ?: "로그인 중 에러 발생")
                         }
                     )

@@ -44,6 +44,7 @@ import com.jparkbro.ui.R
 @Composable
 internal fun PasswordReset(
     onNavigateBack: () -> Unit,
+    onNavigateToLogin: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PasswordResetViewModel = hiltViewModel(),
 ) {
@@ -64,6 +65,7 @@ internal fun PasswordReset(
         onConfirmVisibilityClick = viewModel::toggleConfirmVisibility,
         onResetPassword = viewModel::resetPassword,
         onNavigateBack = onNavigateBack,
+        onNavigateToLogin = onNavigateToLogin,
     )
 }
 
@@ -79,8 +81,9 @@ internal fun PasswordReset(
     onPasswordConfirmChange: (String) -> Unit = {},
     onPasswordVisibilityClick: () -> Unit = {},
     onConfirmVisibilityClick: () -> Unit = {},
-    onResetPassword: () -> Unit = {},
+    onResetPassword: ((Boolean) -> Unit) -> Unit = {},
     onNavigateBack: () -> Unit = {},
+    onNavigateToLogin: () -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -203,8 +206,10 @@ internal fun PasswordReset(
                 )
                 Button(
                     onClick = {
-                        onResetPassword()
-                        // TODO page 이동
+                        onResetPassword { result ->
+                            if (result) onNavigateToLogin
+                        }
+
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = APColors.Primary,

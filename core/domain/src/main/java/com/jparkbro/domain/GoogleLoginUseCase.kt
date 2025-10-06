@@ -4,6 +4,7 @@ import android.app.Activity
 import com.jparkbro.data.AuthRepository
 import com.jparkbro.data.UserPreferenceRepository
 import com.jparkbro.model.auth.LoginProvider
+import com.jparkbro.model.exception.ApiException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

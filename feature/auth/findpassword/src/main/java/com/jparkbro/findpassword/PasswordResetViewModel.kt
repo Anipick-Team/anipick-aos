@@ -49,7 +49,7 @@ class PasswordResetViewModel @AssistedInject constructor(
         _isConfirmVisibility.value = !_isConfirmVisibility.value
     }
 
-    fun resetPassword() {
+    fun resetPassword(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             authRepository.resetPassword(
                 ResetPassword(
@@ -59,10 +59,10 @@ class PasswordResetViewModel @AssistedInject constructor(
                 )
             ).fold(
                 onSuccess = {
-
+                    onResult(true)
                 },
                 onFailure = {
-
+                    onResult(false)
                 }
             )
         }

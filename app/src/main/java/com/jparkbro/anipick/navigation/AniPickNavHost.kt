@@ -110,6 +110,14 @@ fun APNavHost(
         )
         passwordResetScreen(
             onNavigateBack = navController::navigateUp,
+            onNavigateToLogin = {
+                navController.navigateToLogin(
+                    navOptions {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                )
+            }
         )
         preferenceSetupScreen(
             metaData = metaData,

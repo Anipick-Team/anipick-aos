@@ -35,12 +35,14 @@ fun NavController.navigateToPasswordReset(email: String, navOptions: NavOptions?
 
 fun NavGraphBuilder.passwordResetScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToLogin: () -> Unit,
 ) {
     composable<PasswordReset> { entry ->
         val email = entry.toRoute<PasswordReset>().email
 
         PasswordReset(
             onNavigateBack = onNavigateBack,
+            onNavigateToLogin = onNavigateToLogin,
             viewModel = hiltViewModel<PasswordResetViewModel, PasswordResetViewModel.Factory>(
                 key = email
             ) { factory ->

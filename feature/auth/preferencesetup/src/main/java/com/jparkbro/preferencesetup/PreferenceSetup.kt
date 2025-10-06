@@ -78,6 +78,8 @@ import com.jparkbro.model.common.MetaData
 import com.jparkbro.model.common.ResponseMap
 import com.jparkbro.ui.APBaseTextField
 import com.jparkbro.ui.APBaseTopAppBar
+import com.jparkbro.ui.APCardItem
+import com.jparkbro.ui.APEmptyContent
 import com.jparkbro.ui.APExpireBottomSheet
 import com.jparkbro.ui.APFilterTriggerChip
 import com.jparkbro.ui.DraggableStarRating
@@ -620,9 +622,10 @@ private fun AnimeRatingCard(
                     },
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        contentColor = Color.White,
+                        contentColor = APColors.White,
+                        disabledContentColor = APColors.White,
                         containerColor = APColors.Primary,
-                        disabledContainerColor = APColors.Gray
+                        disabledContainerColor = APColors.Gray,
                     ),
                     enabled = rating != 0f
                 ) {
