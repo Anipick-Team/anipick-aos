@@ -188,6 +188,7 @@ internal fun PasswordVerification(
                                         is RequestCodeButtonUiState.Ready -> true
                                     },
                                     border = when (requestCodeButtonState) {
+                                        is RequestCodeButtonUiState.Loading -> BorderStroke(1.dp, Color(0xFFEBEBEB))
                                         is RequestCodeButtonUiState.Counting -> BorderStroke(1.dp, Color(0xFFEBEBEB))
                                         else -> BorderStroke(0.dp, Color.White)
                                     },
