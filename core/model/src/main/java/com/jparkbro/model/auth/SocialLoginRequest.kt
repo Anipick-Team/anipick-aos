@@ -12,7 +12,7 @@ data class SocialLoginRequest(
 @Serializable
 enum class LoginProvider(val value: String, val displayName: String) {
     @SerialName("LOCAL")
-    Local("Local", ""),
+    LOCAL("Local", ""),
 
     @SerialName("KAKAO")
     KAKAO("KAKAO", "카카오톡"),

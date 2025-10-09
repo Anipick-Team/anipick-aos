@@ -8,14 +8,14 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false
 
-    id("com.google.dagger.hilt.android") version "2.56.1" apply false
-    id("com.google.devtools.ksp") version "2.0.21-1.0.27" apply false
+    id("com.google.dagger.hilt.android") version "2.57.2" apply false
+    id("com.google.devtools.ksp") version "2.2.10-2.0.2" apply false
 }
 
 buildscript {
     val targetSdk = 36
     val minSdk = 26
-    val versionCode = 15
+    val versionCode = 16
     val versionName = "1.0.0"
 
     extra.apply {

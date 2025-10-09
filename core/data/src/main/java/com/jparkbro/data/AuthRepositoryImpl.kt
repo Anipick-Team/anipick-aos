@@ -74,6 +74,7 @@ class AuthRepositoryImpl @Inject constructor(
                     // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
                     UserApiClient.instance.loginWithKakaoAccount(activity, callback = callback)
                 } else if (token != null) {
+                    Log.d("kakao", "token: $token")
                     deferred.complete(Result.success(token.accessToken))
                 }
             }
@@ -85,9 +86,41 @@ class AuthRepositoryImpl @Inject constructor(
         return deferred.await()
     }
 
+    override suspend fun kakaoLogout(): Result<Unit> {
+        val deferred = CompletableDeferred<Result<Unit>>()
+
+        UserApiClient.instance.logout { error ->
+            if (error != null) {
+                Log.e("kakao", "로그아웃 실패. SDK에서 토큰 폐기됨", error)
+                deferred.complete(Result.failure(error))
+            } else {
+                Log.i("kakao", "로그아웃 성공. SDK에서 토큰 폐기됨")
+                deferred.complete(Result.success(Unit))
+            }
+        }
+
+        return deferred.await()
+    }
+
+    override suspend fun kakaoUnlink(): Result<Unit> {
+        val deferred = CompletableDeferred<Result<Unit>>()
+
+        UserApiClient.instance.unlink { error ->
+            if (error != null) {
+                Log.e("kakao", "연결 해제 실패", error)
+                deferred.complete(Result.failure(error))
+            } else {
+                Log.i("kakao", "연결 해제 성공. SDK에서 토큰 폐기 됨")
+                deferred.complete(Result.success(Unit))
+            }
+        }
+
+        return deferred.await()
+    }
+
     /*
-     * Google API Get Token
-     */
+         * Google API Get Token
+         */
     // Trigger a Sign in with Google button flow
     val signInWithGoogleOption: GetSignInWithGoogleOption = GetSignInWithGoogleOption
         .Builder(serverClientId = BuildConfig.WEB_CLIENT_ID)

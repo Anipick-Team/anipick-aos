@@ -174,7 +174,7 @@ private fun Setting(
                                     indication = null,
                                     interactionSource = remember { MutableInteractionSource() }
                                 ) {
-                                    if (userInfo?.provider == LoginProvider.Local) {
+                                    if (userInfo?.provider == LoginProvider.LOCAL) {
                                         onNavigateToProfileEdit(ProfileEditType.EMAIL)
                                     }
                                 },
@@ -202,7 +202,7 @@ private fun Setting(
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(18.dp),
-                                    tint = if (userInfo?.provider == LoginProvider.Local) Color(0xFF667080) else APColors.LightGray
+                                    tint = if (userInfo?.provider == LoginProvider.LOCAL) Color(0xFF667080) else APColors.LightGray
                                 )
                             }
                         }
@@ -213,7 +213,7 @@ private fun Setting(
                                     indication = null,
                                     interactionSource = remember { MutableInteractionSource() }
                                 ) {
-                                    if (userInfo?.provider == LoginProvider.Local) {
+                                    if (userInfo?.provider == LoginProvider.LOCAL) {
                                         onNavigateToProfileEdit(ProfileEditType.PASSWORD)
                                     }
                                 },
@@ -230,7 +230,7 @@ private fun Setting(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                if (userInfo?.provider != LoginProvider.Local) {
+                                if (userInfo?.provider != LoginProvider.LOCAL) {
                                     Text(
                                         text = "sns 간편가입된 계정입니다.",
                                         fontSize = 14.sp,
@@ -243,7 +243,7 @@ private fun Setting(
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(18.dp),
-                                    tint = if (userInfo?.provider == LoginProvider.Local) Color(0xFF667080) else APColors.LightGray
+                                    tint = if (userInfo?.provider == LoginProvider.LOCAL) Color(0xFF667080) else APColors.LightGray
                                 )
                             }
                         }
@@ -335,7 +335,7 @@ private fun Setting(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    val intent = Intent(Intent.ACTION_VIEW, "https://spiral-cowl-f89.notion.site/AniPick-1d3b3eed42088025b329eb107cd42ae1?source=copy_link".toUri())
+                                    val intent = Intent(Intent.ACTION_VIEW, "https://anipick.p-e.kr/terms.html".toUri())
                                     context.startActivity(intent)
                                 },
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -359,7 +359,7 @@ private fun Setting(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    val intent = Intent(Intent.ACTION_VIEW, "https://spiral-cowl-f89.notion.site/AniPick-1d3b3eed42088077a175f63a04dc93fd?source=copy_link".toUri())
+                                    val intent = Intent(Intent.ACTION_VIEW, "https://anipick.p-e.kr/privacy.html".toUri())
                                     context.startActivity(intent)
                                 },
                             horizontalArrangement = Arrangement.SpaceBetween,

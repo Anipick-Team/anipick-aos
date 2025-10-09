@@ -2,7 +2,6 @@ package com.jparkbro.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,8 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -36,7 +33,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,7 +69,7 @@ fun APSimpleBackTopAppBar(
                 modifier = Modifier
             ) {
                 Icon(
-                    Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                    painter = painterResource(R.drawable.ic_chevron_left),
                     contentDescription = "",
                 )
             }
@@ -143,7 +139,7 @@ fun APTitledBackTopAppBar(
                 modifier = Modifier
             ) {
                 Icon(
-                    Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                    painter = painterResource(R.drawable.ic_chevron_left),
                     contentDescription = "",
                 )
             }
@@ -174,7 +170,7 @@ fun APActionsBackTopAppBar(
                 modifier = Modifier
             ) {
                 Icon(
-                    Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                    painter = painterResource(R.drawable.ic_chevron_left),
                     contentDescription = "",
                 )
             }
@@ -201,7 +197,7 @@ fun APSearchFieldBackTopAppBar(
                 modifier = Modifier
             ) {
                 Icon(
-                    Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                    painter = painterResource(R.drawable.ic_chevron_left),
                     contentDescription = "",
                 )
             }

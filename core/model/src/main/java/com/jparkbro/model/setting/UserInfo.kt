@@ -11,5 +11,5 @@ data class UserInfo(
     @SerialName("email")
     val email: String,
     @SerialName("provider")
-    val provider: LoginProvider = LoginProvider.Local,
+    val provider: LoginProvider = LoginProvider.LOCAL,
 )

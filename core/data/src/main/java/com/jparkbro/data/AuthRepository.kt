@@ -21,6 +21,9 @@ interface AuthRepository {
     suspend fun getGoogleAuthToken(activity: Activity): Result<String>
     suspend fun socialLogin(provider: LoginProvider, socialToken: String): Result<AuthResponse>
 
+    suspend fun kakaoLogout(): Result<Unit>
+    suspend fun kakaoUnlink(): Result<Unit>
+
     /* 비밀번호 찾기 로직 */
     suspend fun requestResetCode(request: RequestCode): Result<Unit>
     suspend fun verifyResetCode(request: VerifyCode): Result<Unit>

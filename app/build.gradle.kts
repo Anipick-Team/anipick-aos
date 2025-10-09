@@ -37,6 +37,8 @@ android {
             "KAKAO_APP_KEY",
             "\"${localProperties.getProperty("KAKAO_APP_KEY", "")}\""
         )
+
+        manifestPlaceholders["KAKAO_APP_KEY"] = localProperties.getProperty("KAKAO_APP_KEY", "")
     }
 
     signingConfigs {

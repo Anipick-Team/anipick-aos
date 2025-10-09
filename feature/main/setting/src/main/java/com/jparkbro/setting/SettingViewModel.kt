@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.setting.SettingRepository
 import com.jparkbro.domain.LogoutUseCase
 import com.jparkbro.domain.UpdateUserUseCase
+import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.exception.ApiException
 import com.jparkbro.model.setting.ProfileEditType
 import com.jparkbro.model.setting.UpdateUserRequest
@@ -122,13 +123,16 @@ class SettingViewModel @Inject constructor(
                         currentPassword = _currentPassword.value,
                         newPassword = _newPassword.value,
                         newPasswordConfirm = _newPasswordConfirm.value
-                    )
+                    ),
+                    provider = _userInfo.value?.provider ?: LoginProvider.LOCAL
                 ).collect { result ->
                     result.fold(
                         onSuccess = {
                             Log.d("SettingViewModel", "Successfully updated user info: $type")
+                            if (type != ProfileEditType.WITHDRAWAL) {
+                                getUserInfo() // 업데이트 후 정보 새로고침
+                            }
                             clearNewTextFiled()
-                            getUserInfo() // 업데이트 후 정보 새로고침
                             onResult(true)
                         },
                         onFailure = { exception ->
@@ -149,7 +153,9 @@ class SettingViewModel @Inject constructor(
     fun logout(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
-                logoutUseCase().collect { result ->
+                logoutUseCase(
+                    _userInfo.value?.provider ?: LoginProvider.LOCAL
+                ).collect { result ->
                     result.fold(
                         onSuccess = {
                             Log.d("SettingViewModel", "Successfully logged out")

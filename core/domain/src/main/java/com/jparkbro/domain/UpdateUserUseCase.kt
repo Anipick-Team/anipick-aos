@@ -1,9 +1,11 @@
 package com.jparkbro.domain
 
+import com.jparkbro.data.AuthRepository
 import com.jparkbro.data.UserPreferenceRepository
 import com.jparkbro.data.common.CommonRepository
 import com.jparkbro.data.search.SearchRepository
 import com.jparkbro.data.setting.SettingRepository
+import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.setting.ProfileEditType
 import com.jparkbro.model.setting.UpdateEmail
 import com.jparkbro.model.setting.UpdateNickname
@@ -18,8 +20,9 @@ class UpdateUserUseCase @Inject constructor(
     private val userPreferenceRepository: UserPreferenceRepository,
     private val commonRepository: CommonRepository,
     private val searchRepository: SearchRepository,
+    private val authRepository: AuthRepository
 ) {
-    operator fun invoke(type: ProfileEditType, request: UpdateUserRequest): Flow<Result<Unit>> = flow {
+    operator fun invoke(type: ProfileEditType, request: UpdateUserRequest, provider: LoginProvider): Flow<Result<Unit>> = flow {
         try {
             when (type) {
                 ProfileEditType.NICKNAME -> {
@@ -70,13 +73,42 @@ class UpdateUserUseCase @Inject constructor(
                     // 1. 회원탈퇴 Api
                     settingRepository.userWithdrawal().fold(
                         onSuccess = {
+                            // 1-1. kakao unlink
+                            if (provider == LoginProvider.KAKAO) {
+                                authRepository.kakaoUnlink().fold(
+                                    onSuccess = { },
+                                    onFailure = { exception ->
+                                        emit(Result.failure(exception))
+                                        return@fold
+                                    }
+                                )
+                            }
+
                             // 2. Data Store 정보 삭제
                             // 2-1. 토큰, 닉네임, 아이디
-                            userPreferenceRepository.clearAllData().getOrNull()
+                            userPreferenceRepository.clearAllData().fold(
+                                onSuccess = { },
+                                onFailure = { exception ->
+                                    emit(Result.failure(exception))
+                                    return@fold
+                                }
+                            )
                             // 2-2. 최근 애니
-                            commonRepository.clearRecentAnime().getOrNull()
+                            commonRepository.clearRecentAnime().fold(
+                                onSuccess = { },
+                                onFailure = { exception ->
+                                    emit(Result.failure(exception))
+                                    return@fold
+                                }
+                            )
                             // 2-3. 검색 내역
-                            searchRepository.deleteAll().getOrNull()
+                            searchRepository.deleteAll().fold(
+                                onSuccess = { },
+                                onFailure = { exception ->
+                                    emit(Result.failure(exception))
+                                    return@fold
+                                }
+                            )
                         },
                         onFailure = { exception ->
                             emit(Result.failure(exception))

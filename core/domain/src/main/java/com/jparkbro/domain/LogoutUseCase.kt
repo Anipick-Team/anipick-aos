@@ -1,20 +1,35 @@
 package com.jparkbro.domain
 
+import com.jparkbro.data.AuthRepository
 import com.jparkbro.data.UserPreferenceRepository
+import com.jparkbro.model.auth.LoginProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class LogoutUseCase @Inject constructor(
-    private val userPreferenceRepository: UserPreferenceRepository
+    private val userPreferenceRepository: UserPreferenceRepository,
+    private val authRepository: AuthRepository,
 ) {
     // Data Store 정보 삭제
-    operator fun invoke(): Flow<Result<Unit>> = flow {
+    operator fun invoke(provider: LoginProvider): Flow<Result<Unit>> = flow {
         try {
             // 1. 토큰 삭제
             userPreferenceRepository.clearAllData().fold(
                 onSuccess = {
-                    emit(Result.success(Unit))
+                    // 1-1. 카카오 로그아웃 처리
+                    if (provider == LoginProvider.KAKAO) {
+                        authRepository.kakaoLogout().fold(
+                            onSuccess = {
+                                emit(Result.success(Unit))
+                            },
+                            onFailure = { exception ->
+                                emit(Result.failure(exception))
+                            }
+                        )
+                    } else {
+                        emit(Result.success(Unit))
+                    }
                 },
                 onFailure = { exception ->
                     emit(Result.failure(exception))
