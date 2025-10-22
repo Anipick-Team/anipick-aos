@@ -69,7 +69,7 @@ import com.jparkbro.model.home.HomeDetailResponse
 import com.jparkbro.model.home.HomeReviewItem
 import com.jparkbro.model.home.Sort
 import com.jparkbro.ui.APCardItem
-import com.jparkbro.ui.APDialog
+import com.jparkbro.ui.APConfirmDialog
 import com.jparkbro.ui.APReviewItem
 import com.jparkbro.ui.APTitledBackTopAppBar
 import com.jparkbro.ui.APToggleSwitch
@@ -788,7 +788,7 @@ private fun HomeDetail(
         }
     }
     dialogData?.let {
-        APDialog(
+        APConfirmDialog(
             title = it.title,
             subTitle = it.subTitle,
             content = it.content,

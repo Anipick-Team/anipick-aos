@@ -20,11 +20,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -60,7 +62,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.pointerInput
@@ -90,7 +94,7 @@ import com.jparkbro.model.detail.DetailSeries
 import com.jparkbro.model.detail.ReviewDetailResponse
 import com.jparkbro.model.detail.ReviewSort
 import com.jparkbro.ui.APCardItem
-import com.jparkbro.ui.APDialog
+import com.jparkbro.ui.APConfirmDialog
 import com.jparkbro.ui.APReviewItem
 import com.jparkbro.ui.APSnackBar
 import com.jparkbro.ui.APToggleSwitch
@@ -325,11 +329,12 @@ private fun DetailAnime(
                                         contentScale = ContentScale.Crop
                                     )
                                 } else {
-                                    Box(
+                                    Image(
+                                        painter = painterResource(R.drawable.anipick_banner_default),
+                                        contentDescription = null,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(220.dp)
-                                            .background(Color(0xFFF8F9FD))
                                     )
                                 }
                                 Icon(
@@ -623,7 +628,7 @@ private fun DetailAnime(
     }
 
     dialogData?.let {
-        APDialog(
+        APConfirmDialog(
             title = it.title,
             subTitle = it.subTitle,
             content = it.content,
@@ -698,89 +703,30 @@ private fun AnimeInfo(
         HorizontalDivider(modifier = Modifier.padding(top = 19.dp, bottom = 33.dp), thickness = 3.dp, color = APColors.LightGray)
         Column(
             modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .height(240.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
                 Text(
                     text = "타입",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W500,
-                    color = APColors.Black
+                    color = APColors.Black,
+                    modifier = Modifier
+                        .weight(1f)
                 )
-                Text(
-                    text = "${detailInfo?.type}",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W500,
-                    color = APColors.TextGray
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "장르",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W500,
-                    color = APColors.Black
-                )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    detailInfo?.genres?.forEach { genre ->
-                        Text(
-                            text = genre.name,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W500,
-                            color = APColors.Primary,
-                            modifier = Modifier
-                                .background(APColors.Primary.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
-                                .padding(horizontal = 8.dp, vertical = 4.dp),
-                        )
-                    }
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "방영 시기",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W500,
-                    color = APColors.Black
-                )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                Box(
+                    modifier = Modifier
+                        .weight(4f),
+                    contentAlignment = Alignment.CenterEnd
                 ) {
                     Text(
-                        text = "${detailInfo?.status}",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        color = APColors.Black,
-                        modifier = Modifier
-                            .background(APColors.LightGray, CircleShape)
-                            .padding(horizontal = 10.dp, vertical = 2.dp),
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        text = "${detailInfo?.airDate}",
+                        text = "${detailInfo?.type}",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W500,
                         color = APColors.TextGray
@@ -789,71 +735,179 @@ private fun AnimeInfo(
             }
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
+            ) {
+                Text(
+                    text = "장르",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    color = APColors.Black,
+                    modifier = Modifier
+                        .weight(1f)
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(4f),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        detailInfo?.genres?.forEach { genre ->
+                            Text(
+                                text = genre.name,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W500,
+                                color = APColors.Primary,
+                                modifier = Modifier
+                                    .background(APColors.Primary.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
+                                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                            )
+                        }
+                    }
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                Text(
+                    text = "방영 시기",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    color = APColors.Black,
+                    modifier = Modifier
+                        .weight(1f)
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(4f),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "${detailInfo?.status}",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W500,
+                            color = APColors.Black,
+                            modifier = Modifier
+                                .background(APColors.LightGray, CircleShape)
+                                .padding(horizontal = 10.dp, vertical = 2.dp),
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            text = "${detailInfo?.airDate}",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W500,
+                            color = APColors.TextGray
+                        )
+                    }
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
             ) {
                 Text(
                     text = "에피소드",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W500,
-                    color = APColors.Black
+                    color = APColors.Black,
+                    modifier = Modifier
+                        .weight(1f)
                 )
-                Text(
-                    text = "${detailInfo?.episode}회차",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W500,
-                    color = APColors.TextGray
-                )
+                Box(
+                    modifier = Modifier
+                        .weight(4f),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Text(
+                        text = "${detailInfo?.episode}회차",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        color = APColors.TextGray
+                    )
+                }
             }
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
                 Text(
                     text = "연령 등급",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W500,
-                    color = APColors.Black
+                    color = APColors.Black,
+                    modifier = Modifier
+                        .weight(1f)
                 )
-                Text(
-                    text = "${detailInfo?.age}",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W500,
-                    color = APColors.TextGray
-                )
+                Box(
+                    modifier = Modifier
+                        .weight(4f),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Text(
+                        text = "${detailInfo?.age}",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        color = APColors.TextGray
+                    )
+                }
             }
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
                 Text(
                     text = "제작사",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W500,
-                    color = APColors.Black
+                    color = APColors.Black,
+                    modifier = Modifier
+                        .weight(1f)
                 )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                Box(
+                    modifier = Modifier
+                        .weight(4f),
+                    contentAlignment = Alignment.CenterEnd
                 ) {
-                    detailInfo?.studios?.forEach { studio ->
-                        Text(
-                            text = "${studio.name}",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W500,
-                            color = APColors.Secondary,
-                            textDecoration = TextDecoration.Underline,
-                            modifier = Modifier
-                                .clickable { onNavigateToStudioDetail(studio.studioId) }
-                        )
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End)
+                    ) {
+                        detailInfo?.studios?.forEach { studio ->
+                            Text(
+                                text = "${studio.name}",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W500,
+                                color = APColors.Secondary,
+                                modifier = Modifier
+                                    .clickable { onNavigateToStudioDetail(studio.studioId) }
+                                    .drawBehind {
+                                        val strokeWidth = 1.dp.toPx()
+                                        val y = size.height - strokeWidth / 2
+                                        drawLine(
+                                            color = APColors.Secondary,
+                                            start = Offset(0f, y),
+                                            end = Offset(size.width, y),
+                                            strokeWidth = strokeWidth
+                                        )
+                                    }
+                            )
+                        }
                     }
                 }
             }
@@ -882,20 +936,22 @@ private fun AnimeInfo(
                                     .clickable { onNavigateToActorDetail(actor.voiceActor.id) },
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Column {
+                                Column(
+                                    modifier = Modifier
+                                        .width(102.dp)
+                                ) {
                                     AsyncImage(
                                         model = actor.character.imageUrl,
                                         contentDescription = null,
                                         modifier = Modifier
-                                            .width(65.dp)
-                                            .height(95.dp)
+                                            .height(158.dp)
                                             .clip(RoundedCornerShape(topStart = 8.dp))
                                             .background(APColors.Gray, RoundedCornerShape(topStart = 8.dp)),
                                         contentScale = ContentScale.Crop
                                     )
                                     Box(
                                         modifier = Modifier
-                                            .height(46.dp)
+                                            .height(42.dp)
                                             .padding(start = 8.dp),
                                         contentAlignment = Alignment.CenterStart
                                     ) {
@@ -903,24 +959,27 @@ private fun AnimeInfo(
                                             text = "${actor.character.name}",
                                             fontSize = 14.sp,
                                             fontWeight = FontWeight.W500,
-                                            color = APColors.Black
+                                            color = APColors.Black,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                     }
                                 }
-                                Column {
+                                Column(
+                                    modifier = Modifier
+                                        .width(102.dp)
+                                ) {
                                     AsyncImage(
                                         model = actor.voiceActor.imageUrl,
                                         contentDescription = null,
                                         modifier = Modifier
-                                            .width(65.dp)
-                                            .height(95.dp)
+                                            .height(158.dp)
                                             .clip(RoundedCornerShape(topEnd = 8.dp))
                                             .background(APColors.Gray, RoundedCornerShape(topEnd = 8.dp)),
                                         contentScale = ContentScale.Crop
                                     )
                                     Box(
                                         modifier = Modifier
-                                            .height(46.dp)
+                                            .height(42.dp)
                                             .padding(start = 8.dp),
                                         contentAlignment = Alignment.CenterStart
                                     ) {
@@ -928,7 +987,8 @@ private fun AnimeInfo(
                                             text = "${actor.voiceActor.name}",
                                             fontSize = 14.sp,
                                             fontWeight = FontWeight.W500,
-                                            color = APColors.Black
+                                            color = APColors.Black,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                     }
                                 }

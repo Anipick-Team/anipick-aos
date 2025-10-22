@@ -40,7 +40,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.jparkbro.model.exception.ApiException
 import com.jparkbro.model.setting.ProfileEditType
 import com.jparkbro.model.setting.UserInfo
-import com.jparkbro.ui.APDialog
+import com.jparkbro.ui.APConfirmDialog
 import com.jparkbro.ui.APLabelTextField
 import com.jparkbro.ui.APSurfaceTextFieldWithTrailing
 import com.jparkbro.ui.APTitledBackTopAppBar
@@ -244,7 +244,7 @@ private fun ProfileEdit(
     }
 
     dialogData?.let {
-        APDialog(
+        APConfirmDialog(
             title = it.title,
             subTitle = it.subTitle,
             dismiss = it.dismiss,

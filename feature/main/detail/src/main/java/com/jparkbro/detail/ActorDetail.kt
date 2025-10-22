@@ -117,6 +117,7 @@ private fun ActorDetail(
                 handleBackNavigation = { onNavigateBack() },
             )
         },
+        containerColor = APColors.Surface
     ) { innerPadding ->
         LazyVerticalGrid(
             modifier = Modifier

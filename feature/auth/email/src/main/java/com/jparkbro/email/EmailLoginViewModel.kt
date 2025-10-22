@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.domain.EmailLoginUseCase
 import com.jparkbro.model.exception.ApiException
+import com.jparkbro.ui.DialogData
+import com.jparkbro.ui.DialogType
 import com.jparkbro.ui.util.EmailValidator
 import com.jparkbro.ui.util.extension.filterKorean
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,6 +44,9 @@ internal class EmailLoginViewModel @Inject constructor(
     private val _loginFailMessage = MutableStateFlow<String?>(null)
     val loginFailMessage = _loginFailMessage.asStateFlow()
 
+    private val _showDialog = MutableStateFlow<DialogData?>(null)
+    val showDialog = _showDialog.asStateFlow()
+
     fun updateEmail(email: String) {
         _emailText.value = email
     }
@@ -52,6 +57,10 @@ internal class EmailLoginViewModel @Inject constructor(
 
     fun togglePasswordVisibility() {
         _isVisibility.value = !_isVisibility.value
+    }
+
+    fun dismissDialog() {
+        _showDialog.value = null
     }
 
     fun emailValid() {
@@ -85,6 +94,14 @@ internal class EmailLoginViewModel @Inject constructor(
                                 is ApiException -> {
                                     if (exception.errorCode == 101 || exception.errorCode == 104 || exception.errorCode == 106) {
                                         _loginFailMessage.value = exception.errorValue
+                                    } else if (exception.errorCode == 132) {
+                                        _showDialog.value = DialogData(
+                                            type = DialogType.ALERT,
+                                            title = "탈퇴된 계정입니다.",
+                                            dismiss = "닫기",
+                                            errorMsg = "자세한 사항은 고객센터로 문의해 주세요.\nteamanipick@gmail.com",
+                                            onDismiss = { dismissDialog() }
+                                        )
                                     } else {
                                         _emailErrorMessage.value = exception.errorValue
                                     }

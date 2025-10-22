@@ -37,7 +37,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.jparkbro.ui.APDialog
+import com.jparkbro.ui.APAlertDialog
+import com.jparkbro.ui.APConfirmDialog
+import com.jparkbro.ui.DialogType
 import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.R
 
@@ -77,18 +79,30 @@ internal fun Login(
         signInWithGoogle = viewModel::signInWithGoogle,
     )
 
-    if (showDialog) {
-        APDialog(
-            title = "이미 가입된 이메일 주소입니다.",
-            subTitle = "이메일 로그인을 시도해주세요.",
-            dismiss = "닫기",
-            confirm = "이메일 로그인",
-            onDismiss = { viewModel.dismissDialog() },
-            onConfirm = {
-                viewModel.dismissDialog()
-                onNavigateToEmailLogin()
-            },
-        )
+    showDialog?.let { dialogData ->
+        when (dialogData.type) {
+            DialogType.CONFIRM -> {
+                APConfirmDialog(
+                    title = dialogData.title,
+                    subTitle = dialogData.subTitle,
+                    dismiss = dialogData.dismiss,
+                    confirm = dialogData.confirm,
+                    onDismiss = { viewModel.dismissDialog() },
+                    onConfirm = {
+                        viewModel.dismissDialog()
+                        onNavigateToEmailLogin()
+                    },
+                )
+            }
+            DialogType.ALERT -> {
+                APAlertDialog(
+                    title = dialogData.title,
+                    errorMsg = dialogData.errorMsg,
+                    dismiss = dialogData.dismiss,
+                    onDismiss = { viewModel.dismissDialog() }
+                )
+            }
+        }
     }
 }
 

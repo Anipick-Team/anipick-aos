@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.jparkbro.domain.GoogleLoginUseCase
 import com.jparkbro.domain.KakaoLoginUseCase
 import com.jparkbro.model.exception.ApiException
+import com.jparkbro.ui.DialogData
+import com.jparkbro.ui.DialogType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,11 +25,11 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    private val _showDialog = MutableStateFlow(false)
+    private val _showDialog = MutableStateFlow<DialogData?>(null)
     val showDialog = _showDialog.asStateFlow()
 
     fun dismissDialog() {
-        _showDialog.value = false
+        _showDialog.value = null
     }
 
     fun signInWithGoogle(activity: Activity) {
@@ -53,8 +55,26 @@ class LoginViewModel @Inject constructor(
                             LoginUiState.Success(reviewCompletedYn)
                         },
                         onFailure = { exception ->
-                            if (exception is ApiException && exception.errorCode == 133) {
-                                _showDialog.value = true
+                            if (exception is ApiException) {
+                                when (exception.errorCode) {
+                                    132 -> {
+                                        _showDialog.value = DialogData(
+                                            type = DialogType.ALERT,
+                                            title = "탈퇴된 계정입니다.",
+                                            dismiss = "닫기",
+                                            errorMsg = "자세한 사항은 고객센터로 문의해 주세요.\nteamanipick@gmail.com"
+                                        )
+                                    }
+                                    133 -> {
+                                        _showDialog.value = DialogData(
+                                            type = DialogType.CONFIRM,
+                                            title = "이미 가입된 이메일 주소입니다.",
+                                            subTitle = "이메일 로그인을 시도해주세요.",
+                                            dismiss = "닫기",
+                                            confirm = "이메일 로그인",
+                                        )
+                                    }
+                                }
                             }
                             LoginUiState.Error(exception.message ?: "로그인 중 에러 발생")
                         }

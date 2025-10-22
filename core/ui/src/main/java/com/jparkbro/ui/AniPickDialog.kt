@@ -30,7 +30,7 @@ import androidx.compose.ui.window.Dialog
 import com.jparkbro.ui.theme.APColors
 
 @Composable
-fun APDialog(
+fun APConfirmDialog(
     title: String = "",
     subTitle: String = "",
     content: @Composable (() -> Unit)? = null,
@@ -114,7 +114,8 @@ fun APDialog(
 }
 
 @Composable
-fun APErrorDialog(
+fun APAlertDialog(
+    title: String = "오류",
     errorMsg: String = "",
     dismiss: String = "닫기",
     onDismiss: () -> Unit,
@@ -138,7 +139,7 @@ fun APErrorDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "오류",
+                    text = title,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.W600,
                     color = APColors.Black
@@ -162,7 +163,7 @@ fun APErrorDialog(
                     text = dismiss,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W500,
-                    color = APColors.TextGray,
+                    color = APColors.Primary,
                     modifier = Modifier
                         .clickable(
                             indication = null,
@@ -178,8 +179,8 @@ fun APErrorDialog(
 
 @Preview(showBackground = true)
 @Composable
-private fun APDialogPreview() {
-    APDialog(
+private fun APConfirmDialogPreview() {
+    APConfirmDialog(
         title = "SNS로 간편 가입된 계정입니다.",
         subTitle = "SNS로 로그인해주세요.",
         content = { Text("sadf") },
@@ -193,14 +194,16 @@ private fun APDialogPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun APErrorDialogPreview() {
-    APErrorDialog(
-        dismiss = "확인",
-        errorMsg = "에러입니다. 에러입니다. 에러입니다. 에러입니다. 에러입니다. 에러입니다.",
+    APAlertDialog(
         onDismiss = {},
+        title = "탈퇴된 계정입니다.",
+        dismiss = "닫기",
+        errorMsg = "자세한 사항은 고객센터로 문의해 주세요.\nteamanipick@gmail.com"
     )
 }
 
 data class DialogData(
+    val type: DialogType = DialogType.CONFIRM,
     val title: String = "",
     val subTitle: String = "",
     val content: @Composable () -> Unit = {},
@@ -210,3 +213,8 @@ data class DialogData(
     val onConfirm: () -> Unit = {},
     val errorMsg: String = "",
 )
+
+enum class DialogType {
+    ALERT,
+    CONFIRM
+}

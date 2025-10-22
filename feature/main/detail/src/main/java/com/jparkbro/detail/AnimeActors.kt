@@ -27,7 +27,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -100,6 +102,7 @@ private fun AnimeActors(
                 handleBackNavigation = { onNavigateBack() },
             )
         },
+        containerColor = APColors.Surface
     ) { innerPadding ->
         LazyVerticalGrid(
             modifier = Modifier
@@ -114,29 +117,29 @@ private fun AnimeActors(
             horizontalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             items(actors) { actor ->
+                val cardWidth = calculateCardWidth(maxWidth = 212.dp, itemsPerRow = 2)
                 Row(
                     modifier = Modifier
                         .background(APColors.Surface, RoundedCornerShape(8.dp))
-                        .clickable {
-                            onNavigateToActorDetail(actor.voiceActor.id)
-                        },
+                        .clickable { onNavigateToActorDetail(actor.voiceActor.id) },
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Column(
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .width(cardWidth/2)
                     ) {
                         AsyncImage(
                             model = actor.character.imageUrl,
                             contentDescription = null,
                             modifier = Modifier
-                                .width(65.dp)
-                                .height(95.dp)
+                                .height(cardWidth / 2 * 1.55f)
                                 .clip(RoundedCornerShape(topStart = 8.dp))
                                 .background(APColors.Gray, RoundedCornerShape(topStart = 8.dp)),
+                            contentScale = ContentScale.Crop
                         )
                         Box(
                             modifier = Modifier
-                                .height(46.dp)
+                                .height(42.dp)
                                 .padding(start = 8.dp),
                             contentAlignment = Alignment.CenterStart
                         ) {
@@ -144,25 +147,27 @@ private fun AnimeActors(
                                 text = "${actor.character.name}",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.W500,
-                                color = APColors.Black
+                                color = APColors.Black,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
                     Column(
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .width(cardWidth/2)
                     ) {
                         AsyncImage(
                             model = actor.voiceActor.imageUrl,
                             contentDescription = null,
                             modifier = Modifier
-                                .width(65.dp)
-                                .height(95.dp)
+                                .height(cardWidth / 2 * 1.55f)
                                 .clip(RoundedCornerShape(topEnd = 8.dp))
                                 .background(APColors.Gray, RoundedCornerShape(topEnd = 8.dp)),
+                            contentScale = ContentScale.Crop
                         )
                         Box(
                             modifier = Modifier
-                                .height(46.dp)
+                                .height(42.dp)
                                 .padding(start = 8.dp),
                             contentAlignment = Alignment.CenterStart
                         ) {
@@ -170,7 +175,8 @@ private fun AnimeActors(
                                 text = "${actor.voiceActor.name}",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.W500,
-                                color = APColors.Black
+                                color = APColors.Black,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }

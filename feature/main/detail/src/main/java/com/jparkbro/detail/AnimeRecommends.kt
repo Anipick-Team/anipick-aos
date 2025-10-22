@@ -84,6 +84,7 @@ private fun AnimeRecommends(
                 handleBackNavigation = { onNavigateBack() },
             )
         },
+        containerColor = APColors.Surface
     ) { innerPadding ->
         val gridState = rememberLazyGridState()
 

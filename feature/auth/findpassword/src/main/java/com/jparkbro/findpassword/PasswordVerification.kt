@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jparkbro.findpassword.util.RequestCodeButtonUiState
 import com.jparkbro.findpassword.util.VerifyButtonUiState
-import com.jparkbro.ui.APDialog
+import com.jparkbro.ui.APConfirmDialog
 import com.jparkbro.ui.APSimpleBackTopAppBar
 import com.jparkbro.ui.APSnackBar
 import com.jparkbro.ui.APSurfaceTextField
@@ -291,7 +291,7 @@ internal fun PasswordVerification(
             }
         }
     }
-    if (showDialog) APDialog(
+    if (showDialog) APConfirmDialog(
         title = "SNS로 간편 가입된 계정입니다.",
         subTitle = "SNS로 로그인해주세요.",
         dismiss = "닫기",

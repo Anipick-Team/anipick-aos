@@ -88,6 +88,7 @@ private fun AnimeSeries(
                 handleBackNavigation = { onNavigateBack() },
             )
         },
+        containerColor = APColors.Surface
     ) { innerPadding ->
         val gridState = rememberLazyGridState()
 

@@ -37,7 +37,7 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.setting.ProfileEditType
 import com.jparkbro.model.setting.UserInfo
-import com.jparkbro.ui.APDialog
+import com.jparkbro.ui.APConfirmDialog
 import com.jparkbro.ui.APTitledBackTopAppBar
 import com.jparkbro.ui.DialogData
 import com.jparkbro.ui.R
@@ -489,7 +489,7 @@ private fun Setting(
         }
     }
     dialogData?.let {
-        APDialog(
+        APConfirmDialog(
             title = it.title,
             subTitle = it.subTitle,
             dismiss = it.dismiss,

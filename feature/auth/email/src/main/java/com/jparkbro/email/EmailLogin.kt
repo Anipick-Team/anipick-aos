@@ -42,9 +42,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.jparkbro.ui.APAlertDialog
+import com.jparkbro.ui.APConfirmDialog
 import com.jparkbro.ui.APSimpleBackTopAppBar
 import com.jparkbro.ui.APSurfaceTextField
 import com.jparkbro.ui.APSurfaceTextFieldWithTrailing
+import com.jparkbro.ui.DialogType
 import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
 
@@ -64,6 +67,7 @@ internal fun EmailLogin(
     val passwordText by viewModel.passwordText.collectAsState()
     val isVisibility by viewModel.isVisibility.collectAsState()
 
+    val showDialog by viewModel.showDialog.collectAsState()
     val emailErrorMessage by viewModel.emailErrorMessage.collectAsState()
     val loginFailMessage by viewModel.loginFailMessage.collectAsState()
 
@@ -85,6 +89,15 @@ internal fun EmailLogin(
         onNavigateToPreferenceSetup = onNavigateToPreferenceSetup,
         onLogin = viewModel::emailValid
     )
+
+    showDialog?.let { dialogData ->
+        APAlertDialog(
+            title = dialogData.title,
+            errorMsg = dialogData.errorMsg,
+            dismiss = dialogData.dismiss,
+            onDismiss = dialogData.onDismiss
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
