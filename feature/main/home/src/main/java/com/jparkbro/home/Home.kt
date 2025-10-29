@@ -354,8 +354,9 @@ private fun Home(
                                         modifier = Modifier
                                             .background(Color.White, RoundedCornerShape(8.dp))
                                             .width(229.dp)
+                                            .height(136.dp)
                                             .padding(horizontal = 16.dp, vertical = 12.dp),
-                                        verticalArrangement = Arrangement.spacedBy(17.dp)
+                                        verticalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Column(
                                             verticalArrangement = Arrangement.spacedBy(7.dp)
@@ -364,8 +365,10 @@ private fun Home(
                                                 text = "${review.animeTitle}",
                                                 fontSize = 12.sp,
                                                 fontWeight = FontWeight.W500,
-                                                color = APColors.Black
-
+                                                color = APColors.Black,
+                                                lineHeight = (1.25).em,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
                                             )
                                             Text(
                                                 text = review.reviewContent,
@@ -376,22 +379,26 @@ private fun Home(
                                                 overflow = TextOverflow.Ellipsis
                                             )
                                         }
+                                        Spacer(modifier = Modifier.weight(1f))
                                         Row(
                                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                                             verticalAlignment = Alignment.CenterVertically,
                                         ) {
                                             Text(
                                                 text = review.nickname,
+                                                modifier = Modifier.weight(1f, fill = false),
                                                 fontSize = 12.sp,
                                                 fontWeight = FontWeight.W500,
-                                                color = APColors.Black
+                                                color = APColors.Black,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
                                             )
                                             VerticalDivider(modifier = Modifier.height(10.dp), thickness = 1.dp, color = APColors.Black)
                                             Text(
                                                 text = review.createdAt,
                                                 fontSize = 12.sp,
                                                 fontWeight = FontWeight.W500,
-                                                color = APColors.Black
+                                                color = APColors.Black,
                                             )
                                         }
                                     }
