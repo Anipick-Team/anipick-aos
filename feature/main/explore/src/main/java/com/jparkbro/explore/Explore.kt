@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -23,6 +24,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -153,135 +155,153 @@ private fun Explore(
         bottomBar = { bottomNav() },
         containerColor = APColors.Surface,
     ) { innerPadding ->
-        Column(
+        val listState = rememberLazyListState()
+        val cardWidth = calculateCardWidth(maxWidth = 115.dp)
+        val spacing = calculateItemSpacing(itemWidth = cardWidth)
+
+        LaunchedEffect(listState, animes.size) {
+            snapshotFlow { listState.layoutInfo }
+                .map { layoutInfo ->
+                    val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                    val totalItemsCount = layoutInfo.totalItemsCount
+                    lastVisibleItemIndex >= totalItemsCount - 3
+                }
+                .distinctUntilChanged()
+                .collect { shouldLoadMore ->
+                    if (shouldLoadMore && !isLoading && animes.isNotEmpty()) {
+                        onLoadMoreAnimes(exploreResponse?.cursor?.lastId)
+                    }
+                }
+        }
+
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
+            state = listState
         ) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                APFilterTriggerChip(
-                    title = "년도/분기",
-                    isSelected = yearFilter != "전체년도",
-                    onClick = {
-                        onBottomSheetDataChange(
-                            SheetData(
-                                type = FilterType.YEAR_AND_QUARTER,
-                                initData = FilterParams(
-                                    year = yearFilter,
-                                    quarter = quarterFilter,
-                                    genres = genreFilter,
-                                    type = typeFilter,
-                                    isMatchAllConditions = isMatchAllConditions
-                                ),
-                                onDismiss = { onBottomSheetDataChange(null) },
-                                onConfirm = { onBottomSheetDataChange(null) },
-                            )
-                        )
-                    }
-                )
-                APFilterTriggerChip(
-                    title = "장르",
-                    isSelected = !genreFilter.isEmpty(),
-                    onClick = {
-                        onBottomSheetDataChange(
-                            SheetData(
-                                type = FilterType.GENRE,
-                                initData = FilterParams(
-                                    year = yearFilter,
-                                    quarter = quarterFilter,
-                                    genres = genreFilter,
-                                    type = typeFilter,
-                                    isMatchAllConditions = isMatchAllConditions
-                                ),
-                                onDismiss = { onBottomSheetDataChange(null) },
-                                onConfirm = { onBottomSheetDataChange(null) },
-                            )
-                        )
-                    }
-                )
-                APFilterTriggerChip(
-                    title = "타입",
-                    isSelected = !typeFilter.isEmpty(),
-                    onClick = {
-                        onBottomSheetDataChange(
-                            SheetData(
-                                type = FilterType.TYPE,
-                                initData = FilterParams(
-                                    year = yearFilter,
-                                    quarter = quarterFilter,
-                                    genres = genreFilter,
-                                    type = typeFilter,
-                                    isMatchAllConditions = isMatchAllConditions
-                                ),
-                                onDismiss = { onBottomSheetDataChange(null) },
-                                onConfirm = { onBottomSheetDataChange(null) },
-                            )
-                        )
-                    }
-                )
-            }
-            Spacer(modifier = Modifier.height(2.dp))
-            if (yearFilter != "전체년도" || genreFilter.isNotEmpty() || typeFilter.isNotBlank()) {
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(APColors.White)
-                        .padding(vertical = 16.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    if (yearFilter != "전체년도") {
-                        item {
-                            SelectedFilter(
-                                filter = yearFilter,
-                                onClick = { onCancelFilter(CancelFilterType.YEAR, null) }
-                            )
-                        }
-                    }
-                    if (quarterFilter != "전체분기") {
-                        item {
-                            SelectedFilter(
-                                filter = quarterFilter,
-                                onClick = { onCancelFilter(CancelFilterType.QUARTER, null) }
-                            )
-                        }
-                    }
-                    if (genreFilter.isNotEmpty()) {
-                        items(genreFilter) {
-                            SelectedFilter(
-                                filter = it.name,
-                                onClick = { onCancelFilter(CancelFilterType.GENRE, it.id) }
-                            )
-                        }
-                    }
-                    if (typeFilter.isNotBlank()) {
-                        item {
-                            SelectedFilter(
-                                filter = typeFilter,
-                                onClick = { onCancelFilter(CancelFilterType.TYPE, null) }
-                            )
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(2.dp))
-            }
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .background(Color.White),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            stickyHeader { Spacer(modifier = Modifier.height(8.dp)) }
+            item {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    APFilterTriggerChip(
+                        title = "년도/분기",
+                        isSelected = yearFilter != "전체년도",
+                        onClick = {
+                            onBottomSheetDataChange(
+                                SheetData(
+                                    type = FilterType.YEAR_AND_QUARTER,
+                                    initData = FilterParams(
+                                        year = yearFilter,
+                                        quarter = quarterFilter,
+                                        genres = genreFilter,
+                                        type = typeFilter,
+                                        isMatchAllConditions = isMatchAllConditions
+                                    ),
+                                    onDismiss = { onBottomSheetDataChange(null) },
+                                    onConfirm = { onBottomSheetDataChange(null) },
+                                )
+                            )
+                        }
+                    )
+                    APFilterTriggerChip(
+                        title = "장르",
+                        isSelected = !genreFilter.isEmpty(),
+                        onClick = {
+                            onBottomSheetDataChange(
+                                SheetData(
+                                    type = FilterType.GENRE,
+                                    initData = FilterParams(
+                                        year = yearFilter,
+                                        quarter = quarterFilter,
+                                        genres = genreFilter,
+                                        type = typeFilter,
+                                        isMatchAllConditions = isMatchAllConditions
+                                    ),
+                                    onDismiss = { onBottomSheetDataChange(null) },
+                                    onConfirm = { onBottomSheetDataChange(null) },
+                                )
+                            )
+                        }
+                    )
+                    APFilterTriggerChip(
+                        title = "타입",
+                        isSelected = !typeFilter.isEmpty(),
+                        onClick = {
+                            onBottomSheetDataChange(
+                                SheetData(
+                                    type = FilterType.TYPE,
+                                    initData = FilterParams(
+                                        year = yearFilter,
+                                        quarter = quarterFilter,
+                                        genres = genreFilter,
+                                        type = typeFilter,
+                                        isMatchAllConditions = isMatchAllConditions
+                                    ),
+                                    onDismiss = { onBottomSheetDataChange(null) },
+                                    onConfirm = { onBottomSheetDataChange(null) },
+                                )
+                            )
+                        }
+                    )
+                }
+                HorizontalDivider(thickness = 2.dp, color = APColors.Surface)
+            }
+            stickyHeader {
+                if (yearFilter != "전체년도" || genreFilter.isNotEmpty() || typeFilter.isNotBlank()) {
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(APColors.White)
+                            .padding(vertical = 16.dp),
+                        contentPadding = PaddingValues(horizontal = 20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        if (yearFilter != "전체년도") {
+                            item {
+                                SelectedFilter(
+                                    filter = yearFilter,
+                                    onClick = { onCancelFilter(CancelFilterType.YEAR, null) }
+                                )
+                            }
+                        }
+                        if (quarterFilter != "전체분기") {
+                            item {
+                                SelectedFilter(
+                                    filter = quarterFilter,
+                                    onClick = { onCancelFilter(CancelFilterType.QUARTER, null) }
+                                )
+                            }
+                        }
+                        if (genreFilter.isNotEmpty()) {
+                            items(genreFilter) {
+                                SelectedFilter(
+                                    filter = it.name,
+                                    onClick = { onCancelFilter(CancelFilterType.GENRE, it.id) }
+                                )
+                            }
+                        }
+                        if (typeFilter.isNotBlank()) {
+                            item {
+                                SelectedFilter(
+                                    filter = typeFilter,
+                                    onClick = { onCancelFilter(CancelFilterType.TYPE, null) }
+                                )
+                            }
+                        }
+                    }
+                    HorizontalDivider(thickness = 2.dp, color = APColors.Surface)
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(APColors.White),
                     horizontalArrangement = Arrangement.End
                 ) {
                     Box{
@@ -356,48 +376,32 @@ private fun Explore(
                         }
                     }
                 }
-                when (uiState) {
-                    is ExploreUiState.Loading -> {
+            }
+            when (uiState) {
+                is ExploreUiState.Loading -> {
+                    item {
                         Box(
                             modifier = Modifier
-                                .fillMaxSize(),
+                                .fillParentMaxSize()
+                                .background(APColors.White),
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator()
                         }
                     }
-                    is ExploreUiState.Success -> {
-                        val gridState = rememberLazyGridState()
-
-                        LaunchedEffect(gridState, animes.size) {
-                            snapshotFlow { gridState.layoutInfo }
-                                .map { layoutInfo ->
-                                    val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-                                    val totalItemsCount = layoutInfo.totalItemsCount
-
-                                    lastVisibleItemIndex >= totalItemsCount - 6
-                                }
-                                .distinctUntilChanged()
-                                .collect { shouldLoadMore ->
-                                    if (shouldLoadMore && !isLoading && animes.isNotEmpty()) {
-                                        onLoadMoreAnimes(exploreResponse?.cursor?.lastId)
-                                    }
-                                }
-                        }
-
-                        if (animes.isNotEmpty()) {
-                            val cardWidth = calculateCardWidth(maxWidth = 115.dp)
-                            val spacing = calculateItemSpacing(itemWidth = cardWidth)
-                            LazyVerticalGrid(
-                                state = gridState,
-                                columns = GridCells.Fixed(3),
-                                horizontalArrangement = Arrangement.spacedBy(spacing),
-                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                }
+                is ExploreUiState.Success -> {
+                    if (animes.isNotEmpty()) {
+                        val chunkedAnimes = animes.chunked(3)
+                        items(chunkedAnimes.size) { index ->
+                            val rowItems = chunkedAnimes[index]
+                            Row(
                                 modifier = Modifier
-                                    .fillMaxSize(),
-                                contentPadding = PaddingValues(horizontal = 20.dp)
+                                    .fillMaxWidth()
+                                    .padding(vertical = 6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(spacing)
                             ) {
-                                items(animes) { anime ->
+                                rowItems.forEach { anime ->
                                     APCardItem(
                                         title = "${anime.title}",
                                         imageUrl = anime.coverImageUrl,
@@ -405,31 +409,40 @@ private fun Explore(
                                         cardHeight = cardWidth * 1.41f,
                                         fontSize = 14.sp,
                                         maxLine = 1,
-                                        onClick = { onNavigateToAnimeDetail(anime.animeId) }
+                                        onClick = { onNavigateToAnimeDetail(anime.animeId) },
+                                        modifier = Modifier.weight(1f)
                                     )
                                 }
-                                if (isLoading) {
-                                    item(span = { GridItemSpan(3) }) {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(vertical = 20.dp),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            CircularProgressIndicator()
-                                        }
-                                    }
+                                // 3개 미만일 때 빈 공간 채우기
+                                repeat(3 - rowItems.size) {
+                                    Spacer(modifier = Modifier.weight(1f))
                                 }
                             }
-                        } else {
+                        }
+                        if (isLoading) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 20.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+                        }
+                    } else {
+                        item {
                             APEmptyContent(
                                 comment = "앗! 해당 조건에 맞는 작품이 없네요.",
                                 modifier = Modifier
-                                    .weight(1f)
+                                    .fillParentMaxSize()
                             )
                         }
                     }
-                    is ExploreUiState.Error -> {}
+                }
+                is ExploreUiState.Error -> {
+                    // TODO Error 처리 필요
                 }
             }
         }

@@ -284,7 +284,7 @@ private fun ColumnScope.NicknameEditForm(
                 onValueChange = { onChangeNewNickname(it) },
                 placeholder = "새 닉네임 입력",
             )
-            if (errorException != null && (errorException.errorCode == 117 || errorException.errorCode == 118)) {
+            if (errorException != null && (errorException.errorCode == 116 || errorException.errorCode == 117 || errorException.errorCode == 118)) {
                 Text(
                     text = errorException.errorValue,
                     fontSize = 14.sp,

@@ -16,7 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,7 +34,6 @@ fun APFilterTriggerChip(
 ) {
     Row(
         modifier = Modifier
-            .widthIn(min = 84.dp)
             .height(36.dp)
             .border(
                 width = 1.dp,
@@ -40,7 +43,7 @@ fun APFilterTriggerChip(
             .clip(CircleShape)
             .clickable { onClick() }
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -48,11 +51,20 @@ fun APFilterTriggerChip(
             fontSize = 16.sp,
             fontWeight = FontWeight.W400,
             color = if (isSelected) APColors.Secondary else APColors.Black,
+            style = TextStyle(
+                platformStyle = PlatformTextStyle(
+                    includeFontPadding = false
+                ),
+                lineHeightStyle = LineHeightStyle(
+                    alignment = LineHeightStyle.Alignment.Center,
+                    trim = LineHeightStyle.Trim.Both
+                )
+            )
         )
         Icon(
             painter = painterResource(R.drawable.ic_chevron_down),
             contentDescription = null,
-            tint = if (isSelected) APColors.Secondary else APColors.Gray
+            tint = if (isSelected) APColors.Secondary else APColors.Gray,
         )
     }
 }

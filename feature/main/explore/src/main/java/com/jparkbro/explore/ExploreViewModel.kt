@@ -1,6 +1,5 @@
 package com.jparkbro.explore
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.explore.ExploreRepository
@@ -10,7 +9,6 @@ import com.jparkbro.model.explore.ExploreRequest
 import com.jparkbro.model.explore.ExploreResponse
 import com.jparkbro.model.explore.InitDate
 import com.jparkbro.ui.FilterParams
-import com.jparkbro.ui.FilterType
 import com.jparkbro.ui.SheetData
 import com.jparkbro.ui.util.extension.quarterStringToInt
 import dagger.assisted.Assisted
@@ -21,7 +19,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel(assistedFactory = ExploreViewModel.Factory::class)
 class ExploreViewModel @AssistedInject constructor(
@@ -113,12 +110,12 @@ class ExploreViewModel @AssistedInject constructor(
     }
 
     fun loadAnimes(lastId: Int? = null) {
-        val isInit = _animes.value.isEmpty()
-
         if (lastId == null) {
             _exploreResponse.value = null
             _animes.value = emptyList()
         }
+
+        val isInit = _animes.value.isEmpty()
 
         if (lastId != null && (_isLoading.value || !_hasMoreData.value)) return
 

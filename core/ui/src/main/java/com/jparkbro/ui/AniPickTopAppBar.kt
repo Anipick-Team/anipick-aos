@@ -92,8 +92,7 @@ fun APLogoSearchTopAppBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(95.dp)
-                .padding(top = 8.dp),
+                .height(60.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {

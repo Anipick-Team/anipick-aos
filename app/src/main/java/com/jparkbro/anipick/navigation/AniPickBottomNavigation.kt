@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -58,7 +59,7 @@ internal fun APBottomNavigation(
         modifier = modifier
             .fillMaxWidth()
             .padding(bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())
-            .background(Color.White)
+            .background(Color.White),
     ) {
         HorizontalDivider(
             modifier = Modifier
@@ -69,7 +70,7 @@ internal fun APBottomNavigation(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 48.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             items.forEach { destination ->
@@ -88,7 +89,6 @@ internal fun APBottomNavigation(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(top = 14.dp)
                         .clickable {
                             if (!isSelected) {
                                 when (destination) {
@@ -98,7 +98,8 @@ internal fun APBottomNavigation(
                                     BottomDestination.MY_PAGE -> { navController.navigateToMyPage(navOptions) }
                                 }
                             }
-                        },
+                        }
+                        .padding(top = 12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
@@ -107,11 +108,13 @@ internal fun APBottomNavigation(
                             if (isSelected) destination.selectedIcon else destination.unselectedIcon
                         ),
                         contentDescription = null,
-                        tint = Color.Unspecified
+                        tint = Color.Unspecified,
+                        modifier = Modifier
+                            .size(18.dp)
                     )
                     Text(
                         text = stringResource(destination.labelTextId),
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.W500,
                         color = if (isSelected) APColors.Primary else APColors.Gray
                     )
