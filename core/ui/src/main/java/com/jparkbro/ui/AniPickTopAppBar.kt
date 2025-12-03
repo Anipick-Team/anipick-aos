@@ -1,33 +1,28 @@
 package com.jparkbro.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,34 +38,33 @@ fun APBaseTopAppBar(
     navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null,
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(containerColor = APColors.White)
 ) {
     CenterAlignedTopAppBar(
         title = title,
+        modifier = modifier,
         navigationIcon = navigationIcon,
         actions = actions,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White
-        ),
         scrollBehavior = scrollBehavior,
-        modifier = modifier
+        colors = colors
     )
 }
 
+/** BackStack Navigation TopAppBar */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun APSimpleBackTopAppBar(
+fun APBackStackTopAppBar(
+    onNavigateBack: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    handleBackNavigation: () -> Unit
 ) {
     APBaseTopAppBar(
         navigationIcon = {
             IconButton(
-                onClick = { handleBackNavigation() },
-                modifier = Modifier
+                onClick = onNavigateBack
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_chevron_left),
-                    contentDescription = "",
+                    contentDescription = stringResource(R.string.back_stack_icon),
                 )
             }
         },
@@ -78,133 +72,88 @@ fun APSimpleBackTopAppBar(
     )
 }
 
+/** Skip Action TopAppBar */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun APLogoSearchTopAppBar(
+fun APSkipActionTopAppBar(
+    onClick: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    onNavigateToSearch: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .background(Color.White)
-            .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding())
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+    APBaseTopAppBar(
+        actions = {
+            TextButton(
+                onClick = onClick
+            ) {
+                Text(
+                    text = "건너뛰기",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W500,
+                    color = Color(0xFFC9C9C9)
+                )
+            }
+        },
+        scrollBehavior = scrollBehavior
+    )
+}
+
+/** Navigation Logo, Search Action Icon */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun APMainTopAppBar(
+    onNavigateToSearch: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+) {
+    APBaseTopAppBar(
+        navigationIcon = {
             Image(
                 painter = painterResource(R.drawable.anipick_logo),
-                contentDescription = null,
+                contentDescription = "앱 로고",
                 modifier = Modifier
-                    .padding(start = 16.dp)
-                    .size(120.dp)
+                    .padding(start = dimensionResource(R.dimen.padding_default))
+                    .width(120.dp)
             )
+        },
+        actions = {
             IconButton(
-                onClick = { onNavigateToSearch() }
+                onClick = onNavigateToSearch
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_search_outline),
-                    contentDescription = null,
-                    tint = APColors.Gray,
-                    modifier = Modifier
-                        .size(24.dp)
+                    contentDescription = "검색 아이콘",
+                    tint = APColors.Gray
                 )
             }
-        }
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth(),
-            thickness = 1.dp,
-            color = APColors.Gray
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun APTitledBackTopAppBar(
-    title: String,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-    handleBackNavigation: () -> Unit
-) {
-    APBaseTopAppBar(
-        navigationIcon = {
-            IconButton(
-                onClick = { handleBackNavigation() },
-                modifier = Modifier
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_chevron_left),
-                    contentDescription = "",
-                )
-            }
-        },
-        title = {
-            Text(
-                text = title,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.W700,
-                color = APColors.Black
-            )
         },
         scrollBehavior = scrollBehavior
     )
 }
 
+/** BackStack Icon, Search TextField */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun APActionsBackTopAppBar(
-    actions: @Composable RowScope.() -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-    handleBackNavigation: () -> Unit
-) {
-    APBaseTopAppBar(
-        navigationIcon = {
-            IconButton(
-                onClick = { handleBackNavigation() },
-                modifier = Modifier
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_chevron_left),
-                    contentDescription = "",
-                )
-            }
-        },
-        actions = actions,
-        scrollBehavior = scrollBehavior
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun APSearchFieldBackTopAppBar(
-    value: String,
-    onValueChange: (String) -> Unit,
+fun APSearchTopAppBar(
+    onNavigateBack: () -> Unit,
+    value: String = "",
+    onValueChange: (String) -> Unit = {},
     keyboardActions: KeyboardActions = KeyboardActions.Default,
+    trailingIcon: @Composable () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    handleBackNavigation: () -> Unit,
-    actions: @Composable () -> Unit,
 ) {
     APBaseTopAppBar(
         navigationIcon = {
             IconButton(
-                onClick = { handleBackNavigation() },
-                modifier = Modifier
+                onClick = onNavigateBack
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_chevron_left),
-                    contentDescription = "",
+                    contentDescription = stringResource(R.string.back_stack_icon),
                 )
             }
         },
         title = {
             APBaseTextField(
                 value = value,
-                onValueChange = { onValueChange(it) },
+                onValueChange = onValueChange,
                 placeholder = {
                     Text(
                         text = "무엇을 검색할까요?",
@@ -217,9 +166,40 @@ fun APSearchFieldBackTopAppBar(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(42.dp)
-                    .padding(end = 16.dp),
-                trailingIcon = { actions() }
+                    .height(52.dp)
+                    .padding(end = dimensionResource(R.dimen.padding_extra_small)),
+                trailingIcon = trailingIcon
+            )
+        },
+        scrollBehavior = scrollBehavior
+    )
+}
+
+/** BackStack Icon, Title */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun APTitleTopAppBar(
+    title: Int,
+    onNavigateBack: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+) {
+    APBaseTopAppBar(
+        navigationIcon = {
+            IconButton(
+                onClick = onNavigateBack
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_chevron_left),
+                    contentDescription = stringResource(R.string.back_stack_icon),
+                )
+            }
+        },
+        title = {
+            Text(
+                text = stringResource(title),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.W700,
+                color = APColors.Black
             )
         },
         scrollBehavior = scrollBehavior
@@ -227,10 +207,47 @@ fun APSearchFieldBackTopAppBar(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
-fun APSimpleBackTopAppBarPreview() {
-    APLogoSearchTopAppBar(
-        onNavigateToSearch = {}
+@Preview(showBackground = true)
+private fun APBackStackTopAppBarPreview() {
+    APBackStackTopAppBar(
+        onNavigateBack = {},
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@Preview(showBackground = true)
+private fun APSkipActionTopAppBarPreview() {
+    APSkipActionTopAppBar(
+        onClick = {},
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@Preview(showBackground = true)
+private fun APMainTopAppBarPreview() {
+    APMainTopAppBar(
+        onNavigateToSearch = {},
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@Preview(showBackground = true)
+private fun APSearchTopAppBarPreview() {
+    APSearchTopAppBar(
+        onNavigateBack = {},
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@Preview(showBackground = true)
+private fun APTitleTopAppBarPreview() {
+    APTitleTopAppBar(
+        title = R.string.back_stack_icon,
+        onNavigateBack = {},
     )
 }
