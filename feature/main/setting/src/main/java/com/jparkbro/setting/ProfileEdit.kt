@@ -40,12 +40,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.jparkbro.model.exception.ApiException
 import com.jparkbro.model.setting.ProfileEditType
 import com.jparkbro.model.setting.UserInfo
+import com.jparkbro.ui.APAlertDialog
 import com.jparkbro.ui.APConfirmDialog
 import com.jparkbro.ui.APLabelTextField
 import com.jparkbro.ui.APSurfaceTextFieldWithTrailing
 import com.jparkbro.ui.APTitledBackTopAppBar
 import com.jparkbro.ui.BulletPointText
 import com.jparkbro.ui.DialogData
+import com.jparkbro.ui.DialogType
 import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.util.EmailValidator
@@ -86,6 +88,7 @@ internal fun ProfileEdit(
         onChangeNewPasswordConfirm = viewModel::updateNewPasswordConfirm,
         userInfo = userInfo,
         onChangeUserInfo = viewModel::updateUserInfo,
+        onLogout = viewModel::logout,
         errorException = errorException,
         onNavigateBack = onNavigateBack,
         onNavigateToLogin = onNavigateToLogin,
@@ -112,6 +115,7 @@ private fun ProfileEdit(
     onChangeNewPasswordConfirm: (String) -> Unit,
     userInfo: UserInfo?,
     onChangeUserInfo: (ProfileEditType, (Boolean) -> Unit) -> Unit,
+    onLogout: ((Boolean) -> Unit) -> Unit,
     errorException: ApiException? = null,
     onNavigateBack: () -> Unit,
     onNavigateToLogin: () -> Unit,
@@ -206,6 +210,28 @@ private fun ProfileEdit(
                                     )
                                 )
                             }
+                            ProfileEditType.EMAIL -> {
+                                onChangeUserInfo(type) { result ->
+                                    if (result) {
+                                        onChangeDialogData(
+                                            DialogData(
+                                                type = DialogType.ALERT,
+                                                title = "이메일 변경이 완료되었어요.",
+                                                dismiss = "확인",
+                                                onDismiss = {
+                                                    onLogout { result ->
+                                                        if (result) {
+                                                            onChangeDialogData(null)
+                                                            onNavigateToLogin()
+                                                        }
+                                                    }
+                                                },
+                                                errorMsg = "변경된 이메일로 다시 로그인해 주세요."
+                                            )
+                                        )
+                                    }
+                                }
+                            }
                             else -> {
                                 onChangeUserInfo(type) { result ->
                                     if (result) onPopBackWithRefresh()
@@ -244,14 +270,26 @@ private fun ProfileEdit(
     }
 
     dialogData?.let {
-        APConfirmDialog(
-            title = it.title,
-            subTitle = it.subTitle,
-            dismiss = it.dismiss,
-            confirm = it.confirm,
-            onDismiss = it.onDismiss,
-            onConfirm = it.onConfirm
-        )
+        when (it.type) {
+            DialogType.ALERT -> {
+                APAlertDialog(
+                    title = it.title,
+                    errorMsg = it.errorMsg,
+                    dismiss = it.dismiss,
+                    onDismiss = it.onDismiss
+                )
+            }
+            DialogType.CONFIRM -> {
+                APConfirmDialog(
+                    title = it.title,
+                    subTitle = it.subTitle,
+                    dismiss = it.dismiss,
+                    confirm = it.confirm,
+                    onDismiss = it.onDismiss,
+                    onConfirm = it.onConfirm
+                )
+            }
+        }
     }
 }
 
@@ -355,7 +393,7 @@ private fun ColumnScope.PasswordEditForm(
                 label = "새 비밀번호",
                 value = newPassword,
                 onValueChange = { onChangeNewPassword(it) },
-                placeholder = "8~16자의 영문 대/소문자, 숫자, 특수문자 조합",
+                placeholder = "새 비밀번호",
                 isVisibility = isNewVisibility,
                 trailingButton = {
                     IconButton(
@@ -370,6 +408,12 @@ private fun ColumnScope.PasswordEditForm(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password
                 ),
+            )
+            Text(
+                text = "8~16자의 영문 대/소문자, 숫자, 특수문자를 조합하여 입력해주세요.",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.W500,
+                color = APColors.TextGray
             )
             if (errorException != null && errorException.errorCode == 110) {
                 Text(
@@ -481,7 +525,7 @@ private fun ColumnScope.EmailEditForm(
                     keyboardType = KeyboardType.Password
                 ),
             )
-            if (errorException != null && (errorException.errorCode == 105 || errorException.errorCode == 107)) {
+            if (errorException != null && (errorException.errorCode == 105 || errorException.errorCode == 106 || errorException.errorCode == 107)) {
                 Text(
                     text = errorException.errorValue,
                     fontSize = 14.sp,

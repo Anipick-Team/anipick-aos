@@ -1,11 +1,13 @@
 package com.jparkbro.detail.navigation
 
+import android.content.Intent
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import com.jparkbro.detail.ActorDetail
 import com.jparkbro.detail.ActorDetailViewModel

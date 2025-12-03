@@ -1,15 +1,25 @@
 package com.jparkbro.network.common
 
 import com.jparkbro.model.auth.AuthToken
+import com.jparkbro.model.common.AppInitRequest
+import com.jparkbro.model.common.AppInitResponse
 import com.jparkbro.model.common.MetaData
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface CommonApi {
+    @GET(ApiConstants.APP_INIT_CHECK)
+    suspend fun checkAppInit(
+        @Query("userAppVersion") userAppVersion: String,
+        @Query("platform") platform: String
+    ): Response<ApiResponse<AppInitResponse>>
+
     @GET(ApiConstants.GET_META_DATA)
     suspend fun getMetaData(
     ): Response<ApiResponse<MetaData>>

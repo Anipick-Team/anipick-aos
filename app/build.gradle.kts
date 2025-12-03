@@ -34,6 +34,12 @@ android {
 
         buildConfigField(
             "String",
+            "APP_VERSION_NAME",
+            "\"${rootProject.extra["versionName"]}\""
+        )
+
+        buildConfigField(
+            "String",
             "KAKAO_APP_KEY",
             "\"${localProperties.getProperty("KAKAO_APP_KEY", "")}\""
         )

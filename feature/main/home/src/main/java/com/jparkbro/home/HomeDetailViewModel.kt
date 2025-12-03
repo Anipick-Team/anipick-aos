@@ -15,6 +15,7 @@ import com.jparkbro.model.home.HomeDetailResponse
 import com.jparkbro.model.home.Sort
 import com.jparkbro.model.review.ReportReviewRequest
 import com.jparkbro.ui.DialogData
+import com.jparkbro.ui.SnackBarData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -50,6 +51,13 @@ class HomeDetailViewModel @AssistedInject constructor(
 
     fun updateDialogData(data: DialogData? = null) {
         _dialogData.value = data
+    }
+
+    private val _snackBarData = MutableStateFlow<SnackBarData?>(null)
+    val snackBarData: StateFlow<SnackBarData?> = _snackBarData.asStateFlow()
+
+    fun updateSnackBarData(snackBarData: SnackBarData? = null) {
+        _snackBarData.value = snackBarData
     }
 
     private val _uiState = MutableStateFlow<HomeDetailUiState>(HomeDetailUiState.Loading)
@@ -96,7 +104,13 @@ class HomeDetailViewModel @AssistedInject constructor(
         if (lastId != null && (_isLoading.value || !_hasMoreData.value)) return
 
         viewModelScope.launch {
-            if (!isInitialLoad) { _isLoading.value = true }
+            if (!isInitialLoad) {
+                _isLoading.value = true
+            } else {
+                _responseData.value = null
+                _items.value = emptyList()
+            }
+
             homeRepository.getDetailData(
                 type = type,
                 request = HomeDetailRequest(
@@ -150,25 +164,49 @@ class HomeDetailViewModel @AssistedInject constructor(
     }
 
     fun deleteReview(reviewId: Int) {
-        // TODO Loading 추가
-
         viewModelScope.launch {
-            reviewRepository.deleteReview(reviewId).getOrThrow()
-            loadData()
+            reviewRepository.deleteReview(reviewId).fold(
+                onSuccess = {
+                    _uiState.value = HomeDetailUiState.Loading
+                    loadData()
+                },
+                onFailure = { exception ->
+                    Log.e("AnimeDetailViewModel", "Failed to delete review", exception)
+                    _uiState.value = HomeDetailUiState.Error(exception.message ?: "리뷰 삭제에 실패했습니다")
+                }
+            )
         }
     }
 
     fun reportReview(reviewId: Int, reason: String) {
         viewModelScope.launch {
-            reviewRepository.reportReview(reviewId, ReportReviewRequest(reason)).getOrThrow()
-            loadData()
+            reviewRepository.reportReview(reviewId, ReportReviewRequest(message = reason)).fold(
+                onSuccess = {
+                    _uiState.value = HomeDetailUiState.Loading
+                    loadData()
+                    updateSnackBarData(SnackBarData("리뷰가 신고되었습니다"))
+                },
+                onFailure = { exception ->
+                    Log.e("AnimeDetailViewModel", "Failed to report review", exception)
+                    updateSnackBarData(SnackBarData("리뷰 신고에 실패했습니다"))
+                }
+            )
         }
     }
 
     fun blockUser(userId: Int) {
         viewModelScope.launch {
-            reviewRepository.blockUser(userId).getOrThrow()
-            loadData()
+            reviewRepository.blockUser(userId).fold(
+                onSuccess = {
+                    _uiState.value = HomeDetailUiState.Loading
+                    loadData()
+                    updateSnackBarData(SnackBarData("사용자가 차단되었습니다"))
+                },
+                onFailure = { exception ->
+                    Log.e("AnimeDetailViewModel", "Failed to block user", exception)
+                    updateSnackBarData(SnackBarData("사용자 차단에 실패했습니다"))
+                }
+            )
         }
     }
 

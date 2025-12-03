@@ -1,14 +1,9 @@
 package com.jparkbro.mypage
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowColumn
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,9 +15,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -34,26 +26,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.jparkbro.model.common.FormType
-import com.jparkbro.model.home.ComingSoonItem
 import com.jparkbro.model.mypage.ContentType
-import com.jparkbro.model.mypage.LikedAnime
 import com.jparkbro.model.mypage.LikedPerson
 import com.jparkbro.model.mypage.UserContentAnime
 import com.jparkbro.model.mypage.UserContentResponse
 import com.jparkbro.ui.APCardItem
+import com.jparkbro.ui.APEmptyContent
 import com.jparkbro.ui.APTitledBackTopAppBar
-import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.util.calculateCardWidth
 import com.jparkbro.ui.util.calculateItemSpacing
@@ -170,22 +155,36 @@ private fun UserContent(
             }
             item(span = { GridItemSpan(3) }) {
                 val countText = when (type) {
-                    ContentType.LIKED_PERSON -> "총 ${responseData?.count}명"
-                    else -> "총 ${responseData?.count}개"
+                    ContentType.LIKED_PERSON -> "총 ${responseData?.count ?: 0}명"
+                    else -> "총 ${responseData?.count ?: 0}개"
                 }
                 Text(
                     text = countText,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W500,
                     color = APColors.TextGray,
-                    modifier = Modifier
                 )
+            }
+            if (dataList.isEmpty() && !isLoading) {
+                item(span = { GridItemSpan(3) }) {
+                    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+                    val description = when (type) {
+                        ContentType.WATCHLIST -> "아직 볼 애니가 없어요!"
+                        ContentType.WATCHING -> "아직 보는 중인 애니가 없어요!"
+                        ContentType.FINISHED -> "아직 다 본 애니가 없어요!"
+                        else -> ""
+                    }
+                    APEmptyContent(
+                        comment = description,
+                        modifier = Modifier
+                            .height(screenHeight - 200.dp)
+                    )
+                }
             }
             items(
                 count = dataList.size,
                 key = { index ->
-                    val item = dataList[index]
-                    when (item) {
+                    when (val item = dataList[index]) {
                         is LikedPerson -> item.personId
                         is UserContentAnime -> item.animeId
                         else -> item.hashCode()

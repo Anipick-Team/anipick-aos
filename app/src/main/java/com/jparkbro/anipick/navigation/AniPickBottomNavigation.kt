@@ -70,7 +70,7 @@ internal fun APBottomNavigation(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 48.dp),
+                .padding(horizontal = 36.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             items.forEach { destination ->
@@ -99,7 +99,7 @@ internal fun APBottomNavigation(
                                 }
                             }
                         }
-                        .padding(top = 12.dp),
+                        .padding(vertical = 12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {

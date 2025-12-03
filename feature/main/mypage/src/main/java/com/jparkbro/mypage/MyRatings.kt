@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -34,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,12 +47,18 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jparkbro.model.common.FormType
 import com.jparkbro.model.detail.ReviewSort
+import com.jparkbro.model.mypage.ContentType
 import com.jparkbro.model.mypage.MyReviewItem
 import com.jparkbro.model.mypage.MyReviewsResponse
+import com.jparkbro.ui.APConfirmDialog
+import com.jparkbro.ui.APEmptyContent
 import com.jparkbro.ui.APReviewItem
+import com.jparkbro.ui.APSnackBar
 import com.jparkbro.ui.APTitledBackTopAppBar
 import com.jparkbro.ui.APToggleSwitch
+import com.jparkbro.ui.DialogData
 import com.jparkbro.ui.R
+import com.jparkbro.ui.SnackBarData
 import com.jparkbro.ui.theme.APColors
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -67,6 +76,8 @@ internal fun MyRatings(
     val isLikedLoading by viewModel.isLikedLoading.collectAsState()
 
     val sort by viewModel.sort.collectAsState()
+    val dialogData by viewModel.dialogData.collectAsState()
+    val snackBarData by viewModel.snackBarData.collectAsState()
     val isReviewOnly by viewModel.isReviewOnly.collectAsState()
     val showSortDropdown by viewModel.showSortDropdown.collectAsState()
 
@@ -77,6 +88,10 @@ internal fun MyRatings(
         isLikedLoading = isLikedLoading,
         onLoadMoreData = viewModel::getMyReviews,
         sort = sort,
+        dialogData = dialogData,
+        onChangeDialogData = viewModel::updateDialogData,
+        snackBarData = snackBarData,
+        onChangeSnackBarData = viewModel::updateSnackBarData,
         isReviewOnly = isReviewOnly,
         showSortDropdown = showSortDropdown,
         onChangeSort = viewModel::updateSort,
@@ -99,6 +114,10 @@ private fun MyRatings(
     isLikedLoading: Boolean = false,
     onLoadMoreData: (Int?) -> Unit = {},
     sort: ReviewSort = ReviewSort.LATEST,
+    dialogData: DialogData? = null,
+    onChangeDialogData: (DialogData?) -> Unit,
+    snackBarData: SnackBarData? = null,
+    onChangeSnackBarData: (SnackBarData?) -> Unit,
     isReviewOnly: Boolean = false,
     showSortDropdown: Boolean = false,
     onChangeSort: (ReviewSort) -> Unit,
@@ -107,7 +126,7 @@ private fun MyRatings(
     onChangeLikeState: (Boolean, Int, (Boolean) -> Unit) -> Unit,
     onDeleteReview: (Int) -> Unit,
     onNavigateBack: () -> Unit = {},
-    onNavigateToReviewForm: (Int, Int, FormType) -> Unit = {_, _, _ ->},
+    onNavigateToReviewForm: (Int, Int, FormType) -> Unit = { _, _, _ -> },
     onNavigateToAnimeDetail: (Int) -> Unit,
 ) {
     Scaffold(
@@ -158,7 +177,7 @@ private fun MyRatings(
                         fontWeight = FontWeight.W500,
                         color = APColors.TextGray
                     )
-                    Box{
+                    Box {
                         Row(
                             modifier = Modifier
                                 .clip(CircleShape)
@@ -300,6 +319,17 @@ private fun MyRatings(
                     )
                 }
             }
+            if (reviews.isEmpty() && !isLoading) {
+                item {
+                    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+                    APEmptyContent(
+                        comment = "앗! 아직 평가한 작품이 없네요.",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(screenHeight - 200.dp)
+                    )
+                }
+            }
             items(
                 items = reviews.filter { it.reviewContent != null || !isReviewOnly },
                 key = { review -> review.reviewId }
@@ -308,7 +338,21 @@ private fun MyRatings(
                     reviewItem = review,
                     onNavigateAnimeDetail = { onNavigateToAnimeDetail(it) },
                     onClickUpdate = { onNavigateToReviewForm(review.animeId, review.reviewId, FormType.EDIT) },
-                    onClickDelete = { onDeleteReview(review.reviewId) },
+                    onClickDelete = {
+                        onChangeDialogData(
+                            DialogData(
+                                title = "정말 리뷰를 삭제하시겠어요?",
+                                subTitle = "삭제한 리뷰는 복구가 불가능해요.",
+                                dismiss = "취소",
+                                confirm = "삭제",
+                                onDismiss = { onChangeDialogData(null) },
+                                onConfirm = {
+                                    onDeleteReview(review.reviewId)
+                                    onChangeDialogData(null)
+                                },
+                            )
+                        )
+                    },
                     isLikedLoading = isLikedLoading,
                     onClickLiked = { isLiked, callBack ->
                         onChangeLikeState(isLiked, review.reviewId) { result ->
@@ -330,5 +374,25 @@ private fun MyRatings(
                 }
             }
         }
+    }
+
+    snackBarData?.let {
+        APSnackBar(
+            snackBarData = it,
+            visible = true,
+            onDismiss = { onChangeSnackBarData(null) }
+        )
+    }
+
+    dialogData?.let {
+        APConfirmDialog(
+            title = it.title,
+            subTitle = it.subTitle,
+            content = it.content,
+            dismiss = it.dismiss,
+            confirm = it.confirm,
+            onDismiss = it.onDismiss,
+            onConfirm = it.onConfirm
+        )
     }
 }

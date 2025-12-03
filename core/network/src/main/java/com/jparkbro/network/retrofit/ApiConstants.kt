@@ -3,6 +3,8 @@ package com.jparkbro.network.retrofit
 object ApiConstants {
     const val BASE_URL = "http://anipick.p-e.kr:8080/api/"
 
+    /** GET version */
+    const val APP_INIT_CHECK = "version"
     /** GET animes/meta-data-group */
     const val GET_META_DATA = "animes/meta-data-group"
     /** POST tokens/refresh */

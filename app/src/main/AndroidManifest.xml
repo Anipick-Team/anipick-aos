@@ -34,20 +34,22 @@
             android:name=".MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AniPick">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <!-- Deep Link -->
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="anipick"/>
+                <data android:scheme="https" />
+                <data android:host="anipick.p-e.kr" />
+                <data android:pathPrefix="/app" />
             </intent-filter>
         </activity>
 

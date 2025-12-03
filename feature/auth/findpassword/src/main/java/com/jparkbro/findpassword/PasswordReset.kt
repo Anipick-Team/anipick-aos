@@ -52,6 +52,7 @@ internal fun PasswordReset(
     val passwordConfirm by viewModel.passwordConfirm.collectAsState()
     val isPasswordVisibility by viewModel.isPasswordVisibility.collectAsState()
     val isConfirmVisibility by viewModel.isConfirmVisibility.collectAsState()
+    val errorText by viewModel.errorText.collectAsState()
 
     PasswordReset(
         modifier = modifier,
@@ -59,6 +60,7 @@ internal fun PasswordReset(
         passwordConfirm = passwordConfirm,
         isPasswordVisibility = isPasswordVisibility,
         isConfirmVisibility = isConfirmVisibility,
+        errorText = errorText,
         onPasswordChange = viewModel::updatePassword,
         onPasswordConfirmChange = viewModel::updatePasswordConfirm,
         onPasswordVisibilityClick = viewModel::togglePasswordVisibility,
@@ -77,6 +79,7 @@ internal fun PasswordReset(
     passwordConfirm: String = "",
     isPasswordVisibility: Boolean = false,
     isConfirmVisibility: Boolean = false,
+    errorText: String? = null,
     onPasswordChange: (String) -> Unit = {},
     onPasswordConfirmChange: (String) -> Unit = {},
     onPasswordVisibilityClick: () -> Unit = {},
@@ -191,7 +194,14 @@ internal fun PasswordReset(
                                 keyboardType = KeyboardType.Password
                             ),
                         )
-                        // TODO Error Text 추가
+                        errorText?.let {
+                            Text(
+                                text = errorText,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W500,
+                                color = APColors.Point
+                            )
+                        }
                     }
                 }
             }
@@ -207,16 +217,15 @@ internal fun PasswordReset(
                 Button(
                     onClick = {
                         onResetPassword { result ->
-                            if (result) onNavigateToLogin
+                            if (result) { onNavigateToLogin() }
                         }
-
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = APColors.Primary,
                         disabledContainerColor = APColors.Gray
                     ),
                     shape = RoundedCornerShape(8.dp),
-                    enabled = true,
+                    enabled = password.length >= 8 && passwordConfirm.length >= 8,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(51.dp)

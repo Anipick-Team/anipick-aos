@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -151,7 +152,7 @@ private fun LazyListScope.animeByYearSection(
                 FlowRow(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(spacing),
+                    horizontalArrangement = Arrangement.spacedBy(spacing - 1.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     maxItemsInEachRow = 3
                 ) {
@@ -163,7 +164,7 @@ private fun LazyListScope.animeByYearSection(
                             cardHeight = cardWidth * 1.41f,
                             fontSize = 14.sp,
                             maxLine = 2,
-                            onClick = { onNavigateToAnimeDetail(anime.animeId) }
+                            onClick = { onNavigateToAnimeDetail(anime.animeId) },
                         )
                     }
                 }

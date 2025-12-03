@@ -1,9 +1,11 @@
 package com.jparkbro.findpassword
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.AuthRepository
 import com.jparkbro.model.auth.ResetPassword
+import com.jparkbro.model.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.jparkbro.ui.util.extension.filterKorean
 import dagger.assisted.Assisted
@@ -33,6 +35,10 @@ class PasswordResetViewModel @AssistedInject constructor(
     private val _isConfirmVisibility = MutableStateFlow<Boolean>(false)
     val isConfirmVisibility: StateFlow<Boolean> = _isConfirmVisibility.asStateFlow()
 
+    /** error message */
+    private val _errorText = MutableStateFlow<String?>(null)
+    val errorText = _errorText.asStateFlow()
+
     fun updatePassword(password: String) {
         _password.value = password.filterKorean()
     }
@@ -61,7 +67,12 @@ class PasswordResetViewModel @AssistedInject constructor(
                 onSuccess = {
                     onResult(true)
                 },
-                onFailure = {
+                onFailure = { exception ->
+                    when (exception) {
+                        is ApiException -> {
+                            _errorText.value = exception.errorValue
+                        }
+                    }
                     onResult(false)
                 }
             )

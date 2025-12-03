@@ -366,11 +366,8 @@ class DetailAnimeViewModel @AssistedInject constructor(
         }
     }
 
-    fun copyAnimeLink() {
-        val deepLink = "anipick://anime/$animeId"
-        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("애니메이션 링크", deepLink)
-        clipboard.setPrimaryClip(clip)
+    fun copyAnimeLink(): String {
+        return "https://anipick.p-e.kr/app/anime/detail/$animeId"
     }
 
     @AssistedFactory

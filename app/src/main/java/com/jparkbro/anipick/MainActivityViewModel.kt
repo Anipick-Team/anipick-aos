@@ -1,11 +1,16 @@
 package com.jparkbro.anipick
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.common.CommonRepository
 import com.jparkbro.domain.AutoLoginUseCase
+import com.jparkbro.model.common.AppInitDialogType
+import com.jparkbro.model.common.AppInitRequest
 import com.jparkbro.model.common.MetaData
+import com.jparkbro.ui.DialogData
+import com.jparkbro.ui.DialogType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +29,73 @@ class MainActivityViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<MainActivityUiState>(MainActivityUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
+    private val _dialogData = MutableStateFlow<DialogData?>(null)
+    val dialogData = _dialogData.asStateFlow()
+
+    private val _pendingDeepLink = MutableStateFlow<Uri?>(null)
+    val pendingDeepLink = _pendingDeepLink.asStateFlow()
+
     init {
+//        checkAppInit()
+        getMetaData()
+        autoLogin()
+    }
+
+    fun setPendingDeepLink(uri: Uri?) {
+        Log.d("MainActivityViewModel", "Setting pending deep link: $uri")
+        _pendingDeepLink.value = uri
+    }
+
+    fun clearPendingDeepLink() {
+        Log.d("MainActivityViewModel", "Clearing pending deep link")
+        _pendingDeepLink.value = null
+    }
+
+    private fun checkAppInit() {
+        val appVersion = BuildConfig.APP_VERSION_NAME
+        viewModelScope.launch {
+            commonRepository.checkAppInit(appVersion).fold(
+                onSuccess = {
+                    _dialogData.value = DialogData(
+                        type = if (it.type === AppInitDialogType.NOTICE) DialogType.ALERT else DialogType.CONFIRM,
+                        title = it.title.toString(),
+                        dismiss = "취소",
+                        confirm = "확인",
+                        onDismiss = {
+                            when (it.type) {
+                                AppInitDialogType.NOTICE -> { _dialogData.value = null }
+                                AppInitDialogType.UPDATE -> {
+                                    _dialogData.value = null
+                                    if (it.isRequiredUpdate) _uiState.value = MainActivityUiState.FinishApp(null)
+                                }
+                            }
+                        },
+                        onConfirm = {
+                            when (it.type) {
+                                AppInitDialogType.NOTICE -> { _dialogData.value = null }
+                                AppInitDialogType.UPDATE -> {
+                                    _dialogData.value = null
+                                    val playStoreUrl = "market://details?id=${BuildConfig.APPLICATION_ID}"
+                                    _uiState.value = MainActivityUiState.FinishApp(playStoreUrl)
+                                }
+                            }
+                        },
+                        errorMsg = it.content.toString()
+                    )
+                },
+                onFailure = {
+                    Log.e("AppInitCheck", "API Error: ${it.message}")
+                    _uiState.value = MainActivityUiState.Error(
+                        "네트워크 연결을 확인해주세요.\n앱 초기화에 실패했습니다."
+                    )
+                }
+            )
+        }
+    }
+
+    fun retryAppInit() {
+        _uiState.value = MainActivityUiState.Loading
+//        checkAppInit()
         getMetaData()
         autoLogin()
     }
@@ -39,7 +110,6 @@ class MainActivityViewModel @Inject constructor(
                     },
                     onFailure = { exception ->
                         Log.e("MainActivityViewModel", "Failed to load meta data", exception)
-                        // 메타데이터 로드 실패는 앱 사용에 치명적이지 않으므로 기본값 유지
                     }
                 )
             } catch (e: Exception) {
@@ -49,8 +119,6 @@ class MainActivityViewModel @Inject constructor(
     }
 
     private fun autoLogin() {
-        _uiState.value = MainActivityUiState.Loading
-        
         viewModelScope.launch {
             try {
                 autoLoginUseCase().collect { result ->
@@ -77,6 +145,8 @@ class MainActivityViewModel @Inject constructor(
 sealed interface MainActivityUiState {
     data object Loading: MainActivityUiState
     data class Success(val isAutoLogin: Boolean): MainActivityUiState
+    data class Error(val message: String): MainActivityUiState
+    data class FinishApp(val storeUrl: String?): MainActivityUiState
 
     fun shouldKeepSplashScreen() = this is Loading
 }

@@ -49,6 +49,7 @@ class RankingViewModel @Inject constructor(
     }
 
     fun updateFilter(request: RankingRequest) {
+        _hasMoreData.value = true
         _response.value = null
         _params.value = createRankingParams(request)
         getAnimesRank()
@@ -62,8 +63,8 @@ class RankingViewModel @Inject constructor(
 
         return when (request.type) {
             RankingType.YEAR_SEASON -> baseParams.copy(
-                year = sanitizeYear(request.year),
-                season = sanitizeSeason(request.year, request.season)
+                year = sanitizeYear(request.year ?: _params.value.year),
+                season = sanitizeSeason(request.year ?: _params.value.year, request.season ?: _params.value.season)
             )
             else -> baseParams.copy(
                 year = null,

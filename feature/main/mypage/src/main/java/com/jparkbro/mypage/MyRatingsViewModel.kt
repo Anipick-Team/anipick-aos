@@ -1,5 +1,6 @@
 package com.jparkbro.mypage
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.mypage.MyPageRepository
@@ -9,6 +10,8 @@ import com.jparkbro.model.detail.ReviewSort
 import com.jparkbro.model.mypage.MyReviewItem
 import com.jparkbro.model.mypage.MyReviewsRequest
 import com.jparkbro.model.mypage.MyReviewsResponse
+import com.jparkbro.ui.DialogData
+import com.jparkbro.ui.SnackBarData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +34,20 @@ class MyRatingsViewModel @Inject constructor(
 
     private val _showSortDropdown = MutableStateFlow(false)
     val showSortDropdown: StateFlow<Boolean> = _showSortDropdown.asStateFlow()
+
+    private val _dialogData = MutableStateFlow<DialogData?>(null)
+    val dialogData = _dialogData.asStateFlow()
+
+    fun updateDialogData(data: DialogData? = null) {
+        _dialogData.value = data
+    }
+
+    private val _snackBarData = MutableStateFlow<SnackBarData?>(null)
+    val snackBarData: StateFlow<SnackBarData?> = _snackBarData.asStateFlow()
+
+    fun updateSnackBarData(snackBarData: SnackBarData? = null) {
+        _snackBarData.value = snackBarData
+    }
 
     fun updateSort(sort: ReviewSort) {
         _sort.value = sort
@@ -78,7 +95,6 @@ class MyRatingsViewModel @Inject constructor(
                     lastLikeCount = if (_sort.value == ReviewSort.LIKES) _reviewResponse.value?.cursor?.lastValue else null,
                     lastRating = if (_sort.value == ReviewSort.RATING_ASC || _sort.value == ReviewSort.RATING_DESC) _reviewResponse.value?.cursor?.lastValue else null,
                     sort = _sort.value.param,
-                    reviewOnly = _isReviewOnly.value,
                     size = 10
                 )
             ).fold(
@@ -99,10 +115,15 @@ class MyRatingsViewModel @Inject constructor(
 
     fun deleteReview(reviewId: Int) {
         // TODO Loading 추가
-
         viewModelScope.launch {
-            reviewRepository.deleteReview(reviewId).getOrThrow()
-            getMyReviews()
+            reviewRepository.deleteReview(reviewId).fold(
+                onSuccess = {
+                    getMyReviews()
+                },
+                onFailure = { exception ->
+                    Log.e("AnimeDetailViewModel", "Failed to delete review", exception)
+                }
+            )
         }
     }
 

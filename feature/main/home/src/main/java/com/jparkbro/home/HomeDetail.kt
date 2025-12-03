@@ -21,21 +21,19 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
@@ -71,10 +69,11 @@ import com.jparkbro.model.home.Sort
 import com.jparkbro.ui.APCardItem
 import com.jparkbro.ui.APConfirmDialog
 import com.jparkbro.ui.APReviewItem
+import com.jparkbro.ui.APSnackBar
 import com.jparkbro.ui.APTitledBackTopAppBar
-import com.jparkbro.ui.APToggleSwitch
 import com.jparkbro.ui.DialogData
 import com.jparkbro.ui.R
+import com.jparkbro.ui.SnackBarData
 import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.util.calculateCardWidth
 import com.jparkbro.ui.util.calculateItemSpacing
@@ -94,6 +93,7 @@ internal fun HomeDetail(
     val sort by viewModel.sort.collectAsState()
     val showSortDropdown by viewModel.showSortDropdown.collectAsState()
     val dialogData by viewModel.dialogData.collectAsState()
+    val snackBarData by viewModel.snackBarData.collectAsState()
 
     val uiState by viewModel.uiState.collectAsState()
     val responseData by viewModel.responseData.collectAsState()
@@ -109,6 +109,7 @@ internal fun HomeDetail(
         showSortDropdown = showSortDropdown,
         dialogData = dialogData,
         onChangeDialogData = viewModel::updateDialogData,
+        snackBarData = snackBarData,
         uiState = uiState,
         responseData = responseData,
         items = items,
@@ -118,6 +119,7 @@ internal fun HomeDetail(
         onChangeSortDropdown = viewModel::changeDropdownState,
         onLoadMoreData = viewModel::loadData,
         onChangeLikeState = viewModel::updateLikeState,
+        onChangeSnackBarData = viewModel::updateSnackBarData,
         onDeleteReview = viewModel::deleteReview,
         onReportReview = viewModel::reportReview,
         onBlockUser = viewModel::blockUser,
@@ -137,6 +139,7 @@ private fun HomeDetail(
     showSortDropdown: Boolean = false,
     dialogData: DialogData? = null,
     onChangeDialogData: (DialogData?) -> Unit,
+    snackBarData: SnackBarData? = null,
     uiState: HomeDetailUiState = HomeDetailUiState.Loading,
     responseData: HomeDetailResponse? = null,
     items: List<Any> = emptyList(),
@@ -146,6 +149,7 @@ private fun HomeDetail(
     onChangeSortDropdown: () -> Unit,
     onLoadMoreData: (Int?) -> Unit,
     onChangeLikeState: (Boolean, Int, (Boolean) -> Unit) -> Unit,
+    onChangeSnackBarData: (SnackBarData?) -> Unit,
     onDeleteReview: (Int) -> Unit,
     onReportReview: (Int, String) -> Unit,
     onBlockUser: (Int) -> Unit,
@@ -208,84 +212,104 @@ private fun HomeDetail(
                             reviewItem = review as HomeReviewItem,
                             onNavigateAnimeDetail = { onNavigateToAnimeDetail(it) },
                             onClickUpdate = { onNavigateToReviewForm(review.animeId, review.reviewId, FormType.EDIT) },
-                            onClickDelete = { onDeleteReview(review.reviewId) },
+                            onClickDelete = {
+                                onChangeDialogData(
+                                    DialogData(
+                                        title = "정말 리뷰를 삭제하시겠어요?",
+                                        subTitle = "삭제한 리뷰는 복구가 불가능해요.",
+                                        dismiss = "취소",
+                                        confirm = "삭제",
+                                        onDismiss = { onChangeDialogData(null) },
+                                        onConfirm = {
+                                            onDeleteReview(review.reviewId)
+                                            onChangeDialogData(null)
+                                        },
+                                    )
+                                )
+                            },
                             onClickBlock = {
-                                onChangeDialogData(DialogData(
-                                    title = "사용자를 차단하시겠습니까?",
-                                    subTitle = "차단한 사용자의 리뷰, 커뮤니티 게시글 및\n댓글 등 모든 컨텐츠가 노출되지 않게 됩니다.",
-                                    dismiss = "취소",
-                                    confirm = "확인",
-                                    onDismiss = { onChangeDialogData(null) },
-                                    onConfirm = {
-                                        onBlockUser(review.userId ?: -1)
-                                        onChangeDialogData(null)
-                                    },
-                                ))
+                                onChangeDialogData(
+                                    DialogData(
+                                        title = "사용자를 차단하시겠습니까?",
+                                        subTitle = "차단한 사용자의 리뷰, 커뮤니티 게시글 및\n댓글 등 모든 컨텐츠가 노출되지 않게 됩니다.",
+                                        dismiss = "취소",
+                                        confirm = "확인",
+                                        onDismiss = { onChangeDialogData(null) },
+                                        onConfirm = {
+                                            onBlockUser(review.userId ?: -1)
+                                            onChangeDialogData(null)
+                                        },
+                                    )
+                                )
                             },
                             onCLickReport = {
-                                onChangeDialogData(DialogData(
-                                    title = "리뷰를 신고하시겠습니까?",
-                                    subTitle = "신고 시, 리뷰 검토 후 처리됩니다.",
-                                    dismiss = "취소",
-                                    confirm = "다음",
-                                    onDismiss = { onChangeDialogData(null) },
-                                    onConfirm = { onChangeDialogData(
-                                        DialogData(
-                                            title = "신고하는 사유를 선택해주세요.",
-                                            subTitle = "신고 시, 검토 후 처리되어요.",
-                                            content = {
-                                                FlowRow(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .padding(horizontal = 20.dp, vertical = 16.dp)
-                                                        .selectableGroup(),
-                                                    maxItemsInEachRow = 2,
-                                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                                                ) {
-                                                    radioOptions.forEach { text ->
-                                                        Row(
-                                                            Modifier
-                                                                .weight(1f)
-                                                                .height(22.dp)
-                                                                .selectable(
-                                                                    selected = (text == selectedOption),
-                                                                    onClick = { selectedOption = text },
-                                                                    role = Role.RadioButton
-                                                                ),
-                                                            verticalAlignment = Alignment.CenterVertically
+                                onChangeDialogData(
+                                    DialogData(
+                                        title = "리뷰를 신고하시겠습니까?",
+                                        subTitle = "신고 시, 리뷰 검토 후 처리됩니다.",
+                                        dismiss = "취소",
+                                        confirm = "다음",
+                                        onDismiss = { onChangeDialogData(null) },
+                                        onConfirm = {
+                                            onChangeDialogData(
+                                                DialogData(
+                                                    title = "신고하는 사유를 선택해주세요.",
+                                                    subTitle = "신고 시, 검토 후 처리되어요.",
+                                                    content = {
+                                                        FlowRow(
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .padding(horizontal = 20.dp, vertical = 16.dp)
+                                                                .selectableGroup(),
+                                                            maxItemsInEachRow = 2,
+                                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                                            verticalArrangement = Arrangement.spacedBy(16.dp)
                                                         ) {
-                                                            RadioButton(
-                                                                selected = (text == selectedOption),
-                                                                onClick = { selectedOption = text },
-                                                                colors = RadioButtonDefaults.colors(
-                                                                    selectedColor = APColors.Point,
-                                                                    unselectedColor = APColors.Gray
-                                                                )
-                                                            )
-                                                            Text(
-                                                                text = text,
-                                                                fontSize = 16.sp,
-                                                                fontWeight = FontWeight.W500,
-                                                                color = APColors.Black,
-                                                                modifier = Modifier
-                                                                    .padding(start = 8.dp)
-                                                            )
+                                                            radioOptions.forEach { text ->
+                                                                Row(
+                                                                    Modifier
+                                                                        .weight(1f)
+                                                                        .height(22.dp)
+                                                                        .selectable(
+                                                                            selected = (text == selectedOption),
+                                                                            onClick = { selectedOption = text },
+                                                                            role = Role.RadioButton
+                                                                        ),
+                                                                    verticalAlignment = Alignment.CenterVertically
+                                                                ) {
+                                                                    RadioButton(
+                                                                        selected = (text == selectedOption),
+                                                                        onClick = { selectedOption = text },
+                                                                        colors = RadioButtonDefaults.colors(
+                                                                            selectedColor = APColors.Point,
+                                                                            unselectedColor = APColors.Gray
+                                                                        )
+                                                                    )
+                                                                    Text(
+                                                                        text = text,
+                                                                        fontSize = 14.sp,
+                                                                        fontWeight = FontWeight.W500,
+                                                                        color = APColors.Black,
+                                                                        modifier = Modifier
+                                                                            .padding(start = 4.dp)
+                                                                    )
+                                                                }
+                                                            }
                                                         }
-                                                    }
-                                                }
-                                            },
-                                            dismiss = "취소",
-                                            confirm = "신고하기",
-                                            onDismiss = { onChangeDialogData(null) },
-                                            onConfirm = {
-                                                // TODO callback
-                                                onReportReview(review.reviewId, selectedOption)
-                                                onChangeDialogData(null)
-                                            },
-                                        )
-                                    )},
-                                ))
+                                                    },
+                                                    dismiss = "취소",
+                                                    confirm = "신고하기",
+                                                    onDismiss = { onChangeDialogData(null) },
+                                                    onConfirm = {
+                                                        // TODO callback
+                                                        onReportReview(review.reviewId, selectedOption)
+                                                        onChangeDialogData(null)
+                                                    },
+                                                )
+                                            )
+                                        },
+                                    )
+                                )
                             },
                             isLikedLoading = isLikedLoading,
                             onClickLiked = { isLiked, callBack ->
@@ -309,6 +333,7 @@ private fun HomeDetail(
                     }
                 }
             }
+
             ContentType.RECOMMEND -> {
                 val gridState = rememberLazyGridState()
 
@@ -338,20 +363,23 @@ private fun HomeDetail(
                     columns = GridCells.Fixed(3),
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
-                    contentPadding = PaddingValues(horizontal = 20.dp),
+                        .padding(innerPadding)
+                        .background(APColors.White),
                     verticalArrangement = Arrangement.spacedBy(24.dp),
                     horizontalArrangement = Arrangement.spacedBy(spacing),
                 ) {
                     item(span = { GridItemSpan(3) }) {
-                        Spacer(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(12.dp)
-                            .background(APColors.Surface))
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(12.dp)
+                                .background(APColors.Surface)
+                        )
                     }
                     item(span = { GridItemSpan(3) }) {
                         Box(
                             modifier = Modifier
+                                .padding(horizontal = 20.dp)
                                 .fillMaxWidth()
                                 .background(Color(0xFF010000), RoundedCornerShape(8.dp))
                         ) {
@@ -447,6 +475,9 @@ private fun HomeDetail(
                     ) { index ->
                         val item = items[index]
                         if (item is ComingSoonItem) {
+                            val isFirstColumn = index % 3 == 0  // 왼쪽 끝
+                            val isLastColumn = index % 3 == 2   // 오른쪽 끝
+
                             APCardItem(
                                 title = "${item.title}",
                                 imageUrl = item.coverImageUrl,
@@ -454,7 +485,11 @@ private fun HomeDetail(
                                 cardHeight = cardWidth * 1.41f,
                                 fontSize = 14.sp,
                                 maxLine = 1,
-                                onClick = { onNavigateToAnimeDetail(item.animeId) }
+                                onClick = { onNavigateToAnimeDetail(item.animeId) },
+                                modifier = Modifier.padding(
+                                    start = if (isFirstColumn) 20.dp else 0.dp,
+                                    end = if (isLastColumn) 20.dp else 0.dp
+                                )
                             )
                         }
                     }
@@ -472,6 +507,7 @@ private fun HomeDetail(
                     }
                 }
             }
+
             ContentType.RECENT_RECOMMEND -> {
                 val gridState = rememberLazyGridState()
 
@@ -501,20 +537,23 @@ private fun HomeDetail(
                     columns = GridCells.Fixed(3),
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
-                    contentPadding = PaddingValues(horizontal = 20.dp),
+                        .padding(innerPadding)
+                        .background(APColors.White),
                     verticalArrangement = Arrangement.spacedBy(24.dp),
                     horizontalArrangement = Arrangement.spacedBy(spacing),
                 ) {
                     item(span = { GridItemSpan(3) }) {
-                        Spacer(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(12.dp)
-                            .background(APColors.Surface))
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(12.dp)
+                                .background(APColors.Surface)
+                        )
                     }
                     item(span = { GridItemSpan(3) }) {
                         Box(
                             modifier = Modifier
+                                .padding(horizontal = 20.dp)
                                 .fillMaxWidth()
                                 .background(Color(0xFF010000), RoundedCornerShape(8.dp))
                         ) {
@@ -579,6 +618,9 @@ private fun HomeDetail(
                     ) { index ->
                         val item = items[index]
                         if (item is ComingSoonItem) {
+                            val isFirstColumn = index % 3 == 0  // 왼쪽 끝
+                            val isLastColumn = index % 3 == 2   // 오른쪽 끝
+
                             APCardItem(
                                 title = "${item.title}",
                                 imageUrl = item.coverImageUrl,
@@ -586,7 +628,11 @@ private fun HomeDetail(
                                 cardHeight = cardWidth * 1.41f,
                                 fontSize = 14.sp,
                                 maxLine = 1,
-                                onClick = { onNavigateToAnimeDetail(item.animeId) }
+                                onClick = { onNavigateToAnimeDetail(item.animeId) },
+                                modifier = Modifier.padding(
+                                    start = if (isFirstColumn) 20.dp else 0.dp,
+                                    end = if (isLastColumn) 20.dp else 0.dp
+                                )
                             )
                         }
                     }
@@ -604,6 +650,7 @@ private fun HomeDetail(
                     }
                 }
             }
+
             ContentType.COMING_SOON -> {
                 val gridState = rememberLazyGridState()
 
@@ -633,20 +680,24 @@ private fun HomeDetail(
                     columns = GridCells.Fixed(3),
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
-                    contentPadding = PaddingValues(horizontal = 20.dp),
+                        .padding(innerPadding)
+                        .background(APColors.White),
                     verticalArrangement = Arrangement.spacedBy(24.dp),
                     horizontalArrangement = Arrangement.spacedBy(spacing),
                 ) {
                     item(span = { GridItemSpan(3) }) {
-                        Spacer(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(12.dp)
-                            .background(APColors.Surface))
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(12.dp)
+                                .background(APColors.Surface)
+                        )
                     }
                     item(span = { GridItemSpan(3) }) {
                         Box(
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp)
                         ) {
                             Box(
                                 modifier = Modifier.align(Alignment.CenterEnd)
@@ -749,10 +800,13 @@ private fun HomeDetail(
                             }
                         }
                     }
-                    items(
+                    itemsIndexed(
                         items = items.filterIsInstance<ComingSoonItem>(),
-                        key = { item -> item.animeId }
-                    ) { anime ->
+                        key = { _, item -> item.animeId }
+                    ) { index, anime ->
+                        val isFirstColumn = index % 3 == 0  // 왼쪽 끝
+                        val isLastColumn = index % 3 == 2   // 오른쪽 끝
+
                         APCardItem(
                             title = "${anime.title}",
                             imageUrl = anime.coverImageUrl,
@@ -768,7 +822,11 @@ private fun HomeDetail(
                             cardHeight = cardWidth * 1.41f,
                             fontSize = 14.sp,
                             maxLine = 1,
-                            onClick = { onNavigateToAnimeDetail(anime.animeId) }
+                            onClick = { onNavigateToAnimeDetail(anime.animeId) },
+                            modifier = Modifier.padding(
+                                start = if (isFirstColumn) 20.dp else 0.dp,
+                                end = if (isLastColumn) 20.dp else 0.dp
+                            )
                         )
                     }
                     if (isLoading) {
@@ -787,6 +845,15 @@ private fun HomeDetail(
             }
         }
     }
+
+    snackBarData?.let {
+        APSnackBar(
+            snackBarData = it,
+            visible = true,
+            onDismiss = { onChangeSnackBarData(null) }
+        )
+    }
+
     dialogData?.let {
         APConfirmDialog(
             title = it.title,

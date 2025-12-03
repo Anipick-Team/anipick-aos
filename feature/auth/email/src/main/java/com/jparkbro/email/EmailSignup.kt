@@ -302,7 +302,7 @@ internal fun EmailSignup(
                             isChecked = isTermsOfServiceAccepted,
                             onCheckedChange = { onAgreementClick(AgreementType.TERMS_OF_SERVICE, !isTermsOfServiceAccepted) },
                             onNavigateToTerms = {
-                                val intent = Intent(Intent.ACTION_VIEW, "https://www.notion.so/1d3b3eed42088025b329eb107cd42ae1".toUri())
+                                val intent = Intent(Intent.ACTION_VIEW, "https://anipick.p-e.kr/terms.html".toUri())
                                 context.startActivity(intent)
                             }
                         )
@@ -311,7 +311,7 @@ internal fun EmailSignup(
                             isChecked = isPrivacyPolicyAccepted,
                             onCheckedChange = { onAgreementClick(AgreementType.PRIVACY_POLICY, !isPrivacyPolicyAccepted) },
                             onNavigateToTerms = {
-                                val intent = Intent(Intent.ACTION_VIEW, "https://www.notion.so/1d3b3eed42088077a175f63a04dc93fd".toUri())
+                                val intent = Intent(Intent.ACTION_VIEW, "https://anipick.p-e.kr/privacy.html".toUri())
                                 context.startActivity(intent)
                             }
                         )

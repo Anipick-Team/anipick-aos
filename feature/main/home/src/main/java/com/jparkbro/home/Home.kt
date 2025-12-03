@@ -584,7 +584,6 @@ private fun Home(
                 }
                 is HomeUiState.Error -> {}
             }
-            Spacer(modifier = Modifier.height(43.dp))
         }
     }
 }
@@ -605,7 +604,8 @@ private fun CategorySection(
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .clickable { onNavigateClick() },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -621,7 +621,6 @@ private fun CategorySection(
                 tint = APColors.Gray,
                 modifier = Modifier
                     .clip(CircleShape)
-                    .clickable { onNavigateClick() }
                     .padding(4.dp)
             )
         }

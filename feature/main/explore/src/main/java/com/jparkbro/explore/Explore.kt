@@ -398,7 +398,8 @@ private fun Explore(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 6.dp),
+                                    .background(APColors.White)
+                                    .padding(horizontal = 20.dp, vertical = 6.dp),
                                 horizontalArrangement = Arrangement.spacedBy(spacing)
                             ) {
                                 rowItems.forEach { anime ->

@@ -1,5 +1,6 @@
 package com.jparkbro.detail
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -69,6 +70,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -95,6 +98,7 @@ import com.jparkbro.model.detail.ReviewDetailResponse
 import com.jparkbro.model.detail.ReviewSort
 import com.jparkbro.ui.APCardItem
 import com.jparkbro.ui.APConfirmDialog
+import com.jparkbro.ui.APEmptyContent
 import com.jparkbro.ui.APReviewItem
 import com.jparkbro.ui.APSnackBar
 import com.jparkbro.ui.APToggleSwitch
@@ -219,7 +223,7 @@ private fun DetailAnime(
     isLikeLoading: Boolean,
     isChangeStatusLoading: Boolean,
     isAnimeRatingLoading: Boolean,
-    onShareAnimeLink: () -> Unit,
+    onShareAnimeLink: () -> String,
     onChangeTabIndex: (DetailTab) -> Unit,
     onChangeIncludeSpoiler: () -> Unit,
     onChangeSort: (ReviewSort) -> Unit,
@@ -246,6 +250,8 @@ private fun DetailAnime(
     onStatusRefresh: () -> Unit,
     onRefreshAllData: () -> Unit,
 ) {
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         val isUpdate = onCheckReviewRefresh()
         if (isUpdate) {
@@ -378,7 +384,7 @@ private fun DetailAnime(
                                         modifier = Modifier
                                             .weight(1f)
                                     )
-                                    /*Spacer(modifier = Modifier.width(12.dp))
+                                    Spacer(modifier = Modifier.width(12.dp))
                                     Icon(
                                         painter = painterResource(R.drawable.ic_share),
                                         contentDescription = null,
@@ -389,10 +395,16 @@ private fun DetailAnime(
                                                 indication = null,
                                                 interactionSource = remember { MutableInteractionSource() }
                                             ) {
-                                                onShareAnimeLink()
-                                                onChangeSnackBarData(SnackBarData(text = "링크가 복사되었습니다."))
-                                              },
-                                    )*/
+                                                val shareText = onShareAnimeLink()
+                                                val sendIntent = Intent().apply {
+                                                    action = Intent.ACTION_SEND
+                                                    putExtra(Intent.EXTRA_TEXT, shareText)
+                                                    type = "text/plain"
+                                                }
+                                                val shareIntent = Intent.createChooser(sendIntent, null)
+                                                context.startActivity(shareIntent)
+                                            },
+                                    )
                                 }
                                 Row(
                                     modifier = Modifier
@@ -1096,7 +1108,9 @@ private fun AnimeReview(
             detailInfo = detailInfo,
             myReview = myReview,
             onRateAnime = onRateAnime,
+            onDeleteReview = onDeleteReview,
             isAnimeRatingLoading = isAnimeRatingLoading,
+            onChangeDialogData = onChangeDialogData,
             onChangeSnackBarData = onChangeSnackBarData,
             onNavigateToReviewForm = onNavigateToReviewForm,
         )
@@ -1277,97 +1291,127 @@ private fun AnimeReview(
                     }
                 }
             }
-            reviewItems.filter { !it.isSpoiler || includeSpoiler }.forEach { review ->
-                val radioOptions = listOf("스포일러", "편파적인 언행", "욕설 및 비하", "홍보성 및 영리 목적", "음란성 및 선정성")
-                var selectedOption by remember { mutableStateOf(radioOptions[0]) }
-                APReviewItem(
-                    reviewItem = review,
-                    onClickUpdate = { onNavigateToReviewForm(detailInfo?.animeId ?: -1, review.reviewId, FormType.EDIT) },
-                    onClickDelete = { onDeleteReview(review.reviewId) },
-                    onClickBlock = {
-                        onChangeDialogData(DialogData(
-                            title = "사용자를 차단하시겠습니까?",
-                            subTitle = "차단한 사용자의 리뷰, 커뮤니티 게시글 및\n댓글 등 모든 컨텐츠가 노출되지 않게 됩니다.",
-                            dismiss = "취소",
-                            confirm = "확인",
-                            onDismiss = { onChangeDialogData(null) },
-                            onConfirm = {
-                                onBlockUser(review.userId ?: -1)
-                                onChangeDialogData(null)
-                            },
-                        ))
-                    },
-                    onCLickReport = {
-                        onChangeDialogData(DialogData(
-                            title = "리뷰를 신고하시겠습니까?",
-                            subTitle = "신고 시, 리뷰 검토 후 처리됩니다.",
-                            dismiss = "취소",
-                            confirm = "다음",
-                            onDismiss = { onChangeDialogData(null) },
-                            onConfirm = { onChangeDialogData(
+            val filteredReviews = reviewItems.filter { !it.isSpoiler || includeSpoiler }
+            if (filteredReviews.isNotEmpty()) {
+                filteredReviews.forEach { review ->
+                    val radioOptions = listOf("스포일러", "편파적인 언행", "욕설 및 비하", "홍보성 및 영리 목적", "음란성 및 선정성")
+                    var selectedOption by remember { mutableStateOf(radioOptions[0]) }
+                    APReviewItem(
+                        reviewItem = review,
+                        onClickUpdate = { onNavigateToReviewForm(detailInfo?.animeId ?: -1, review.reviewId, FormType.EDIT) },
+                        onClickDelete = {
+                            onChangeDialogData(
                                 DialogData(
-                                    title = "신고하는 사유를 선택해주세요.",
-                                    subTitle = "신고 시, 검토 후 처리되어요.",
-                                    content = {
-                                        FlowRow(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = 20.dp, vertical = 16.dp)
-                                                .selectableGroup(),
-                                            maxItemsInEachRow = 2,
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                                        ) {
-                                            radioOptions.forEach { text ->
-                                                Row(
-                                                    Modifier
-                                                        .weight(1f)
-                                                        .height(22.dp)
-                                                        .selectable(
-                                                            selected = (text == selectedOption),
-                                                            onClick = { selectedOption = text },
-                                                            role = Role.RadioButton
-                                                        ),
-                                                    verticalAlignment = Alignment.CenterVertically
-                                                ) {
-                                                    RadioButton(
-                                                        selected = (text == selectedOption),
-                                                        onClick = { selectedOption = text },
-                                                        colors = RadioButtonDefaults.colors(
-                                                            selectedColor = APColors.Point,
-                                                            unselectedColor = APColors.Gray
-                                                        )
-                                                    )
-                                                    Text(
-                                                        text = text,
-                                                        fontSize = 16.sp,
-                                                        fontWeight = FontWeight.W500,
-                                                        color = APColors.Black,
-                                                        modifier = Modifier
-                                                            .padding(start = 8.dp)
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    },
+                                    title = "정말 리뷰를 삭제하시겠어요?",
+                                    subTitle = "삭제한 리뷰는 복구가 불가능해요.",
                                     dismiss = "취소",
-                                    confirm = "신고하기",
+                                    confirm = "삭제",
                                     onDismiss = { onChangeDialogData(null) },
                                     onConfirm = {
-                                        // TODO callback
-                                        onReportReview(review.reviewId, selectedOption)
+                                        onDeleteReview(review.reviewId)
                                         onChangeDialogData(null)
                                     },
                                 )
-                            )},
-                        ))
-                    },
-                    isLikedLoading = isReviewLikedLoading,
-                    onClickLiked = { isLiked, callBack ->
-                        onChangeLikeState(isLiked, review.reviewId) { result ->
-                            callBack(result)
-                        }
-                    },
+                            )
+                        },
+                        onClickBlock = {
+                            onChangeDialogData(
+                                DialogData(
+                                    title = "사용자를 차단하시겠습니까?",
+                                    subTitle = "차단한 사용자의 리뷰, 커뮤니티 게시글 및\n댓글 등 모든 컨텐츠가 노출되지 않게 됩니다.",
+                                    dismiss = "취소",
+                                    confirm = "확인",
+                                    onDismiss = { onChangeDialogData(null) },
+                                    onConfirm = {
+                                        onBlockUser(review.userId ?: -1)
+                                        onChangeDialogData(null)
+                                    },
+                                )
+                            )
+                        },
+                        onCLickReport = {
+                            onChangeDialogData(
+                                DialogData(
+                                    title = "리뷰를 신고하시겠습니까?",
+                                    subTitle = "신고 시, 리뷰 검토 후 처리됩니다.",
+                                    dismiss = "취소",
+                                    confirm = "다음",
+                                    onDismiss = { onChangeDialogData(null) },
+                                    onConfirm = {
+                                        onChangeDialogData(
+                                            DialogData(
+                                                title = "신고하는 사유를 선택해주세요.",
+                                                subTitle = "신고 시, 검토 후 처리되어요.",
+                                                content = {
+                                                    FlowRow(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .padding(horizontal = 20.dp, vertical = 16.dp)
+                                                            .selectableGroup(),
+                                                        maxItemsInEachRow = 2,
+                                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                                                    ) {
+                                                        radioOptions.forEach { text ->
+                                                            Row(
+                                                                Modifier
+                                                                    .weight(1f)
+                                                                    .height(22.dp)
+                                                                    .selectable(
+                                                                        selected = (text == selectedOption),
+                                                                        onClick = { selectedOption = text },
+                                                                        role = Role.RadioButton
+                                                                    ),
+                                                                verticalAlignment = Alignment.CenterVertically
+                                                            ) {
+                                                                RadioButton(
+                                                                    selected = (text == selectedOption),
+                                                                    onClick = { selectedOption = text },
+                                                                    colors = RadioButtonDefaults.colors(
+                                                                        selectedColor = APColors.Point,
+                                                                        unselectedColor = APColors.Gray
+                                                                    )
+                                                                )
+                                                                Text(
+                                                                    text = text,
+                                                                    fontSize = 16.sp,
+                                                                    fontWeight = FontWeight.W500,
+                                                                    color = APColors.Black,
+                                                                    modifier = Modifier
+                                                                        .padding(start = 8.dp)
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                dismiss = "취소",
+                                                confirm = "신고하기",
+                                                onDismiss = { onChangeDialogData(null) },
+                                                onConfirm = {
+                                                    // TODO callback
+                                                    onReportReview(review.reviewId, selectedOption)
+                                                    onChangeDialogData(null)
+                                                },
+                                            )
+                                        )
+                                    },
+                                )
+                            )
+                        },
+                        isLikedLoading = isReviewLikedLoading,
+                        onClickLiked = { isLiked, callBack ->
+                            onChangeLikeState(isLiked, review.reviewId) { result ->
+                                callBack(result)
+                            }
+                        },
+                    )
+                }
+            } else {
+                APEmptyContent(
+                    comment = "아직 리뷰가 없어요!\n첫 번째 리뷰의 주인공이 되어볼까요?",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .offset(y = 80.dp)
                 )
             }
             if (isLoading) {
@@ -1419,7 +1463,9 @@ private fun MyReviewContainer(
     detailInfo: DetailInfo?,
     myReview: DetailMyReview?,
     onRateAnime: (rating: Float, onResult: (Boolean) -> Unit) -> Unit,
+    onDeleteReview: (Int) -> Unit,
     isAnimeRatingLoading: Boolean = false,
+    onChangeDialogData: (DialogData?) -> Unit,
     onChangeSnackBarData: (SnackBarData?) -> Unit,
     onNavigateToReviewForm: (Int, Int?, FormType) -> Unit,
 ) {
@@ -1726,7 +1772,19 @@ private fun MyReviewContainer(
                                         interactionSource = remember { MutableInteractionSource() }
                                     ) {
                                         showDropDown = !showDropDown
-                                        // TODO
+                                        onChangeDialogData(
+                                            DialogData(
+                                                title = "정말 리뷰를 삭제하시겠어요?",
+                                                subTitle = "삭제한 리뷰는 복구가 불가능해요.",
+                                                dismiss = "취소",
+                                                confirm = "삭제",
+                                                onDismiss = { onChangeDialogData(null) },
+                                                onConfirm = {
+                                                    onDeleteReview(myReview.reviewId ?: -1)
+                                                    onChangeDialogData(null)
+                                                },
+                                            )
+                                        )
                                     }
                                     .padding(horizontal = 33.dp, vertical = 14.dp)
                             )

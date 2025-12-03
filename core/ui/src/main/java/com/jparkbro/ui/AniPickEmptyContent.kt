@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jparkbro.ui.theme.APColors
@@ -55,7 +56,8 @@ fun APEmptyContent(
                 text = comment,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W500,
-                color = APColors.TextGray
+                color = APColors.TextGray,
+                textAlign = TextAlign.Center
             )
         }
     }

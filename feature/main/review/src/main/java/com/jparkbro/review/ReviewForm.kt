@@ -1,5 +1,6 @@
 package com.jparkbro.review
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,6 +46,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -54,6 +56,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jparkbro.model.common.FormType
 import com.jparkbro.model.review.MyReview
@@ -110,6 +113,7 @@ internal fun ReviewForm(
     onNavigateBack: () -> Unit,
     onPopBackWithRefresh: () -> Unit,
 ) {
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
     Scaffold(
@@ -264,7 +268,10 @@ internal fun ReviewForm(
                                     color = APColors.White,
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(8.dp))
-                                        .clickable {}
+                                        .clickable {
+                                            val intent = Intent(Intent.ACTION_VIEW, "https://anipick.p-e.kr/community-guidelines.html".toUri())
+                                            context.startActivity(intent)
+                                        }
                                         .background(APColors.TextGray, RoundedCornerShape(8.dp))
                                         .padding(8.dp)
                                 )

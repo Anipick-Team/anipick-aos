@@ -150,7 +150,7 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun logout(onResult: (Boolean) -> Unit) {
+    fun logout(onResult: (Boolean) -> Unit = {}) {
         viewModelScope.launch {
             try {
                 logoutUseCase(
