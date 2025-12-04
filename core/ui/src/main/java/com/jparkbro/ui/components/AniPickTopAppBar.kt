@@ -1,10 +1,16 @@
-package com.jparkbro.ui
+package com.jparkbro.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,17 +24,25 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.theme.AniPick16Normal
+import com.jparkbro.ui.theme.AniPick18ExtraBold
+import com.jparkbro.ui.theme.AniPick24Bold
+import com.jparkbro.ui.theme.AniPickBlack
+import com.jparkbro.ui.theme.AniPickGray100
+import com.jparkbro.ui.theme.AniPickGray200
+import com.jparkbro.ui.theme.AniPickGray300
+import com.jparkbro.ui.theme.AniPickSmallShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,10 +99,8 @@ fun APSkipActionTopAppBar(
                 onClick = onClick
             ) {
                 Text(
-                    text = "건너뛰기",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W500,
-                    color = Color(0xFFC9C9C9)
+                    text = stringResource(R.string.skip),
+                    style = AniPick16Normal.copy(color = AniPickGray200),
                 )
             }
         },
@@ -107,7 +119,7 @@ fun APMainTopAppBar(
         navigationIcon = {
             Image(
                 painter = painterResource(R.drawable.anipick_logo),
-                contentDescription = "앱 로고",
+                contentDescription = stringResource(R.string.app_logo),
                 modifier = Modifier
                     .padding(start = dimensionResource(R.dimen.padding_default))
                     .width(120.dp)
@@ -119,8 +131,10 @@ fun APMainTopAppBar(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_search_outline),
-                    contentDescription = "검색 아이콘",
-                    tint = APColors.Gray
+                    contentDescription = stringResource(R.string.search_icon),
+                    tint = AniPickGray100,
+                    modifier = Modifier
+                        .size(dimensionResource(R.dimen.icon_size_large))
                 )
             }
         },
@@ -156,10 +170,8 @@ fun APSearchTopAppBar(
                 onValueChange = onValueChange,
                 placeholder = {
                     Text(
-                        text = "무엇을 검색할까요?",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W500,
-                        color = APColors.TextGray,
+                        text = stringResource(R.string.search_placeholder),
+                        style = AniPick16Normal.copy(color = AniPickGray300),
                     )
                 },
                 keyboardActions = keyboardActions,
@@ -179,7 +191,7 @@ fun APSearchTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun APTitleTopAppBar(
-    title: Int,
+    title: String,
     onNavigateBack: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
@@ -196,13 +208,49 @@ fun APTitleTopAppBar(
         },
         title = {
             Text(
-                text = stringResource(title),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.W700,
-                color = APColors.Black
+                text = title,
+                style = AniPick18ExtraBold.copy(color = AniPickBlack),
             )
         },
         scrollBehavior = scrollBehavior
+    )
+}
+
+/** MyPage TopAppBar */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun APMyPageTopAppBar(
+    onNavigateToSetting: () -> Unit = {},
+) {
+    APBaseTopAppBar(
+        navigationIcon = {
+            Row(
+                modifier = Modifier
+                .padding(start = dimensionResource(R.dimen.padding_default)),
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium)),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.my_page),
+                    style = AniPick24Bold.copy(color = AniPickBlack),
+                )
+                Box(
+                    modifier = Modifier
+                        .border(dimensionResource(R.dimen.border_width_default), APColors.Gray, AniPickSmallShape)
+                        .clip(AniPickSmallShape)
+                        .clickable { onNavigateToSetting() }
+                        .padding(dimensionResource(R.dimen.padding_small))
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_setting),
+                        contentDescription = stringResource(R.string.setting_icon),
+                        modifier = Modifier
+                            .size(dimensionResource(R.dimen.icon_size_small)),
+                        tint = AniPickGray100
+                    )
+                }
+            }
+        }
     )
 }
 
@@ -247,7 +295,16 @@ private fun APSearchTopAppBarPreview() {
 @Preview(showBackground = true)
 private fun APTitleTopAppBarPreview() {
     APTitleTopAppBar(
-        title = R.string.back_stack_icon,
+        title = stringResource(R.string.back_stack_icon),
         onNavigateBack = {},
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@Preview(showBackground = true)
+private fun APMyPageTopAppBarPreview() {
+    APMyPageTopAppBar(
+
     )
 }
