@@ -4,10 +4,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.jparkbro.login.Login
+import com.jparkbro.login.LoginRoot
 import kotlinx.serialization.Serializable
 
-@Serializable data object Login // route to Login screen
+/** Route to LoginScreen */
+@Serializable data object Login
 
 fun NavController.navigateToLogin(navOptions: NavOptions? = null) = navigate(route = Login, navOptions)
 
@@ -18,7 +19,7 @@ fun NavGraphBuilder.loginScreen(
     onNavigateToEmailSignup: () -> Unit,
 ) {
     composable<Login> {
-        Login(
+        LoginRoot(
             onNavigateToHome = onNavigateToHome,
             onNavigateToPreferenceSetup = onNavigateToPreferenceSetup,
             onNavigateToEmailLogin = onNavigateToEmailLogin,
