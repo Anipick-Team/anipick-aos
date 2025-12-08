@@ -1,4 +1,4 @@
-package com.jparkbro.ui
+package com.jparkbro.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -27,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.jparkbro.model.enum.DialogType
 import com.jparkbro.ui.theme.APColors
 
 @Composable
@@ -54,6 +54,9 @@ fun APConfirmDialog(
         ) {
             // Title
             Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -214,7 +217,3 @@ data class DialogData(
     val errorMsg: String = "",
 )
 
-enum class DialogType {
-    ALERT,
-    CONFIRM
-}
