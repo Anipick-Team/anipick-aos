@@ -5,95 +5,143 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.domain.GoogleLoginUseCase
 import com.jparkbro.domain.KakaoLoginUseCase
+import com.jparkbro.model.enum.DialogType
 import com.jparkbro.model.exception.ApiException
-import com.jparkbro.ui.DialogData
-import com.jparkbro.ui.DialogType
+import com.jparkbro.ui.R
+import com.jparkbro.ui.util.UiText
+import com.jparkbro.ui.model.DialogData
+import com.jparkbro.ui.model.SnackBarData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.collections.plus
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val googleLoginUseCase: GoogleLoginUseCase,
     private val kakaoLoginUseCase: KakaoLoginUseCase,
-) : ViewModel() {
+    private val googleLoginUseCase: GoogleLoginUseCase,
+): ViewModel() {
 
-    private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
-    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(LoginState())
+    val uiState = _uiState.asStateFlow()
 
-    private val _showDialog = MutableStateFlow<DialogData?>(null)
-    val showDialog = _showDialog.asStateFlow()
+    private val _eventChannel = Channel<LoginEvent>()
+    val events = _eventChannel.receiveAsFlow()
 
-    fun dismissDialog() {
-        _showDialog.value = null
-    }
-
-    fun signInWithGoogle(activity: Activity) {
-        socialLoginProceed {
-            googleLoginUseCase(activity)
+    fun onAction(action: LoginAction) {
+        when (action) {
+            is LoginAction.OnKakaoLoginClick -> kakaoLogin(action.activity)
+            is LoginAction.OnGoogleLoginClick -> googleLogin(action.activity)
+            is LoginAction.OnDialogDismiss -> dismissDialog()
+            else -> Unit
         }
     }
 
-    fun signInWithKakao(activity: Activity) {
-        socialLoginProceed {
-            kakaoLoginUseCase(activity)
-        }
-    }
-
-    private fun socialLoginProceed(socialLogin: () -> Flow<Result<Boolean>>) {
-        _uiState.value = LoginUiState.Loading
-        
-        viewModelScope.launch {
-            try {
-                socialLogin().collect { result ->
-                    _uiState.value = result.fold(
-                        onSuccess = { reviewCompletedYn ->
-                            LoginUiState.Success(reviewCompletedYn)
-                        },
-                        onFailure = { exception ->
-                            if (exception is ApiException) {
-                                when (exception.errorCode) {
-                                    132 -> {
-                                        _showDialog.value = DialogData(
-                                            type = DialogType.ALERT,
-                                            title = "탈퇴된 계정입니다.",
-                                            dismiss = "닫기",
-                                            errorMsg = "자세한 사항은 고객센터로 문의해 주세요.\nteamanipick@gmail.com"
-                                        )
-                                    }
-                                    133 -> {
-                                        _showDialog.value = DialogData(
-                                            type = DialogType.CONFIRM,
-                                            title = "이미 가입된 이메일 주소입니다.",
-                                            subTitle = "이메일 로그인을 시도해주세요.",
-                                            dismiss = "닫기",
-                                            confirm = "이메일 로그인",
-                                        )
-                                    }
-                                }
+    private fun kakaoLogin(activity: Activity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            kakaoLoginUseCase(activity).collect { result ->
+                result.fold(
+                    onSuccess = { reviewCompletedYn ->
+                        _eventChannel.send(LoginEvent.LoginSuccess(reviewCompletedYn))
+                    },
+                    onFailure = { exception ->
+                        if (exception is ApiException) {
+                            when (exception.errorCode) {
+                                132 -> { showWithdrawnAccountDialog() }
+                                133 -> { showDuplicateEmailDialog() }
                             }
-                            LoginUiState.Error(exception.message ?: "로그인 중 에러 발생")
+                        } else {
+                            showSnackBar(
+                                SnackBarData(text = UiText.StringResource(R.string.snackbar_login_failed))
+                            )
                         }
-                    )
-                }
-            } catch (e: Exception) {
-                _uiState.value = LoginUiState.Error(e.message ?: "예상치 못한 오류가 발생했습니다")
+                    }
+                )
             }
         }
     }
 
-    fun resetUiState() {
-        _uiState.value = LoginUiState.Idle
+    private fun googleLogin(activity: Activity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            googleLoginUseCase(activity).collect { result ->
+                result.fold(
+                    onSuccess = { reviewCompletedYn ->
+                        _eventChannel.send(LoginEvent.LoginSuccess(reviewCompletedYn))
+                    },
+                    onFailure = { exception ->
+                        if (exception is ApiException) {
+                            when (exception.errorCode) {
+                                132 -> { showWithdrawnAccountDialog() }
+                                133 -> { showDuplicateEmailDialog() }
+                            }
+                        } else {
+                            showSnackBar(
+                                SnackBarData(
+                                    text = UiText.StringResource(R.string.snackbar_login_failed),
+                                    onDismiss = { dismissSnackBar() }
+                                )
+                            )
+                        }
+                    }
+                )
+            }
+        }
     }
-}
 
-sealed interface LoginUiState {
-    data object Idle: LoginUiState
-    data object Loading: LoginUiState
-    data class Success(val reviewCompletedYn: Boolean): LoginUiState
-    data class Error(val msg: String): LoginUiState
+    private fun showWithdrawnAccountDialog() {
+        _uiState.update {
+            it.copy(
+                dialogData = DialogData(
+                    type = DialogType.ALERT,
+                    title = UiText.StringResource(R.string.dialog_account_withdrawn),
+                    subTitle = UiText.StringResource(R.string.dialog_account_withdrawn_message),
+                    confirm = UiText.StringResource(R.string.dialog_dismiss),
+                    onConfirm = { dismissDialog() }
+                )
+            )
+        }
+    }
+
+    private fun showDuplicateEmailDialog() {
+        _uiState.update {
+            it.copy(
+                dialogData = DialogData(
+                    type = DialogType.CONFIRM,
+                    title = UiText.StringResource(R.string.dialog_email_exists),
+                    subTitle = UiText.StringResource(R.string.dialog_email_exists_message),
+                    dismiss = UiText.StringResource(R.string.dialog_dismiss),
+                    confirm = UiText.StringResource(R.string.dialog_email_login),
+                    onDismiss = { dismissDialog() },
+                )
+            )
+        }
+    }
+
+    private fun showSnackBar(snackBarData: SnackBarData) {
+        _uiState.update {
+            it.copy(
+                snackBarQueue = it.snackBarQueue + snackBarData
+            )
+        }
+    }
+
+    private fun dismissSnackBar() {
+        _uiState.update {
+            it.copy(
+                snackBarQueue = it.snackBarQueue.drop(1)
+            )
+        }
+    }
+
+    private fun dismissDialog() {
+        _uiState.update {
+            it.copy(dialogData = null)
+        }
+    }
 }
