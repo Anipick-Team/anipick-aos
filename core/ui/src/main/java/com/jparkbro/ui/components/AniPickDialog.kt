@@ -28,8 +28,8 @@ import com.jparkbro.ui.theme.AniPick14Normal
 import com.jparkbro.ui.theme.AniPick16Normal
 import com.jparkbro.ui.theme.AniPick20Bold
 import com.jparkbro.ui.theme.AniPickBlack
-import com.jparkbro.ui.theme.AniPickGray300
 import com.jparkbro.ui.theme.AniPickGray400
+import com.jparkbro.ui.theme.AniPickGray500
 import com.jparkbro.ui.theme.AniPickGray50
 import com.jparkbro.ui.theme.AniPickPrimary
 import com.jparkbro.ui.theme.AniPickSmallShape
@@ -69,7 +69,7 @@ fun APConfirmDialog(
                 dialogData.subTitle?.let {
                     Text(
                         text = it.asString(),
-                        style = AniPick14Normal.copy(color = AniPickGray400),
+                        style = AniPick14Normal.copy(color = AniPickGray500),
                         textAlign = TextAlign.Center
                     )
                 }
@@ -91,7 +91,7 @@ fun APConfirmDialog(
                     dialogData.dismiss?.let {
                         Text(
                             text = it.asString(),
-                            style = AniPick16Normal.copy(color = AniPickGray300)
+                            style = AniPick16Normal.copy(color = AniPickGray400)
                         )
                     }
                 }
@@ -147,7 +147,7 @@ fun APAlertDialog(
                 dialogData.subTitle?.let {
                     Text(
                         text = it.asString(),
-                        style = AniPick14Normal.copy(color = AniPickGray400),
+                        style = AniPick14Normal.copy(color = AniPickGray500),
                         textAlign = TextAlign.Center
                     )
                 }

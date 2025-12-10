@@ -20,6 +20,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,37 +32,42 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jparkbro.model.enum.DialogType
 import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APAlertDialog
 import com.jparkbro.ui.components.APConfirmDialog
 import com.jparkbro.ui.components.APSnackBarRe
+import com.jparkbro.ui.model.DialogData
+import com.jparkbro.ui.model.SnackBarData
 import com.jparkbro.ui.preview.DevicePreviews
 import com.jparkbro.ui.theme.AniPick14Normal
 import com.jparkbro.ui.theme.AniPick24Bold
 import com.jparkbro.ui.theme.AniPickBlack
-import com.jparkbro.ui.theme.AniPickGray300
+import com.jparkbro.ui.theme.AniPickGray400
 import com.jparkbro.ui.theme.AniPickLogoImg
 import com.jparkbro.ui.theme.AniPickSmallShape
 import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.theme.GoogleLoginImg
 import com.jparkbro.ui.theme.KakaoLoginImg
 import com.jparkbro.ui.util.ObserveAsEvents
+import com.jparkbro.ui.util.extension.requireActivity
 
 @Composable
 internal fun LoginRoot(
     onNavigateToHome: () -> Unit,
     onNavigateToPreferenceSetup: () -> Unit,
     onNavigateToEmailLogin: () -> Unit,
-    onNavigateToEmailSignup: () -> Unit,
+    onNavigateToEmailRegister: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current as Activity
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val activity = context.requireActivity()
+
+    var dialogData by rememberSaveable { mutableStateOf<DialogData?>(null) }
+    var snackBarData by rememberSaveable { mutableStateOf<List<SnackBarData>>(emptyList()) }
 
     ObserveAsEvents(viewModel.events) { event ->
-        when(event) {
+        when (event) {
             is LoginEvent.LoginSuccess -> {
                 if (event.reviewCompletedYn) {
                     onNavigateToPreferenceSetup()
@@ -67,44 +75,67 @@ internal fun LoginRoot(
                     onNavigateToHome()
                 }
             }
+
+            is LoginEvent.LoginFailWithDialog -> {
+                when (event.dialogData.type) {
+                    DialogType.ALERT -> {
+                        dialogData = event.dialogData.copy(
+                            onConfirm = { dialogData = null }
+                        )
+                    }
+
+                    DialogType.CONFIRM -> {
+                        dialogData = event.dialogData.copy(
+                            onDismiss = { dialogData = null },
+                            onConfirm = {
+                                dialogData = null
+                                onNavigateToEmailLogin()
+                            }
+                        )
+                    }
+                }
+            }
+
+            is LoginEvent.LoginFailWithSnackBar -> {
+                snackBarData = snackBarData + event.snackBarData.copy(
+                    onDismiss = {
+                        snackBarData = snackBarData.drop(1)
+                    }
+                )
+            }
         }
     }
 
     LoginScreen(
-        activity = context,
+        activity = activity,
         onAction = { action ->
             when (action) {
                 LoginAction.OnEmailLoginClick -> onNavigateToEmailLogin()
-                LoginAction.OnEmailRegisterClick -> onNavigateToEmailSignup()
+                LoginAction.OnEmailRegisterClick -> onNavigateToEmailRegister()
                 is LoginAction.OnProblemClick -> {
                     val intent = Intent(Intent.ACTION_VIEW, "https://forms.gle/SJ7mbQfyfoe2HDLd7".toUri())
                     context.startActivity(intent)
                 }
+
                 else -> Unit
             }
             viewModel.onAction(action)
         }
     )
 
-    uiState.dialogData?.let {
-        when(it.type) {
+    dialogData?.let {
+        when (it.type) {
             DialogType.ALERT -> {
                 APAlertDialog(it)
             }
+
             DialogType.CONFIRM -> {
-                APConfirmDialog(
-                    it.copy(
-                        onConfirm = {
-                            viewModel.onAction(LoginAction.OnDialogDismiss)
-                            onNavigateToEmailLogin()
-                        }
-                    )
-                )
+                APConfirmDialog(it)
             }
         }
     }
 
-    uiState.snackBarQueue.firstOrNull()?.let { snackBarData ->
+    snackBarData.firstOrNull()?.let { snackBarData ->
         APSnackBarRe(snackBarData)
     }
 }
@@ -194,7 +225,7 @@ private fun Content(
             ) {
                 Text(
                     text = stringResource(R.string.login_email_register),
-                    style = AniPick14Normal.copy(color = AniPickGray300),
+                    style = AniPick14Normal.copy(color = AniPickGray400),
                     modifier = Modifier
                         .clip(CircleShape)
                         .clickable { onAction(LoginAction.OnEmailRegisterClick) }
@@ -205,7 +236,7 @@ private fun Content(
                 modifier = Modifier
                     .height(dimensionResource(R.dimen.spacing_default))
                     .padding(horizontal = dimensionResource(R.dimen.padding_large)),
-                color = AniPickGray300
+                color = AniPickGray400
             )
             Box(
                 modifier = Modifier
@@ -214,7 +245,7 @@ private fun Content(
             ) {
                 Text(
                     text = stringResource(R.string.login_email_login),
-                    style = AniPick14Normal.copy(color = AniPickGray300),
+                    style = AniPick14Normal.copy(color = AniPickGray400),
                     modifier = Modifier
                         .clip(CircleShape)
                         .clickable { onAction(LoginAction.OnEmailLoginClick) }
@@ -231,14 +262,14 @@ private fun Footer(
 ) {
     Text(
         text = stringResource(R.string.login_problem),
-        style = AniPick14Normal.copy(color = AniPickGray300),
+        style = AniPick14Normal.copy(color = AniPickGray400),
         modifier = Modifier
             .clip(CircleShape)
             .clickable { onAction(LoginAction.OnProblemClick) }
             .border(
-                dimensionResource(R.dimen.border_width_default),
-                AniPickGray300,
-                CircleShape
+                width = dimensionResource(R.dimen.border_width_default),
+                color = AniPickGray400,
+                shape = CircleShape
             )
             .padding(
                 horizontal = dimensionResource(R.dimen.padding_default),
@@ -251,7 +282,7 @@ private fun Footer(
 @Composable
 private fun LoginScreenPreview() {
     LoginScreen(
-        activity = LocalContext.current as Activity,
+        activity = LocalContext.current.requireActivity(),
         onAction = {}
     )
 }

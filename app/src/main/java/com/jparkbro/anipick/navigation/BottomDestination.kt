@@ -10,9 +10,9 @@ import com.jparkbro.ranking.navigation.Ranking
 import kotlin.reflect.KClass
 
 enum class BottomDestination(
-    @DrawableRes val selectedIcon: Int,
-    @DrawableRes val unselectedIcon: Int,
-    @StringRes val labelTextId: Int,
+    @param:DrawableRes val selectedIcon: Int,
+    @param:DrawableRes val unselectedIcon: Int,
+    @param:StringRes val labelTextId: Int,
     val route: KClass<*>,
 ) {
     HOME(

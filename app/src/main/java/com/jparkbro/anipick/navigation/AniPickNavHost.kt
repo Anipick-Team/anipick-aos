@@ -1,13 +1,8 @@
 package com.jparkbro.anipick.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
 import com.jparkbro.detail.navigation.actorDetailScreen
@@ -22,10 +17,6 @@ import com.jparkbro.detail.navigation.navigateToAnimeRecommends
 import com.jparkbro.detail.navigation.navigateToAnimeSeries
 import com.jparkbro.detail.navigation.navigateToStudioDetail
 import com.jparkbro.detail.navigation.studioDetailScreen
-import com.jparkbro.email.navigation.emailLoginScreen
-import com.jparkbro.email.navigation.emailSignupScreen
-import com.jparkbro.email.navigation.navigateToEmailLogin
-import com.jparkbro.email.navigation.navigateToEmailSignup
 import com.jparkbro.explore.navigation.exploreScreen
 import com.jparkbro.explore.navigation.navigateToExplore
 import com.jparkbro.findpassword.navigation.navigateToPasswordReset
@@ -36,18 +27,22 @@ import com.jparkbro.home.navigation.homeDetailScreen
 import com.jparkbro.home.navigation.homeScreen
 import com.jparkbro.home.navigation.navigateToHome
 import com.jparkbro.home.navigation.navigateToHomeDetail
+import com.jparkbro.login.navigation.emailLoginScreen
 import com.jparkbro.login.navigation.loginScreen
+import com.jparkbro.login.navigation.navigateToEmailLogin
 import com.jparkbro.login.navigation.navigateToLogin
 import com.jparkbro.model.common.MetaData
 import com.jparkbro.mypage.navigation.myPageScreen
-import com.jparkbro.preferencesetup.navigation.navigateToPreferenceSetup
-import com.jparkbro.preferencesetup.navigation.preferenceSetupScreen
 import com.jparkbro.mypage.navigation.myRatingsScreen
 import com.jparkbro.mypage.navigation.navigateToMyRatings
 import com.jparkbro.mypage.navigation.navigateToUserContent
 import com.jparkbro.mypage.navigation.userContentScreen
+import com.jparkbro.preferencesetup.navigation.navigateToPreferenceSetup
+import com.jparkbro.preferencesetup.navigation.preferenceSetupScreen
 import com.jparkbro.ranking.navigation.navigateToRanking
 import com.jparkbro.ranking.navigation.rankingScreen
+import com.jparkbro.register.navigation.emailRegisterScreen
+import com.jparkbro.register.navigation.navigateToEmailRegister
 import com.jparkbro.review.navigation.navigateToReviewForm
 import com.jparkbro.review.navigation.reviewFormScreen
 import com.jparkbro.search.navigation.navigateToSearch
@@ -58,6 +53,7 @@ import com.jparkbro.setting.navigation.navigateToProfileEdit
 import com.jparkbro.setting.navigation.navigateToSetting
 import com.jparkbro.setting.navigation.profileEditScreen
 import com.jparkbro.setting.navigation.settingScreen
+import com.jparkbro.ui.util.extension.clearAllBackStack
 
 @Composable
 fun APNavHost(
@@ -73,51 +69,30 @@ fun APNavHost(
         modifier = modifier
     ) {
         loginScreen(
-            onNavigateToHome = {
-                navController.navigateToHome(
-                    navOptions {
-                        popUpTo(0) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                )
-            },
+            onNavigateToHome = navController::navigateToHome,
             onNavigateToPreferenceSetup = navController::navigateToPreferenceSetup,
             onNavigateToEmailLogin = navController::navigateToEmailLogin,
-            onNavigateToEmailSignup = navController::navigateToEmailSignup,
+            onNavigateToEmailRegister = navController::navigateToEmailRegister,
         )
         emailLoginScreen(
             onNavigateBack = navController::navigateUp,
-            onNavigateToEmailSignup = navController::navigateToEmailSignup,
+            onNavigateToEmailRegister = navController::navigateToEmailRegister,
             onNavigateToFindPassword = navController::navigateToPasswordVerification,
             onNavigateToHome = navController::navigateToHome,
             onNavigateToPreferenceSetup = navController::navigateToPreferenceSetup
         )
-        emailSignupScreen(
+        emailRegisterScreen(
             onNavigateBack = navController::navigateUp,
             onNavigateToPreferenceSetup = navController::navigateToPreferenceSetup,
         )
         passwordVerificationScreen(
             onNavigateBack = navController::navigateUp,
             onNavigateToPasswordReset = navController::navigateToPasswordReset,
-            onNavigateToLogin = {
-                navController.navigateToLogin(
-                    navOptions {
-                        popUpTo(0) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                )
-            },
+            onNavigateToLogin = navController::navigateToLogin,
         )
         passwordResetScreen(
             onNavigateBack = navController::navigateUp,
-            onNavigateToLogin = {
-                navController.navigateToLogin(
-                    navOptions {
-                        popUpTo(0) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                )
-            }
+            onNavigateToLogin = navController::navigateToLogin,
         )
         preferenceSetupScreen(
             metaData = metaData,
@@ -216,12 +191,7 @@ fun APNavHost(
         settingScreen(
             onNavigateBack = navController::navigateUp,
             onNavigateToProfileEdit = navController::navigateToProfileEdit,
-            onNavigateToLogin = {
-                navController.navigateToLogin(navOptions {
-                    popUpTo(0) { inclusive = true }
-                    launchSingleTop = true
-                })
-            },
+            onNavigateToLogin = navController::navigateToLogin,
             onCheckSettingRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("setting_refresh") ?: false },
             onPopBackWithRefresh = {
                 navController.previousBackStackEntry?.savedStateHandle?.set("setting_refresh", true)
@@ -229,12 +199,7 @@ fun APNavHost(
         )
         profileEditScreen(
             onNavigateBack = navController::navigateUp,
-            onNavigateToLogin = {
-                navController.navigateToLogin(navOptions {
-                    popUpTo(0) { inclusive = true }
-                    launchSingleTop = true
-                })
-            },
+            onNavigateToLogin = navController::navigateToLogin,
             onPopBackWithRefresh = {
                 navController.previousBackStackEntry?.savedStateHandle?.set("setting_refresh", true)
                 navController.popBackStack()
@@ -263,14 +228,4 @@ fun APNavHost(
             }
         )
     }
-}
-
-fun NavOptionsBuilder.clearBackStack(navController: NavHostController) {
-    popUpTo(navController.graph.id) {
-        saveState = false
-//        saveState = true
-    }
-    launchSingleTop = true
-//    restoreState = true
-    restoreState = false
 }

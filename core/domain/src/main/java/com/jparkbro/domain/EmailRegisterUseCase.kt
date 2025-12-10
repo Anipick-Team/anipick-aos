@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class EmailSignupUseCase @Inject constructor(
+class EmailRegisterUseCase @Inject constructor(
     private val authRepository: AuthRepository,
     private val userPreferenceRepository: UserPreferenceRepository,
 ) {

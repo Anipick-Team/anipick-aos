@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -9,6 +10,11 @@ plugins {
 
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+
+    // Firebase - Application 모듈에만 필요
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
+    id("com.google.firebase.firebase-perf")
 }
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -69,11 +75,13 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_17
+        }
     }
     buildFeatures {
         compose = true
@@ -87,13 +95,14 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:datastore"))
     implementation(project(":core:domain"))
-    implementation(project(":core:model"))
     implementation(project(":core:network"))
     implementation(project(":core:ui"))
 
-    implementation(project(":feature:auth:email"))
-    implementation(project(":feature:auth:findpassword"))
     implementation(project(":feature:auth:login"))
+    implementation(project(":feature:auth:email:login"))
+    implementation(project(":feature:auth:email:register"))
+
+    implementation(project(":feature:auth:findpassword"))
     implementation(project(":feature:auth:preferencesetup"))
 
     implementation(project(":feature:main:detail"))
@@ -104,17 +113,6 @@ dependencies {
     implementation(project(":feature:main:review"))
     implementation(project(":feature:main:search"))
     implementation(project(":feature:main:setting"))
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-
-    // Compose
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
 
     // Test
     testImplementation(libs.junit)
@@ -128,9 +126,6 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
-
-    // Kakao
-    implementation(libs.v2.user)
 
     // Splash Screen
     implementation(libs.androidx.core.splashscreen)

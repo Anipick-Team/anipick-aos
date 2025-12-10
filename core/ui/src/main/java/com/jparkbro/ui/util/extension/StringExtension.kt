@@ -1,6 +1,22 @@
 package com.jparkbro.ui.util.extension
 
 import com.jparkbro.ui.R
+import com.jparkbro.ui.util.EmailValidator
+import com.jparkbro.ui.util.UiText
+
+fun String.isEmailValid(): Boolean {
+    return EmailValidator.validate(this)
+}
+
+fun String.getEmailErrorMessage(): UiText? {
+    return when {
+        this.isEmpty() -> null
+        this.length > 50 -> UiText.StringResource(R.string.error_email_too_long)
+        !this.isEmailValid() -> UiText.StringResource(R.string.error_email_invalid_format)
+        else -> null
+    }
+}
+
 
 /**
  * 한글 문자를 필터링하는 함수

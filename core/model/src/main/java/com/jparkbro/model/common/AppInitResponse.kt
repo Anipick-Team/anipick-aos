@@ -15,6 +15,8 @@ data class AppInitResponse(
     val url: String?,
     @SerialName("isRequiredUpdate")
     val isRequiredUpdate: Boolean = false,
+    @SerialName("isLatestVersion")
+    val isLatestVersion: Boolean = true,
 )
 
 @Serializable

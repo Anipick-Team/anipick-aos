@@ -28,21 +28,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jparkbro.ui.R
-import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.preview.DevicePreviews
 import com.jparkbro.ui.theme.AniPick16Normal
 import com.jparkbro.ui.theme.AniPick18ExtraBold
 import com.jparkbro.ui.theme.AniPick24Bold
 import com.jparkbro.ui.theme.AniPickBlack
 import com.jparkbro.ui.theme.AniPickGray100
 import com.jparkbro.ui.theme.AniPickGray200
-import com.jparkbro.ui.theme.AniPickGray300
+import com.jparkbro.ui.theme.AniPickGray400
+import com.jparkbro.ui.theme.AniPickLogoImg
 import com.jparkbro.ui.theme.AniPickSmallShape
+import com.jparkbro.ui.theme.AniPickWhite
+import com.jparkbro.ui.theme.ChevronLeftIcon
+import com.jparkbro.ui.theme.SearchOutlineIcon
+import com.jparkbro.ui.theme.SettingIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +55,7 @@ fun APBaseTopAppBar(
     navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(containerColor = APColors.White)
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(containerColor = AniPickWhite)
 ) {
     CenterAlignedTopAppBar(
         title = title,
@@ -77,7 +80,7 @@ fun APBackStackTopAppBar(
                 onClick = onNavigateBack
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_chevron_left),
+                    imageVector = ChevronLeftIcon,
                     contentDescription = stringResource(R.string.back_stack_icon),
                 )
             }
@@ -118,7 +121,7 @@ fun APMainTopAppBar(
     APBaseTopAppBar(
         navigationIcon = {
             Image(
-                painter = painterResource(R.drawable.anipick_logo),
+                imageVector = AniPickLogoImg,
                 contentDescription = stringResource(R.string.app_logo),
                 modifier = Modifier
                     .padding(start = dimensionResource(R.dimen.padding_default))
@@ -130,7 +133,7 @@ fun APMainTopAppBar(
                 onClick = onNavigateToSearch
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_search_outline),
+                    imageVector = SearchOutlineIcon,
                     contentDescription = stringResource(R.string.search_icon),
                     tint = AniPickGray100,
                     modifier = Modifier
@@ -159,7 +162,7 @@ fun APSearchTopAppBar(
                 onClick = onNavigateBack
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_chevron_left),
+                    imageVector = ChevronLeftIcon,
                     contentDescription = stringResource(R.string.back_stack_icon),
                 )
             }
@@ -171,7 +174,7 @@ fun APSearchTopAppBar(
                 placeholder = {
                     Text(
                         text = stringResource(R.string.search_placeholder),
-                        style = AniPick16Normal.copy(color = AniPickGray300),
+                        style = AniPick16Normal.copy(color = AniPickGray400),
                     )
                 },
                 keyboardActions = keyboardActions,
@@ -201,7 +204,7 @@ fun APTitleTopAppBar(
                 onClick = onNavigateBack
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_chevron_left),
+                    imageVector = ChevronLeftIcon,
                     contentDescription = stringResource(R.string.back_stack_icon),
                 )
             }
@@ -236,13 +239,13 @@ fun APMyPageTopAppBar(
                 )
                 Box(
                     modifier = Modifier
-                        .border(dimensionResource(R.dimen.border_width_default), APColors.Gray, AniPickSmallShape)
+                        .border(dimensionResource(R.dimen.border_width_default), AniPickGray100, AniPickSmallShape)
                         .clip(AniPickSmallShape)
                         .clickable { onNavigateToSetting() }
                         .padding(dimensionResource(R.dimen.padding_small))
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_setting),
+                        imageVector = SettingIcon,
                         contentDescription = stringResource(R.string.setting_icon),
                         modifier = Modifier
                             .size(dimensionResource(R.dimen.icon_size_small)),
@@ -256,7 +259,7 @@ fun APMyPageTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview(showBackground = true)
+@DevicePreviews
 private fun APBackStackTopAppBarPreview() {
     APBackStackTopAppBar(
         onNavigateBack = {},
@@ -265,7 +268,7 @@ private fun APBackStackTopAppBarPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview(showBackground = true)
+@DevicePreviews
 private fun APSkipActionTopAppBarPreview() {
     APSkipActionTopAppBar(
         onClick = {},
@@ -274,7 +277,7 @@ private fun APSkipActionTopAppBarPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview(showBackground = true)
+@DevicePreviews
 private fun APMainTopAppBarPreview() {
     APMainTopAppBar(
         onNavigateToSearch = {},
@@ -283,7 +286,7 @@ private fun APMainTopAppBarPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview(showBackground = true)
+@DevicePreviews
 private fun APSearchTopAppBarPreview() {
     APSearchTopAppBar(
         onNavigateBack = {},
@@ -292,7 +295,7 @@ private fun APSearchTopAppBarPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview(showBackground = true)
+@DevicePreviews
 private fun APTitleTopAppBarPreview() {
     APTitleTopAppBar(
         title = stringResource(R.string.back_stack_icon),
@@ -302,9 +305,7 @@ private fun APTitleTopAppBarPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview(showBackground = true)
+@DevicePreviews
 private fun APMyPageTopAppBarPreview() {
-    APMyPageTopAppBar(
-
-    )
+    APMyPageTopAppBar()
 }

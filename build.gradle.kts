@@ -9,14 +9,19 @@ plugins {
     alias(libs.plugins.kotlin.serialization) apply false
 
     id("com.google.dagger.hilt.android") version "2.57.2" apply false
-    id("com.google.devtools.ksp") version "2.2.10-2.0.2" apply false
+    id("com.google.devtools.ksp") version "2.2.21-2.0.4" apply false
+
+    // Firebase
+    id("com.google.gms.google-services") version "4.4.4" apply false
+    id("com.google.firebase.crashlytics") version "3.0.6" apply false
+    id("com.google.firebase.firebase-perf") version "2.0.2" apply false
 }
 
 buildscript {
     val targetSdk = 36
-    val minSdk = 26
-    val versionCode = 21
-    val versionName = "1.0.5"
+    val minSdk = 28
+    val versionCode = 24
+    val versionName = "1.0.8"
 
     extra.apply {
         set("targetSdk", targetSdk)
