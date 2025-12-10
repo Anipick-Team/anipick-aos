@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Border -->
+    <dimen name="border_width_default">1dp</dimen>
+    <dimen name="border_width_thick">2dp</dimen>
+    <dimen name="border_width_large">4dp</dimen>
+
+    <!-- Corner Radius -->
+    <dimen name="corner_radius_extra_small">4dp</dimen>
+    <dimen name="corner_radius_small">8dp</dimen>
+
+    <!-- Base Spacing Scale (중복 방지 공통 값) -->
+    <dimen name="space_4">4dp</dimen>
+    <dimen name="space_8">8dp</dimen>
+    <dimen name="space_12">12dp</dimen>
+    <dimen name="space_16">16dp</dimen>
+    <dimen name="space_20">20dp</dimen>
+    <dimen name="space_24">24dp</dimen>
+    <dimen name="space_28">28dp</dimen>
+    <dimen name="space_32">32dp</dimen>
+    <dimen name="space_36">36dp</dimen>
+    <dimen name="space_40">40dp</dimen>
+    <dimen name="space_48">48dp</dimen>
+    <dimen name="space_56">56dp</dimen>
+    <dimen name="space_64">64dp</dimen>
+
+    <!-- Padding (alias to space_) -->
+    <dimen name="padding_extra_small">@dimen/space_4</dimen>
+    <dimen name="padding_small">@dimen/space_8</dimen>
+    <dimen name="padding_medium">@dimen/space_12</dimen>
+    <dimen name="padding_default">@dimen/space_16</dimen>
+    <dimen name="padding_large">@dimen/space_20</dimen>
+    <dimen name="padding_extra_large">@dimen/space_24</dimen>
+    <dimen name="padding_huge">@dimen/space_32</dimen>
+    <dimen name="padding_extra_huge">@dimen/space_40</dimen>
+
+    <!-- Spacing (alias to space_) -->
+    <dimen name="spacing_extra_small">@dimen/space_4</dimen>
+    <dimen name="spacing_small">@dimen/space_8</dimen>
+    <dimen name="spacing_medium">@dimen/space_12</dimen>
+    <dimen name="spacing_default">@dimen/space_16</dimen>
+    <dimen name="spacing_large">@dimen/space_20</dimen>
+    <dimen name="spacing_extra_large">@dimen/space_24</dimen>
+    <dimen name="spacing_28">@dimen/space_28</dimen>
+    <dimen name="spacing_32">@dimen/space_32</dimen>
+    <dimen name="spacing_36">@dimen/space_36</dimen>
+    <dimen name="spacing_40">@dimen/space_40</dimen>
+    <dimen name="spacing_48">@dimen/space_48</dimen>
+    <dimen name="spacing_56">@dimen/space_56</dimen>
+    <dimen name="spacing_64">@dimen/space_64</dimen>
+
+    <!-- Size (고정 UI 요소 크기) -->
+    <dimen name="icon_size_small">16dp</dimen>
+    <dimen name="icon_size_medium">20dp</dimen>
+    <dimen name="icon_size_large">24dp</dimen>
+    <dimen name="icon_size_extra_large">32dp</dimen>
+    <dimen name="icon_size_huge">48dp</dimen>
+
+</resources>
