@@ -1,21 +1,25 @@
 package com.jparkbro.preferencesetup
 
-import android.util.Log
+import androidx.compose.foundation.text.input.clearText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.AuthRepository
-import com.jparkbro.model.auth.PreferenceRequest
-import com.jparkbro.model.auth.PreferenceResponse
-import com.jparkbro.model.auth.RatedAnime
-import com.jparkbro.model.common.DefaultAnime
 import com.jparkbro.model.common.ResponseMap
-import com.jparkbro.ui.FilterParams
-import com.jparkbro.ui.SheetData
-import com.jparkbro.ui.util.extension.quarterStringToInt
+import com.jparkbro.model.common.UiState
+import com.jparkbro.model.dto.preference.RatedAnime
+import com.jparkbro.model.dto.preference.SearchRequest
+import com.jparkbro.model.enum.BottomSheetType
+import com.jparkbro.model.exception.ApiException
+import com.jparkbro.ui.model.BottomSheetData
+import com.jparkbro.ui.model.BottomSheetParams
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,131 +28,283 @@ class PreferenceSetupViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _bottomSheetData = MutableStateFlow<SheetData?>(null)
-    val bottomSheetData: StateFlow<SheetData?> = _bottomSheetData.asStateFlow()
+    private val _state = MutableStateFlow(PreferenceSetupState())
+    val state = _state.asStateFlow()
 
-    fun updateBottomSheetData(data: SheetData? = null) {
-        _bottomSheetData.value = data
-    }
-
-    private val _searchText = MutableStateFlow("")
-    val searchText: StateFlow<String> = _searchText.asStateFlow()
-
-    private val _yearFilter = MutableStateFlow("전체년도")
-    val yearFilter: StateFlow<String> = _yearFilter.asStateFlow()
-
-    private val _quarterFilter = MutableStateFlow("전체분기")
-    val quarterFilter: StateFlow<String> = _quarterFilter.asStateFlow()
-
-    private val _genreFilter = MutableStateFlow(ResponseMap())
-    val genreFilter: StateFlow<ResponseMap> = _genreFilter.asStateFlow()
-
-    fun updateSearch(search: String) {
-        _searchText.value = search
-    }
-
-    private val _searchResponse = MutableStateFlow<PreferenceResponse?>(null)
-    val searchResponse: StateFlow<PreferenceResponse?> = _searchResponse.asStateFlow()
-
-    private val _animes = MutableStateFlow<List<DefaultAnime>>(emptyList())
-    val animes = _animes.asStateFlow()
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-    // 더 불러올 데이터 있는지
-    private val _hasMoreData = MutableStateFlow(true)
+    private val _eventChannel = Channel<PreferenceSetupEvent>()
+    val events = _eventChannel.receiveAsFlow()
 
     init {
-        loadAnimeData()
+        loadInitialAnimes()
     }
 
-    fun loadAnimeData(lastId: Int? = null) {
-        if (lastId != null && (_isLoading.value || !_hasMoreData.value)) return
+    fun onAction(action: PreferenceSetupAction) {
+        when (action) {
+            PreferenceSetupAction.OnRetryClicked -> retry()
+            PreferenceSetupAction.OnClearTextClicked -> {
+                _state.update {
+                    it.copy(
+                        searchText = it.searchText.apply { clearText() }
+                    )
+                }
+            }
+            PreferenceSetupAction.OnClearFilterClicked -> {
+                _state.update {
+                    it.copy(
+                        yearFilter = "",
+                        quarterFilter = ResponseMap(),
+                        genreFilter = ResponseMap()
+                    )
+                }
+            }
+            PreferenceSetupAction.OnSearchClicked -> searchAnimes()
+            PreferenceSetupAction.OnLoadMore -> loadMoreAnimes()
+            PreferenceSetupAction.OnSkipClicked -> submitReviews(true)
+            PreferenceSetupAction.OnCompleteClicked -> submitReviews(false)
+            is PreferenceSetupAction.OnFilterChipClicked -> { showBottomSheet(action.type) }
+            is PreferenceSetupAction.OnFilterCompleteClicked -> {
+                _state.update {
+                    it.copy(
+                        yearFilter = action.params.year,
+                        quarterFilter = action.params.quarter,
+                        genreFilter = action.params.genres.firstOrNull() ?: ResponseMap(),
+                    )
+                }
+                searchAnimes()
+            }
+            is PreferenceSetupAction.OnRatingAddClicked -> { addRateAnime(action.rate) }
+            is PreferenceSetupAction.OnRatingRemoveClicked -> { removeRateAnime(action.animeId) }
+            else -> Unit
+        }
+    }
 
-        _isLoading.value = true
+    private fun retry() {
+        _state.update {
+            it.copy(
+                uiState = UiState.Loading
+            )
+        }
+        loadInitialAnimes()
+    }
 
-        viewModelScope.launch {
-            if (lastId == null) _animes.value = emptyList()
-
+    private fun loadInitialAnimes() {
+        viewModelScope.launch(Dispatchers.IO) {
             authRepository.exploreOrSearch(
-                request = PreferenceRequest(
-                    query = _searchText.value,
-                    year = if (_yearFilter.value == "전체년도") null else _yearFilter.value,
-                    season = _quarterFilter.value.quarterStringToInt(),
-                    genres = if (_genreFilter.value.id == -1) null else _genreFilter.value.id,
-                    lastId = lastId,
-                    size = 10
-                )
+                request = SearchRequest()
             ).fold(
-                onSuccess = {
-
-                    when (it.animes.size) {
-                        10 -> {
-                            _animes.value += it.animes
-                            _hasMoreData.value = true
-                        }
-                        0 -> {
-                            _hasMoreData.value = false
-                        }
-                        else -> {
-                            _animes.value += it.animes
-                            _hasMoreData.value = false
-                        }
+                onSuccess = { response ->
+                    _state.update {
+                        it.copy(
+                            animes = response.animes,
+                            totalCount = response.count,
+                            cursor = response.cursor,
+                            uiState = UiState.Success
+                        )
                     }
-                    _searchResponse.value = it
-                    _isLoading.value = false
                 },
-                onFailure = {
-                    _isLoading.value = false
+                onFailure = { exception ->
+                    _state.update {
+                        it.copy(uiState = UiState.Error)
+                    }
+                    when (exception) {
+                        is ApiException -> {
+                            _eventChannel.send(
+                                PreferenceSetupEvent.InitLoadFailed(exception.errorValue)
+                            )
+                        }
+                        else -> Unit
+                    }
                 }
             )
         }
     }
 
-    fun searchByFilters(params: FilterParams) {
-        _yearFilter.value = params.year
-        _quarterFilter.value = params.quarter
-        _genreFilter.value = if (params.genres.isEmpty()) {
-            ResponseMap()
-        } else {
-            params.genres[0]
+    private fun searchAnimes() {
+        _state.update {
+            it.copy(
+                animes = emptyList(),
+                totalCount = 0,
+                cursor = null,
+                isMoreAnimeLoading = true,
+                hasMoreAnime = true
+            )
         }
 
-        loadAnimeData()
+        viewModelScope.launch(Dispatchers.IO) {
+            authRepository.exploreOrSearch(
+                request = SearchRequest(
+                    query = _state.value.searchText.text.toString(),
+                    year = if (_state.value.yearFilter == "전체년도") null else _state.value.yearFilter,
+                    season = if (_state.value.quarterFilter.id == -1) null else _state.value.quarterFilter.id,
+                    genres = if (_state.value.genreFilter.id == -1) null else _state.value.genreFilter.id,
+                )
+            ).fold(
+                onSuccess = { response ->
+                    _state.update {
+                        it.copy(
+                            animes = response.animes,
+                            totalCount = response.count,
+                            cursor = response.cursor,
+                            isMoreAnimeLoading = false,
+                            hasMoreAnime = response.animes.size == 10,
+                        )
+                    }
+                },
+                onFailure = { exception ->
+                    when (exception) {
+                        is ApiException -> {
+                            _eventChannel.send(
+                                PreferenceSetupEvent.AnimeLoadFailed(exception.errorValue)
+                            )
+                        }
+                        else -> {
+                            _eventChannel.send(
+                                PreferenceSetupEvent.AnimeLoadFailed("Unknown error") // TODO
+                            )
+                        }
+                    }
+                    _state.update {
+                        it.copy(
+                            isMoreAnimeLoading = false,
+                        )
+                    }
+                }
+            )
+        }
     }
 
-    // 사용자가 평가한 애니메이션 리스트
-    private val _ratedAnimes = MutableStateFlow<List<RatedAnime>>(emptyList())
-    val ratedAnime: StateFlow<List<RatedAnime>> = _ratedAnimes.asStateFlow()
-
-    fun addRateAnime(rate: RatedAnime) {
-        val currentList = _ratedAnimes.value.toMutableList()
-        val existingIndex = currentList.indexOfFirst { it.animeId == rate.animeId }
-
-        if (existingIndex != -1) {
-            currentList[existingIndex] = rate
-        } else {
-            currentList.add(rate)
+    private fun loadMoreAnimes() {
+        _state.update {
+            it.copy(
+                isMoreAnimeLoading = true,
+            )
         }
 
-        _ratedAnimes.value = currentList
+        viewModelScope.launch(Dispatchers.IO) {
+            authRepository.exploreOrSearch(
+                request = SearchRequest(
+                    query = _state.value.searchText.text.toString(),
+                    year = if (_state.value.yearFilter == "전체년도") null else _state.value.yearFilter,
+                    season = if (_state.value.quarterFilter.id == -1) null else _state.value.quarterFilter.id,
+                    genres = if (_state.value.genreFilter.id == -1) null else _state.value.genreFilter.id,
+                    lastId = _state.value.cursor?.lastId,
+                )
+            ).fold(
+                onSuccess = { response ->
+                    _state.update {
+                        it.copy(
+                            animes = it.animes + response.animes,
+                            totalCount = response.count,
+                            cursor = response.cursor,
+                            hasMoreAnime = response.animes.size == 10,
+                            isMoreAnimeLoading = false
+                        )
+                    }
+                },
+                onFailure = { exception ->
+                    when (exception) {
+                        is ApiException -> {
+                            _eventChannel.send(
+                                PreferenceSetupEvent.AnimeLoadFailed(exception.errorValue)
+                            )
+                        }
+                        else -> {
+                            _eventChannel.send(
+                                PreferenceSetupEvent.AnimeLoadFailed("Unknown error") // TODO
+                            )
+                        }
+                    }
+                    _state.update {
+                        it.copy(
+                            isMoreAnimeLoading = false
+                        )
+                    }
+                }
+            )
+        }
     }
 
-    fun removeRateAnime(animeId: Int) {
-        _ratedAnimes.value = _ratedAnimes.value.filter { it.animeId != animeId }
+    private fun submitReviews(skip: Boolean) {
+        _state.update {
+            it.copy(
+                isRating = true
+            )
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            authRepository.submitReviews(
+                request = if (skip) emptyList() else _state.value.ratedAnimes
+            ).fold(
+                onSuccess = {
+                    _state.update {
+                        it.copy(
+                            isRating = false
+                        )
+                    }
+                    _eventChannel.send(
+                        PreferenceSetupEvent.SubmitSuccess
+                    )
+                },
+                onFailure = { exception ->
+                    when (exception) {
+                        is ApiException -> {
+                            _eventChannel.send(
+                                PreferenceSetupEvent.SubmitFailed(exception.errorValue)
+                            )
+                        }
+                        else -> {
+                            _eventChannel.send(
+                                PreferenceSetupEvent.SubmitFailed("Unknown error") // TODO
+                            )
+                        }
+                    }
+                    _state.update {
+                        it.copy(
+                            isRating = false
+                        )
+                    }
+                }
+            )
+        }
     }
 
-    // 완료(평가종료) API
-    fun submitReviews(skip: Boolean) {
-        viewModelScope.launch {
-            if (skip) {
-                authRepository.submitReviews(request = emptyList())
+    private fun showBottomSheet(sheetType: BottomSheetType) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _eventChannel.send(
+                PreferenceSetupEvent.ShowBottomSheet(
+                    BottomSheetData(
+                        sheetType = sheetType,
+                        params = BottomSheetParams(
+                            year = _state.value.yearFilter,
+                            quarter = _state.value.quarterFilter,
+                            genres = listOf(_state.value.genreFilter),
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    private fun addRateAnime(rate: RatedAnime) {
+        _state.update { currentState ->
+            val currentList = currentState.ratedAnimes.toMutableList()
+            val existingIndex = currentList.indexOfFirst { it.animeId == rate.animeId }
+
+            if (existingIndex != -1) {
+                currentList[existingIndex] = rate
             } else {
-                authRepository.submitReviews(request = _ratedAnimes.value)
+                currentList.add(rate)
             }
 
-            // TODO 반환 결과 처리 필요 ( 성공 후 페이지 이동 ? )
+            currentState.copy(ratedAnimes = currentList)
+        }
+    }
+
+    private fun removeRateAnime(animeId: Int) {
+        _state.update {
+            it.copy(
+                ratedAnimes = it.ratedAnimes.filter { it.animeId != animeId }
+            )
         }
     }
 }

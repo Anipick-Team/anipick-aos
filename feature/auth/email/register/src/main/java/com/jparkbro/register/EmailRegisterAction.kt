@@ -1,13 +1,13 @@
 package com.jparkbro.register
 
 interface EmailRegisterAction {
-    data object OnBackClick : EmailRegisterAction
+    data object OnBackClicked : EmailRegisterAction
     data object OnTogglePasswordVisibility : EmailRegisterAction
-    data object OnAllAgreeClick : EmailRegisterAction
-    data object OnAgeVerificationClick : EmailRegisterAction
-    data object OnTermsOfServiceClick : EmailRegisterAction
-    data object OnTermsOfServiceLinkClick : EmailRegisterAction
-    data object OnPrivacyPolicyClick : EmailRegisterAction
-    data object OnPrivacyPolicyLinkClick : EmailRegisterAction
-    data object OnRegisterClick : EmailRegisterAction
+    data object OnAllAgreeClicked : EmailRegisterAction
+    data object OnAgeVerificationClicked : EmailRegisterAction
+    data object OnTermsOfServiceClicked : EmailRegisterAction
+    data object OnTermsOfServiceLinkClicked : EmailRegisterAction
+    data object OnPrivacyPolicyClicked : EmailRegisterAction
+    data object OnPrivacyPolicyLinkClicked : EmailRegisterAction
+    data object OnRegisterClicked : EmailRegisterAction
 }

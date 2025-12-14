@@ -10,7 +10,6 @@ import com.jparkbro.ui.R
 import com.jparkbro.ui.model.DialogData
 import com.jparkbro.ui.model.SnackBarData
 import com.jparkbro.ui.util.UiText
-import com.jparkbro.util.EmailValidationState
 import com.jparkbro.util.UserDataValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -29,8 +28,8 @@ class EmailLoginViewModel @Inject constructor(
     private val emailLoginUseCase: EmailLoginUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(EmailLoginState())
-    val uiState = _uiState.asStateFlow()
+    private val _state = MutableStateFlow(EmailLoginState())
+    val state = _state.asStateFlow()
 
     private val _eventChannel = Channel<EmailLoginEvent>()
     val events = _eventChannel.receiveAsFlow()
@@ -42,12 +41,12 @@ class EmailLoginViewModel @Inject constructor(
 
     fun onAction(action: EmailLoginAction) {
         when (action) {
-            EmailLoginAction.OnLoginClick -> {
+            EmailLoginAction.OnLoginClicked -> {
                 login()
             }
 
             EmailLoginAction.OnTogglePasswordVisibility -> {
-                _uiState.update {
+                _state.update {
                     it.copy(
                         isPasswordVisible = !it.isPasswordVisible
                     )
@@ -60,11 +59,11 @@ class EmailLoginViewModel @Inject constructor(
 
     private fun validateEmail() {
         viewModelScope.launch(Dispatchers.Main) {
-            snapshotFlow { _uiState.value.email.text.toString() }
+            snapshotFlow { _state.value.email.text.toString() }
                 .collectLatest { email ->
                     val isValid = userDataValidator.isValidEmail(email)
 
-                    _uiState.update {
+                    _state.update {
                         it.copy(
                             isEmailValid = isValid,
                             emailErrorMessage = when {
@@ -77,7 +76,7 @@ class EmailLoginViewModel @Inject constructor(
                                 }
                                 else -> null
                             },
-                            canLogin = isValid.isValidEmail && it.isPasswordValid && !it.isLoggingIn
+                            isLoginEnabled = isValid.isValidEmail && it.isPasswordValid && !it.isLoggingIn
                         )
                     }
                 }
@@ -86,14 +85,14 @@ class EmailLoginViewModel @Inject constructor(
 
     private fun validatePassword() {
         viewModelScope.launch(Dispatchers.Main) {
-            snapshotFlow { _uiState.value.password.text.toString() }
+            snapshotFlow { _state.value.password.text.toString() }
                 .collectLatest { password ->
                     val isValid = password.isNotBlank()
 
-                    _uiState.update {
+                    _state.update {
                         it.copy(
                             isPasswordValid = isValid,
-                            canLogin = it.isEmailValid.isValidEmail && isValid && !it.isLoggingIn
+                            isLoginEnabled = it.isEmailValid.isValidEmail && isValid && !it.isLoggingIn
                         )
                     }
                 }
@@ -101,17 +100,17 @@ class EmailLoginViewModel @Inject constructor(
     }
 
     private fun login() {
-        _uiState.update {
+        _state.update {
             it.copy(
                 isLoggingIn = true,
-                canLogin = false
+                isLoginEnabled = false
             )
         }
 
         viewModelScope.launch(Dispatchers.IO) {
             emailLoginUseCase(
-                email = _uiState.value.email.text.toString(),
-                password = _uiState.value.password.text.toString()
+                email = _state.value.email.text.toString(),
+                password = _state.value.password.text.toString()
             ).collect { result ->
                 result.fold(
                     onSuccess = { reviewCompletedYn ->
@@ -124,7 +123,7 @@ class EmailLoginViewModel @Inject constructor(
                                     showWithdrawnAccountDialog()
                                 }
                                 else -> {
-                                    _uiState.update {
+                                    _state.update {
                                         it.copy(
                                             loginErrorMessage = exception.errorValue
                                         )
@@ -142,10 +141,10 @@ class EmailLoginViewModel @Inject constructor(
                 )
             }
 
-            _uiState.update {
+            _state.update {
                 it.copy(
                     isLoggingIn = false,
-                    canLogin = it.isEmailValid.isValidEmail && it.isPasswordValid
+                    isLoginEnabled = it.isEmailValid.isValidEmail && it.isPasswordValid
                 )
             }
         }

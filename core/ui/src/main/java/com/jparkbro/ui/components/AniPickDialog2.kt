@@ -180,31 +180,6 @@ fun APAlertDialog(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun APConfirmDialogPreview() {
-    APConfirmDialog(
-        title = "SNS로 간편 가입된 계정입니다.",
-        subTitle = "SNS로 로그인해주세요.",
-        content = { Text("sadf") },
-        dismiss = "닫기",
-        confirm = "SNS로그인",
-        onDismiss = {},
-        onConfirm = {},
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun APErrorDialogPreview() {
-    APAlertDialog(
-        onDismiss = {},
-        title = "탈퇴된 계정입니다.",
-        dismiss = "닫기",
-        errorMsg = "자세한 사항은 고객센터로 문의해 주세요.\nteamanipick@gmail.com"
-    )
-}
-
 data class DialogData(
     val type: DialogType = DialogType.CONFIRM,
     val title: String = "",

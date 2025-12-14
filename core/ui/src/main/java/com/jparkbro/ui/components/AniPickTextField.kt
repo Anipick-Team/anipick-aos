@@ -76,7 +76,7 @@ fun APBaseTextField(
             cursorBrush = SolidColor(AniPickPrimary),
             decorator = { innerBox ->
                 Row(
-                    modifier = Modifier
+                    modifier = modifier
                         .fillMaxWidth()
                         .background(AniPickGray50)
                         .padding(

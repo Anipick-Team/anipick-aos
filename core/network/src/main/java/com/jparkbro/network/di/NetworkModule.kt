@@ -78,9 +78,9 @@ internal object NetworkModule {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor) // token 자동 추가
             .addInterceptor(httpLoggingInterceptor)
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .build()
     }
 

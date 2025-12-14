@@ -1,15 +1,14 @@
 package com.jparkbro.network.auth
 
 import com.jparkbro.model.auth.AuthResponse
-import com.jparkbro.model.auth.AuthToken
 import com.jparkbro.model.auth.EmailLoginRequest
-import com.jparkbro.model.auth.PreferenceResponse
-import com.jparkbro.model.auth.RatedAnime
 import com.jparkbro.model.auth.RequestCode
 import com.jparkbro.model.auth.ResetPassword
 import com.jparkbro.model.auth.SignupRequest
 import com.jparkbro.model.auth.SocialLoginRequest
 import com.jparkbro.model.auth.VerifyCode
+import com.jparkbro.model.dto.preference.RatedAnime
+import com.jparkbro.model.dto.preference.SearchResponse
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
 import retrofit2.Response
@@ -60,7 +59,7 @@ interface AuthApi {
         @Query("genres") genres: Int?,
         @Query("lastId") lastId: Int?,
         @Query("size") size: Int?,
-    ): Response<ApiResponse<PreferenceResponse>>
+    ): Response<ApiResponse<SearchResponse>>
 
     @POST(ApiConstants.REVIEWS_BULK)
     suspend fun submitReviews(

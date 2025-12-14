@@ -25,6 +25,8 @@
             <option value="$PROJECT_DIR$/feature/auth/email/login" />
             <option value="$PROJECT_DIR$/feature/auth/email/register" />
             <option value="$PROJECT_DIR$/feature/auth/findpassword" />
+            <option value="$PROJECT_DIR$/feature/auth/findpassword/reset" />
+            <option value="$PROJECT_DIR$/feature/auth/findpassword/verification" />
             <option value="$PROJECT_DIR$/feature/auth/login" />
             <option value="$PROJECT_DIR$/feature/auth/preferencesetup" />
             <option value="$PROJECT_DIR$/feature/main" />

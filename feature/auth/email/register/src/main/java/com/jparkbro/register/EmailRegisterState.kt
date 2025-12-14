@@ -17,5 +17,5 @@ data class EmailRegisterState(
     val isTermsOfServiceAccepted: Boolean = false,
     val isPrivacyPolicyAccepted: Boolean = false,
     val isRegisterIng: Boolean = false,
-    val canRegister: Boolean = false,
+    val isRegisterEnabled: Boolean = false,
 )

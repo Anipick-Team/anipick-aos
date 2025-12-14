@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.navOptions
 import com.jparkbro.detail.navigation.actorDetailScreen
 import com.jparkbro.detail.navigation.animeActorsScreen
 import com.jparkbro.detail.navigation.animeRecommendsScreen
@@ -19,10 +18,6 @@ import com.jparkbro.detail.navigation.navigateToStudioDetail
 import com.jparkbro.detail.navigation.studioDetailScreen
 import com.jparkbro.explore.navigation.exploreScreen
 import com.jparkbro.explore.navigation.navigateToExplore
-import com.jparkbro.findpassword.navigation.navigateToPasswordReset
-import com.jparkbro.findpassword.navigation.navigateToPasswordVerification
-import com.jparkbro.findpassword.navigation.passwordResetScreen
-import com.jparkbro.findpassword.navigation.passwordVerificationScreen
 import com.jparkbro.home.navigation.homeDetailScreen
 import com.jparkbro.home.navigation.homeScreen
 import com.jparkbro.home.navigation.navigateToHome
@@ -43,6 +38,8 @@ import com.jparkbro.ranking.navigation.navigateToRanking
 import com.jparkbro.ranking.navigation.rankingScreen
 import com.jparkbro.register.navigation.emailRegisterScreen
 import com.jparkbro.register.navigation.navigateToEmailRegister
+import com.jparkbro.reset.navigation.navigateToPasswordReset
+import com.jparkbro.reset.navigation.passwordResetScreen
 import com.jparkbro.review.navigation.navigateToReviewForm
 import com.jparkbro.review.navigation.reviewFormScreen
 import com.jparkbro.search.navigation.navigateToSearch
@@ -53,7 +50,8 @@ import com.jparkbro.setting.navigation.navigateToProfileEdit
 import com.jparkbro.setting.navigation.navigateToSetting
 import com.jparkbro.setting.navigation.profileEditScreen
 import com.jparkbro.setting.navigation.settingScreen
-import com.jparkbro.ui.util.extension.clearAllBackStack
+import com.jparkbro.verification.navigation.navigateToPasswordVerification
+import com.jparkbro.verification.navigation.passwordVerificationScreen
 
 @Composable
 fun APNavHost(
