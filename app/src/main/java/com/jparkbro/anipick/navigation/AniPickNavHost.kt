@@ -18,10 +18,10 @@ import com.jparkbro.detail.navigation.navigateToStudioDetail
 import com.jparkbro.detail.navigation.studioDetailScreen
 import com.jparkbro.explore.navigation.exploreScreen
 import com.jparkbro.explore.navigation.navigateToExplore
-import com.jparkbro.home.navigation.homeDetailScreen
-import com.jparkbro.home.navigation.homeScreen
-import com.jparkbro.home.navigation.navigateToHome
-import com.jparkbro.home.navigation.navigateToHomeDetail
+import com.jparkbro.home.detail.navigation.homeDetailScreen
+import com.jparkbro.home.detail.navigation.navigateToHomeDetail
+import com.jparkbro.home.main.navigation.homeScreen
+import com.jparkbro.home.main.navigation.navigateToHome
 import com.jparkbro.login.navigation.emailLoginScreen
 import com.jparkbro.login.navigation.loginScreen
 import com.jparkbro.login.navigation.navigateToEmailLogin

@@ -101,9 +101,12 @@ dependencies {
     implementation(project(":feature:auth:login"))
     implementation(project(":feature:auth:email:login"))
     implementation(project(":feature:auth:email:register"))
-
-    implementation(project(":feature:auth:findpassword"))
+    implementation(project(":feature:auth:findpassword:verification"))
+    implementation(project(":feature:auth:findpassword:reset"))
     implementation(project(":feature:auth:preferencesetup"))
+
+    implementation(project(":feature:main:shell:home:main"))
+    implementation(project(":feature:main:shell:home:detail"))
 
     implementation(project(":feature:main:detail"))
     implementation(project(":feature:main:explore"))
