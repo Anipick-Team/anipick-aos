@@ -52,6 +52,7 @@ class HomeDetailViewModel @Inject constructor(
             )
         }
         loadDataByType()
+        collectReviews()
     }
 
     private fun loadDataByType() {
@@ -67,6 +68,22 @@ class HomeDetailViewModel @Inject constructor(
                 }
                 else -> {
                     initLoad()
+                }
+            }
+        }
+    }
+
+    private fun collectReviews() {
+        viewModelScope.launch(Dispatchers.IO) {
+            reviewRepository.detailRecentReviews.collect { result ->
+                _state.update {
+                    it.copy(
+                        reviews = result?.reviews ?: emptyList(),
+                        cursor = result?.cursor,
+                        hasMoreData = result?.reviews?.size != result?.count,
+                        uiState = UiState.Success,
+                        isMoreDataLoading = false
+                    )
                 }
             }
         }
@@ -119,35 +136,30 @@ class HomeDetailViewModel @Inject constructor(
             it.copy(
                 uiState = UiState.Loading,
                 animes = emptyList(),
-                reviews = emptyList(),
                 isMoreDataLoading = false,
                 hasMoreData = true,
                 cursor = null
             )
         }
 
-        homeRepository.getDetailData(
-            type = type ?: HomeDetailType.RECOMMENDS,
-            request = HomeDetailRequest(
-                animeId = _state.value.recentAnime,
-                lastId = _state.value.cursor?.lastId,
-                lastValue = _state.value.cursor?.lastValue,
-                sort = _state.value.sort.param,
-            ),
-        ).fold(
-            onSuccess = { response ->
-                when (type) {
-                    HomeDetailType.LATEST_REVIEWS -> {
-                        _state.update {
-                            it.copy(
-                                reviews = response.reviews,
-                                hasMoreData = response.reviews.size == 18,
-                                uiState = UiState.Success,
-                                cursor = response.cursor
-                            )
-                        }
+        when (type) {
+            HomeDetailType.RECENT_REVIEWS -> {
+                reviewRepository.loadDetailRecentReviews()
+                    .onFailure { exception ->
+                        _state.update { it.copy(uiState = UiState.Error) }
                     }
-                    else -> {
+            }
+            else -> {
+                homeRepository.getDetailData(
+                    type = type ?: HomeDetailType.RECOMMENDS,
+                    request = HomeDetailRequest(
+                        animeId = _state.value.recentAnime,
+                        lastId = _state.value.cursor?.lastId,
+                        lastValue = _state.value.cursor?.lastValue,
+                        sort = _state.value.sort.param,
+                    ),
+                ).fold(
+                    onSuccess = { response ->
                         _state.update {
                             it.copy(
                                 animes = response.animes,
@@ -157,17 +169,17 @@ class HomeDetailViewModel @Inject constructor(
                                 cursor = response.cursor
                             )
                         }
+                    },
+                    onFailure = {
+                        _state.update {
+                            it.copy(
+                                uiState = UiState.Error // TODO 에러 종류 분기 처리
+                            )
+                        }
                     }
-                }
-            },
-            onFailure = {
-                _state.update {
-                    it.copy(
-                        uiState = UiState.Error // TODO 에러 종류 분기 처리
-                    )
-                }
+                )
             }
-        )
+        }
     }
 
     private fun loadMore() {
@@ -178,29 +190,24 @@ class HomeDetailViewModel @Inject constructor(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            homeRepository.getDetailData(
-                type = type ?: HomeDetailType.RECOMMENDS,
-                request = HomeDetailRequest(
-                    animeId = _state.value.recentAnime,
-                    lastId = _state.value.cursor?.lastId,
-                    lastValue = _state.value.cursor?.lastValue,
-                    sort = _state.value.sort.param,
-                ),
-            ).fold(
-                onSuccess = { response ->
-                    when (type) {
-                        HomeDetailType.LATEST_REVIEWS -> {
-                            _state.update {
-                                it.copy(
-                                    reviews = it.reviews + response.reviews,
-                                    hasMoreData = response.reviews.size == 18,
-                                    uiState = UiState.Success,
-                                    cursor = response.cursor,
-                                    isMoreDataLoading = false,
-                                )
-                            }
+            when (type) {
+                HomeDetailType.RECENT_REVIEWS -> {
+                    reviewRepository.loadDetailRecentReviews(_state.value.cursor)
+                        .onFailure { exception ->
+                            _state.update { it.copy(isMoreDataLoading = false) }
                         }
-                        else -> {
+                }
+                else -> {
+                    homeRepository.getDetailData(
+                        type = type ?: HomeDetailType.RECOMMENDS,
+                        request = HomeDetailRequest(
+                            animeId = _state.value.recentAnime,
+                            lastId = _state.value.cursor?.lastId,
+                            lastValue = _state.value.cursor?.lastValue,
+                            sort = _state.value.sort.param,
+                        ),
+                    ).fold(
+                        onSuccess = { response ->
                             _state.update {
                                 it.copy(
                                     animes = it.animes + response.animes,
@@ -211,29 +218,29 @@ class HomeDetailViewModel @Inject constructor(
                                     isMoreDataLoading = false,
                                 )
                             }
+                        },
+                        onFailure = { exception ->
+                            when (exception) {
+                                is ApiException -> {
+                                    _eventChannel.send(
+                                        HomeDetailEvent.DataLoadFailed(exception.errorValue)
+                                    )
+                                }
+                                else -> {
+                                    _eventChannel.send(
+                                        HomeDetailEvent.DataLoadFailed("Unknown error") // TODO
+                                    )
+                                }
+                            }
+                            _state.update {
+                                it.copy(
+                                    isMoreDataLoading = false
+                                )
+                            }
                         }
-                    }
-                },
-                onFailure = { exception ->
-                    when (exception) {
-                        is ApiException -> {
-                            _eventChannel.send(
-                                HomeDetailEvent.DataLoadFailed(exception.errorValue)
-                            )
-                        }
-                        else -> {
-                            _eventChannel.send(
-                                HomeDetailEvent.DataLoadFailed("Unknown error") // TODO
-                            )
-                        }
-                    }
-                    _state.update {
-                        it.copy(
-                            isMoreDataLoading = false
-                        )
-                    }
+                    )
                 }
-            )
+            }
         }
     }
 

@@ -42,7 +42,7 @@ internal fun SkeletonScreen(
         containerColor = AniPickSurface
     ) { innerPadding ->
         when (state.type) {
-            HomeDetailType.LATEST_REVIEWS -> {
+            HomeDetailType.RECENT_REVIEWS -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(

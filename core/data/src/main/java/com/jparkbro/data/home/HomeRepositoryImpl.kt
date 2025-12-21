@@ -50,7 +50,7 @@ class HomeRepositoryImpl @Inject constructor(
     override suspend fun getDetailData(type: HomeDetailType, request: HomeDetailRequest): Result<ListDataResult> {
         return when (type) {
             HomeDetailType.RECOMMENDS -> homeDataSource.getDetailRecommends(request).map { it.toResult() }
-            HomeDetailType.LATEST_REVIEWS -> homeDataSource.getDetailRecentReviews(request).map { it.toResult() }
+            HomeDetailType.RECENT_REVIEWS -> homeDataSource.getDetailRecentReviews(request).map { it.toResult() }
             HomeDetailType.SIMILAR_TO_WATCHED -> homeDataSource.getDetailRecentRecommends(request).map { it.toResult() }
             HomeDetailType.UPCOMING_RELEASE -> homeDataSource.getDetailComingSoon(request).map { it.toResult() }
         }

@@ -11,6 +11,7 @@
       <module name="AniPick.feature.auth.find_password" target="21" />
       <module name="AniPick.feature.explore" target="21" />
       <module name="AniPick.feature.home" target="21" />
+      <module name="AniPick.feature.main.home" target="21" />
       <module name="AniPick.feature.profile" target="21" />
       <module name="AniPick.feature.ranking" target="21" />
       <module name="AniPick.feature.test" target="11" />

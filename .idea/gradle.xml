@@ -32,7 +32,13 @@
             <option value="$PROJECT_DIR$/feature/main" />
             <option value="$PROJECT_DIR$/feature/main/detail" />
             <option value="$PROJECT_DIR$/feature/main/explore" />
-            <option value="$PROJECT_DIR$/feature/main/home" />
+            <option value="$PROJECT_DIR$/feature/main/info" />
+            <option value="$PROJECT_DIR$/feature/main/info/actor" />
+            <option value="$PROJECT_DIR$/feature/main/info/anime" />
+            <option value="$PROJECT_DIR$/feature/main/info/character" />
+            <option value="$PROJECT_DIR$/feature/main/info/recommend" />
+            <option value="$PROJECT_DIR$/feature/main/info/series" />
+            <option value="$PROJECT_DIR$/feature/main/info/studio" />
             <option value="$PROJECT_DIR$/feature/main/mypage" />
             <option value="$PROJECT_DIR$/feature/main/ranking" />
             <option value="$PROJECT_DIR$/feature/main/review" />

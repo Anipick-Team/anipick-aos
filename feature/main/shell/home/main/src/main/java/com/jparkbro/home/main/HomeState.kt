@@ -8,7 +8,7 @@ data class HomeState(
     val uiState: UiState = UiState.Loading,
     val trendingAnimeDtos: List<Anime> = emptyList(),
     val recommendedAnimes: List<Anime> = emptyList(),
-    val latestReviews: List<Review> = emptyList(),
+    val recentReviews: List<Review> = emptyList(),
     val nextQuarterAnimes: List<Anime> = emptyList(),
     val similarAnimes: List<Anime> = emptyList(),
     val upcomingAnimes: List<Anime> = emptyList(),

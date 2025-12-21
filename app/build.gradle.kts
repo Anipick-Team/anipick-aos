@@ -108,9 +108,15 @@ dependencies {
     implementation(project(":feature:main:shell:home:main"))
     implementation(project(":feature:main:shell:home:detail"))
 
+    implementation(project(":feature:main:info:anime"))
+    implementation(project(":feature:main:info:studio"))
+    implementation(project(":feature:main:info:character"))
+    implementation(project(":feature:main:info:actor"))
+    implementation(project(":feature:main:info:series"))
+    implementation(project(":feature:main:info:recommend"))
+
     implementation(project(":feature:main:detail"))
     implementation(project(":feature:main:explore"))
-    implementation(project(":feature:main:home"))
     implementation(project(":feature:main:mypage"))
     implementation(project(":feature:main:ranking"))
     implementation(project(":feature:main:review"))
@@ -136,4 +142,8 @@ dependencies {
     // oss-licenses
     implementation(libs.androidx.appcompat)
     implementation(libs.play.services.oss.licenses)
+
+    // In App Update
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
 }

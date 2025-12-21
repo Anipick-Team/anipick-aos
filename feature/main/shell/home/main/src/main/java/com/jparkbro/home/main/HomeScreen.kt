@@ -85,7 +85,7 @@ internal fun HomeRoot(
                         is HomeAction.NavigateToNextQuarter -> { onNavigateToExplore(action.year, action.quarter)}
                         HomeAction.NavigateToTrending -> onNavigateToRanking()
                         HomeAction.NavigateToRecommend -> onNavigateToHomeDetail(HomeDetailType.RECOMMENDS)
-                        HomeAction.NavigateToReview -> onNavigateToHomeDetail(HomeDetailType.LATEST_REVIEWS)
+                        HomeAction.NavigateToReview -> onNavigateToHomeDetail(HomeDetailType.RECENT_REVIEWS)
                         HomeAction.NavigateToSimilar -> onNavigateToHomeDetail(HomeDetailType.SIMILAR_TO_WATCHED)
                         HomeAction.NavigateToUpcoming -> onNavigateToHomeDetail(HomeDetailType.UPCOMING_RELEASE)
                     }
@@ -138,8 +138,8 @@ private fun HomeScreen(
                     } else {
                         EmptyRecommend()
                     }
-                    if (state.latestReviews.isNotEmpty()) {
-                        LatestReviews(
+                    if (state.recentReviews.isNotEmpty()) {
+                        RecentReviews(
                             state = state,
                             onAction = onAction
                         )
@@ -284,7 +284,7 @@ private fun RecommendedToday(
 }
 
 @Composable
-private fun LatestReviews(
+private fun RecentReviews(
     state: HomeState,
     onAction: (HomeAction) -> Unit
 ) {
@@ -294,7 +294,7 @@ private fun LatestReviews(
                 contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.padding_large)),
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
             ) {
-                items(state.latestReviews) { review ->
+                items(state.recentReviews) { review ->
                     Column(
                         modifier = Modifier
                             .background(AniPickWhite, AniPickSmallShape)

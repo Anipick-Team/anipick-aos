@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.UserPreferenceRepository
 import com.jparkbro.data.detail.DetailRepository
 import com.jparkbro.data.home.HomeRepository
+import com.jparkbro.data.review.ReviewRepository
 import com.jparkbro.model.common.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    private val reviewRepository: ReviewRepository,
     private val homeRepository: HomeRepository,
     private val detailRepository: DetailRepository,
     private val userPreferenceRepository: UserPreferenceRepository,
@@ -30,12 +32,25 @@ class HomeViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     init {
+        collectReviews()
         initDataLoad()
     }
 
     fun onAction(action: HomeAction) {
         when (action) {
             HomeAction.OnRetryClicked -> initDataLoad()
+        }
+    }
+
+    private fun collectReviews() {
+        viewModelScope.launch(Dispatchers.IO) {
+            reviewRepository.recentReviews.collect { reviews ->
+                _state.update {
+                    it.copy(
+                        recentReviews = reviews
+                    )
+                }
+            }
         }
     }
 
@@ -54,7 +69,7 @@ class HomeViewModel @Inject constructor(
                     launch { getRecentAnime() }
                     launch { getTrendingAnimes() } // 실시간 인기 애니메이션
                     launch { getRecommendAnimes() } // 오늘의 추천작
-                    launch { getLatestReviews() } // 최근 리뷰
+                    launch { reviewRepository.refreshRecentReviews() } // 최근 리뷰
                     launch { getNextQuarterAnimes() } // 다음 분기 애니메이션
                     launch { getUpcomingAnimes() } // 공개 예정
                 }
@@ -147,25 +162,6 @@ class HomeViewModel @Inject constructor(
                 },
                 onFailure = {
                     Log.e(TAG, "getRecommendAnimes: 실패", it)
-                    throw it
-                }
-            )
-    }
-
-    private suspend fun getLatestReviews() {
-        Log.d(TAG, "getLatestReviews: 시작")
-        homeRepository.getRecentReviews()
-            .fold(
-                onSuccess = { reviews ->
-                    Log.d(TAG, "getLatestReviews: 성공")
-                    _state.update {
-                        it.copy(
-                            latestReviews = reviews
-                        )
-                    }
-                },
-                onFailure = {
-                    Log.e(TAG, "getLatestReviews: 실패", it)
                     throw it
                 }
             )

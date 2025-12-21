@@ -152,7 +152,7 @@ private fun HomeDetailScreen(
         containerColor = AniPickSurface
     ) { innerPadding ->
         when (state.type) {
-            HomeDetailType.LATEST_REVIEWS -> {
+            HomeDetailType.RECENT_REVIEWS -> {
                 ReviewsContent(
                     modifier = Modifier
                         .fillMaxSize()
@@ -237,6 +237,20 @@ private fun ReviewsContent(
                     }
                 )
             }
+            item {
+                if (state.isMoreDataLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = dimensionResource(R.dimen.padding_default)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = AniPickPrimary
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -302,7 +316,7 @@ private fun AnimesContent(
                     vertical = dimensionResource(R.dimen.spacing_extra_large)
                 )
             ) {
-                item(span = { GridItemSpan(3) }) {
+                item(span = { GridItemSpan(gridInfo.columns) }) {
                     when (state.type) {
                         HomeDetailType.RECOMMENDS, HomeDetailType.SIMILAR_TO_WATCHED -> {
                             RecommendationBanner(state)
@@ -343,7 +357,7 @@ private fun AnimesContent(
                     )
                 }
 
-                item {
+                item(span = { GridItemSpan(gridInfo.columns) }) {
                     if (state.isMoreDataLoading) {
                         Box(
                             modifier = Modifier
