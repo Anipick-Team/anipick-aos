@@ -14,13 +14,12 @@ import com.jparkbro.model.home.HomeDetailRequest
 import com.jparkbro.model.home.HomeDetailResponse
 import com.jparkbro.model.home.Sort
 import com.jparkbro.model.review.ReportReviewRequest
-import com.jparkbro.ui.DialogData
-import com.jparkbro.ui.SnackBarData
+import com.jparkbro.ui.components.DialogData
+import com.jparkbro.ui.components.SnackBarData
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -111,7 +110,7 @@ class HomeDetailViewModel @AssistedInject constructor(
                 _items.value = emptyList()
             }
 
-            homeRepository.getDetailData(
+            /*homeRepository.getDetailData(
                 type = type,
                 request = HomeDetailRequest(
                     animeId = _animeId.value,
@@ -141,7 +140,7 @@ class HomeDetailViewModel @AssistedInject constructor(
                         _isLoading.value = false
                     }
                 }
-            )
+            )*/
         }
     }
 

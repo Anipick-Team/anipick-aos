@@ -105,9 +105,9 @@ internal fun EmailLoginRoot(
         state = state,
         onAction = { action ->
             when (action) {
-                EmailLoginAction.OnBackClicked -> onNavigateBack()
-                EmailLoginAction.OnEmailRegisterClicked -> onNavigateToEmailRegister()
-                EmailLoginAction.OnFindPasswordClicked -> onNavigateToFindPassword()
+                EmailLoginAction.NavigateBack -> onNavigateBack()
+                EmailLoginAction.NavigateToRegister -> onNavigateToEmailRegister()
+                EmailLoginAction.NavigateToFindPassword -> onNavigateToFindPassword()
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -132,7 +132,7 @@ private fun EmailLoginScreen(
     val focusManager = LocalFocusManager.current
 
     Scaffold(
-        topBar = { APBackStackTopAppBar(onNavigateBack = { onAction(EmailLoginAction.OnBackClicked) }) },
+        topBar = { APBackStackTopAppBar(onNavigateBack = { onAction(EmailLoginAction.NavigateBack) }) },
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(Unit) {
@@ -258,7 +258,7 @@ private fun EmailPasswordInputSection(
                     style = AniPick14Normal.copy(color = AniPickGray400),
                     modifier = Modifier
                         .clip(CircleShape)
-                        .clickable { onAction(EmailLoginAction.OnEmailRegisterClicked) }
+                        .clickable { onAction(EmailLoginAction.NavigateToRegister) }
                         .padding(dimensionResource(R.dimen.padding_extra_small))
                 )
             }
@@ -278,7 +278,7 @@ private fun EmailPasswordInputSection(
                     style = AniPick14Normal.copy(color = AniPickGray400),
                     modifier = Modifier
                         .clip(CircleShape)
-                        .clickable { onAction(EmailLoginAction.OnFindPasswordClicked) }
+                        .clickable { onAction(EmailLoginAction.NavigateToFindPassword) }
                         .padding(dimensionResource(R.dimen.padding_extra_small))
                 )
             }

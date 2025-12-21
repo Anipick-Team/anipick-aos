@@ -15,7 +15,6 @@ import com.jparkbro.ui.model.BottomSheetParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -96,7 +95,7 @@ class PreferenceSetupViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             animes = response.animes,
-                            totalCount = response.count,
+                            totalCount = response.count ?: 0,
                             cursor = response.cursor,
                             uiState = UiState.Success
                         )
@@ -126,7 +125,8 @@ class PreferenceSetupViewModel @Inject constructor(
                 totalCount = 0,
                 cursor = null,
                 isMoreAnimeLoading = true,
-                hasMoreAnime = true
+                hasMoreAnime = true,
+                searchQuery = null
             )
         }
 
@@ -143,10 +143,11 @@ class PreferenceSetupViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             animes = response.animes,
-                            totalCount = response.count,
+                            totalCount = response.count ?: 0,
                             cursor = response.cursor,
                             isMoreAnimeLoading = false,
                             hasMoreAnime = response.animes.size == 10,
+                            searchQuery = _state.value.searchText.text.toString()
                         )
                     }
                 },
@@ -183,7 +184,7 @@ class PreferenceSetupViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             authRepository.exploreOrSearch(
                 request = SearchRequest(
-                    query = _state.value.searchText.text.toString(),
+                    query = _state.value.searchQuery,
                     year = if (_state.value.yearFilter == "전체년도") null else _state.value.yearFilter,
                     season = if (_state.value.quarterFilter.id == -1) null else _state.value.quarterFilter.id,
                     genres = if (_state.value.genreFilter.id == -1) null else _state.value.genreFilter.id,
@@ -194,7 +195,7 @@ class PreferenceSetupViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             animes = it.animes + response.animes,
-                            totalCount = response.count,
+                            totalCount = response.count ?: 0,
                             cursor = response.cursor,
                             hasMoreAnime = response.animes.size == 10,
                             isMoreAnimeLoading = false

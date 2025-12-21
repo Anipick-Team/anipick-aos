@@ -40,15 +40,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.jparkbro.model.common.DefaultAnime
 import com.jparkbro.model.home.ComingSoonItem
 import com.jparkbro.model.home.ContentType
 import com.jparkbro.model.home.HomeRecommendResponse
 import com.jparkbro.model.home.HomeReviewItem
 import com.jparkbro.model.home.UpcomingSeasonItems
-import com.jparkbro.ui.APCardItem
-import com.jparkbro.ui.APLogoSearchTopAppBar
+import com.jparkbro.ui.components.APCardItem
+import com.jparkbro.ui.components.APMainTopAppBar
 import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
 
@@ -107,9 +107,7 @@ private fun Home(
 ) {
     Scaffold(
         topBar = {
-            APLogoSearchTopAppBar(
-                onNavigateToSearch = { onNavigateToSearch() }
-            )
+            APMainTopAppBar(onNavigateToSearch = onNavigateToSearch)
         },
         bottomBar = { bottomNav() },
         containerColor = APColors.Surface,
@@ -174,7 +172,7 @@ private fun Home(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Image(
-                                    painter = painterResource(R.drawable.recommend_null_1),
+                                    painter = painterResource(R.drawable.recommend_null_img),
                                     contentDescription = null
                                 )
                             }
@@ -461,7 +459,7 @@ private fun Home(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Image(
-                                    painter = painterResource(R.drawable.recommend_null_1), // TODO 이미지 변경
+                                    painter = painterResource(R.drawable.recommend_null_img), // TODO 이미지 변경
                                     contentDescription = null
                                 )
                             }

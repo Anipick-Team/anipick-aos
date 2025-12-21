@@ -1,6 +1,5 @@
 package com.jparkbro.preferencesetup
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -9,10 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -34,20 +31,19 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jparkbro.model.common.MetaData
 import com.jparkbro.model.common.UiState
 import com.jparkbro.model.enum.BottomSheetType
+import com.jparkbro.preferencesetup.components.AnimeListSectionSkeleton
 import com.jparkbro.preferencesetup.components.AnimeRatingCard
-import com.jparkbro.preferencesetup.components.AnimeRatingCardSkeleton
+import com.jparkbro.preferencesetup.components.SkeletonScreen
 import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APBaseTextField
 import com.jparkbro.ui.components.APEmptyContent
@@ -66,12 +62,10 @@ import com.jparkbro.ui.theme.AniPickGray100
 import com.jparkbro.ui.theme.AniPickPoint
 import com.jparkbro.ui.theme.AniPickPrimary
 import com.jparkbro.ui.theme.AniPickSecondary
-import com.jparkbro.ui.theme.AniPickSmallShape
 import com.jparkbro.ui.theme.AniPickSurface
 import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.theme.CloseIcon
 import com.jparkbro.ui.theme.SearchOutlineIcon
-import com.jparkbro.ui.theme.ShimmerEffect
 import com.jparkbro.ui.util.ObserveAsEvents
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -100,10 +94,22 @@ internal fun PreferenceSetupRoot(
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    PreferenceSetupScreen(
-        state = state,
-        onAction = viewModel::onAction
-    )
+    when (state.uiState) {
+        UiState.Loading -> {
+            SkeletonScreen(state)
+        }
+        UiState.Error -> {
+            APErrorScreen(
+                onClick = { viewModel.onAction(PreferenceSetupAction.OnRetryClicked) }
+            )
+        }
+        UiState.Success -> {
+            PreferenceSetupScreen(
+                state = state,
+                onAction = viewModel::onAction
+            )
+        }
+    }
 
     bottomSheetData?.let { data ->
         APFilterBottomSheet(
@@ -127,124 +133,110 @@ private fun PreferenceSetupScreen(
     val focusManager = LocalFocusManager.current
     val listState = rememberLazyListState()
 
-    when (state.uiState) {
-        UiState.Loading -> {
-            SkeletonScreen(state)
-        }
+    LaunchedEffect(listState, state.animes.size) {
+        snapshotFlow { listState.layoutInfo }
+            .map { layoutInfo ->
+                val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                val totalItemsCount = layoutInfo.totalItemsCount
 
-        UiState.Success -> {
-            LaunchedEffect(listState, state.animes.size) {
-                snapshotFlow { listState.layoutInfo }
-                    .map { layoutInfo ->
-                        val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-                        val totalItemsCount = layoutInfo.totalItemsCount
-
-                        lastVisibleItemIndex >= totalItemsCount - 3
-                    }
-                    .distinctUntilChanged()
-                    .collect { shouldLoadMore ->
-                        if (shouldLoadMore && !state.isMoreAnimeLoading && state.animes.isNotEmpty()) {
-                            onAction(PreferenceSetupAction.OnLoadMore)
-                        }
-                    }
+                lastVisibleItemIndex >= totalItemsCount - 3
             }
-
-            Scaffold(
-                topBar = { APSkipActionTopAppBar(onSkipClicked = { onAction(PreferenceSetupAction.OnSkipClicked) }) },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onTap = { focusManager.clearFocus() }
-                        )
-                    },
-                containerColor = AniPickWhite
-            ) { innerPadding ->
-                Column(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_40))
-                    ) {
-                        Header()
-
-                        LazyColumn(
-                            state = listState,
-                            userScrollEnabled = state.animes.isNotEmpty(),
-                            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
-                        ) {
-                            item {
-                                Column {
-                                    SearchSection(
-                                        state = state,
-                                        onAction = onAction
-                                    )
-                                    HorizontalDivider(
-                                        modifier = Modifier
-                                            .padding(
-                                                top = dimensionResource(R.dimen.padding_large),
-                                                bottom = dimensionResource(R.dimen.padding_small)
-                                            ),
-                                        thickness = dimensionResource(R.dimen.border_width_thick),
-                                        color = AniPickSurface
-                                    )
-                                }
-                            }
-                            if (state.animes.isNotEmpty()) {
-                                items(state.animes) { anime ->
-                                    val ratedAnime = state.ratedAnimes.find { it.animeId == anime.animeId }
-
-                                    AnimeRatingCard(
-                                        initRating = ratedAnime?.rating ?: 0f,
-                                        anime = anime,
-                                        onRatingAdd = { onAction(PreferenceSetupAction.OnRatingAddClicked(it)) },
-                                        onRatingRemove = { onAction(PreferenceSetupAction.OnRatingRemoveClicked(it)) }
-                                    )
-                                }
-                                item {
-                                    if (state.isMoreAnimeLoading) {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(vertical = dimensionResource(R.dimen.padding_default)),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            CircularProgressIndicator(
-                                                color = AniPickPrimary
-                                            )
-                                        }
-                                    }
-                                }
-                            } else {
-                                item {
-                                    if (state.isMoreAnimeLoading) {
-                                        AnimeListSectionSkeleton()
-                                    } else {
-                                        APEmptyContent(
-                                            modifier = Modifier
-                                                .fillParentMaxSize(),
-                                            comment = stringResource(R.string.empty_content)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Footer(
-                        state = state,
-                        onAction = onAction
-                    )
+            .distinctUntilChanged()
+            .collect { shouldLoadMore ->
+                if (shouldLoadMore && !state.isMoreAnimeLoading && state.animes.isNotEmpty()) {
+                    onAction(PreferenceSetupAction.OnLoadMore)
                 }
             }
-        }
+    }
 
-        UiState.Error -> {
-            APErrorScreen(
-                onClick = { onAction(PreferenceSetupAction.OnRetryClicked) }
+    Scaffold(
+        topBar = { APSkipActionTopAppBar(onSkipClicked = { onAction(PreferenceSetupAction.OnSkipClicked) }) },
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = { focusManager.clearFocus() }
+                )
+            },
+        containerColor = AniPickWhite
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_40))
+            ) {
+                Header()
+
+                LazyColumn(
+                    state = listState,
+                    userScrollEnabled = state.animes.isNotEmpty(),
+                    verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
+                ) {
+                    item {
+                        Column {
+                            SearchSection(
+                                state = state,
+                                onAction = onAction
+                            )
+                            HorizontalDivider(
+                                modifier = Modifier
+                                    .padding(
+                                        top = dimensionResource(R.dimen.padding_large),
+                                        bottom = dimensionResource(R.dimen.padding_small)
+                                    ),
+                                thickness = dimensionResource(R.dimen.border_width_thick),
+                                color = AniPickSurface
+                            )
+                        }
+                    }
+                    if (state.animes.isNotEmpty()) {
+                        items(state.animes) { anime ->
+                            val ratedAnime = state.ratedAnimes.find { it.animeId == anime.animeId }
+
+                            AnimeRatingCard(
+                                initRating = ratedAnime?.rating ?: 0f,
+                                anime = anime,
+                                onRatingAdd = { onAction(PreferenceSetupAction.OnRatingAddClicked(it)) },
+                                onRatingRemove = { onAction(PreferenceSetupAction.OnRatingRemoveClicked(it)) }
+                            )
+                        }
+                        item {
+                            if (state.isMoreAnimeLoading) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = dimensionResource(R.dimen.padding_default)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(
+                                        color = AniPickPrimary
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        item {
+                            if (state.isMoreAnimeLoading) {
+                                AnimeListSectionSkeleton()
+                            } else {
+                                APEmptyContent(
+                                    modifier = Modifier
+                                        .fillParentMaxSize(),
+                                    comment = stringResource(R.string.empty_content)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            Footer(
+                state = state,
+                onAction = onAction
             )
         }
     }
@@ -358,148 +350,6 @@ private fun Footer(
             text = stringResource(R.string.preference_setup_complete_btn),
             onClick = { onAction(PreferenceSetupAction.OnCompleteClicked) },
             isLoading = state.isRating,
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SkeletonScreen(
-    state: PreferenceSetupState,
-) {
-    Scaffold(
-        topBar = { APSkipActionTopAppBar(onSkipClicked = {}) },
-        modifier = Modifier
-            .fillMaxSize(),
-        containerColor = AniPickWhite
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_40))
-            ) {
-                HeaderSkeleton()
-
-                Column {
-                    SearchSectionSkeleton(state = state)
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .padding(vertical = dimensionResource(R.dimen.padding_large)),
-                        thickness = dimensionResource(R.dimen.border_width_thick),
-                        color = AniPickSurface
-                    )
-                    AnimeListSectionSkeleton()
-                }
-            }
-            FooterSkeleton()
-        }
-    }
-}
-
-@Composable
-private fun HeaderSkeleton() {
-    Column(
-        modifier = Modifier
-            .padding(horizontal = dimensionResource(R.dimen.padding_large)),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
-    ) {
-        Text(
-            text = stringResource(R.string.preference_setup_title),
-            style = AniPick20Bold.copy(color = Color.Transparent),
-            modifier = Modifier
-                .background(ShimmerEffect())
-        )
-        Text(
-            text = stringResource(R.string.preference_setup_subtitle),
-            style = AniPick14Normal.copy(color = Color.Transparent),
-            modifier = Modifier
-                .background(ShimmerEffect())
-        )
-    }
-}
-
-
-@Composable
-private fun SearchSectionSkeleton(
-    state: PreferenceSetupState,
-) {
-    Column(
-        modifier = Modifier
-            .padding(horizontal = dimensionResource(R.dimen.padding_large)),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_default))
-    ) {
-        Text(
-            text = stringResource(R.string.preference_setup_rated_count, state.ratedAnimes.size),
-            style = AniPick14Normal.copy(color = Color.Transparent),
-            modifier = Modifier
-                .background(ShimmerEffect())
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp)
-                .clip(AniPickSmallShape)
-                .background(ShimmerEffect())
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small)),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                modifier = Modifier
-                    .width(80.dp)
-                    .height(36.dp)
-                    .clip(AniPickSmallShape)
-                    .background(ShimmerEffect())
-            )
-            Box(
-                modifier = Modifier
-                    .width(80.dp)
-                    .height(36.dp)
-                    .clip(AniPickSmallShape)
-                    .background(ShimmerEffect())
-            )
-            Box(
-                modifier = Modifier
-                    .width(80.dp)
-                    .height(36.dp)
-                    .clip(AniPickSmallShape)
-                    .background(ShimmerEffect())
-            )
-        }
-    }
-}
-
-@Composable
-private fun AnimeListSectionSkeleton() {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
-    ) {
-        repeat(10) {
-            AnimeRatingCardSkeleton()
-        }
-    }
-}
-
-@Composable
-private fun FooterSkeleton() {
-    Column(
-        modifier = Modifier
-            .padding(bottom = dimensionResource(R.dimen.padding_extra_large)),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_32))
-    ) {
-        HorizontalDivider(color = AniPickGray100)
-        Box(
-            modifier = Modifier
-                .padding(horizontal = dimensionResource(R.dimen.padding_large))
-                .fillMaxWidth()
-                .height(52.dp)
-                .clip(AniPickSmallShape)
-                .background(ShimmerEffect())
         )
     }
 }

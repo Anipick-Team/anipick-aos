@@ -100,7 +100,7 @@ internal fun PasswordVerificationRoot(
         state = state,
         onAction = { action ->
             when (action) {
-                PasswordVerificationAction.OnBackClicked -> onNavigateBack()
+                PasswordVerificationAction.NavigateBack -> onNavigateBack()
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -125,7 +125,7 @@ private fun PasswordVerificationScreen(
     val focusManager = LocalFocusManager.current
 
     Scaffold(
-        topBar = { APBackStackTopAppBar(onNavigateBack = { onAction(PasswordVerificationAction.OnBackClicked) }) },
+        topBar = { APBackStackTopAppBar(onNavigateBack = { onAction(PasswordVerificationAction.NavigateBack) }) },
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(Unit) {

@@ -106,15 +106,6 @@ class HomeViewModel @Inject constructor(
                 }
             )
 
-            homeRepository.getUpcomingSeasonItems().fold(
-                onSuccess = {
-                    _upcomingSeasonItems.value = HomeUiState.Success(it)
-                },
-                onFailure = {
-                    Log.d("home viewmodel e", "$it")
-                }
-            )
-
             homeRepository.getComingSoonItems().fold(
                 onSuccess = {
                     _comingSoonItems.value = HomeUiState.Success(it)

@@ -41,6 +41,10 @@ val RecommendNullImg: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.recommend_null_img)
 
+val SimilarNullImg: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.similar_null_img)
+
 val ThumbnailImg: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.thumbnail_img)

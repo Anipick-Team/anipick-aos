@@ -38,6 +38,10 @@
             <option value="$PROJECT_DIR$/feature/main/review" />
             <option value="$PROJECT_DIR$/feature/main/search" />
             <option value="$PROJECT_DIR$/feature/main/setting" />
+            <option value="$PROJECT_DIR$/feature/main/shell" />
+            <option value="$PROJECT_DIR$/feature/main/shell/home" />
+            <option value="$PROJECT_DIR$/feature/main/shell/home/detail" />
+            <option value="$PROJECT_DIR$/feature/main/shell/home/main" />
           </set>
         </option>
       </GradleProjectSettings>

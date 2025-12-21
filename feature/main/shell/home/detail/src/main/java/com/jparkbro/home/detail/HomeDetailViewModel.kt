@@ -1,0 +1,409 @@
+package com.jparkbro.home.detail
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.jparkbro.data.UserPreferenceRepository
+import com.jparkbro.data.detail.DetailRepository
+import com.jparkbro.data.home.HomeRepository
+import com.jparkbro.data.review.ReviewRepository
+import com.jparkbro.model.common.ApiAction
+import com.jparkbro.model.common.UiState
+import com.jparkbro.model.enum.DialogType
+import com.jparkbro.model.enum.HomeDetailType
+import com.jparkbro.model.exception.ApiException
+import com.jparkbro.model.home.HomeDetailRequest
+import com.jparkbro.model.review.ReportReviewRequest
+import com.jparkbro.ui.R
+import com.jparkbro.ui.model.DialogData
+import com.jparkbro.ui.model.SnackBarData
+import com.jparkbro.ui.util.UiText
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class HomeDetailViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    private val homeRepository: HomeRepository,
+    private val detailRepository: DetailRepository,
+    private val userPreferenceRepository: UserPreferenceRepository,
+    private val reviewRepository: ReviewRepository,
+) : ViewModel() {
+
+    private val type = savedStateHandle.get<HomeDetailType>("type")
+
+    private val _state = MutableStateFlow(HomeDetailState())
+    val state = _state.asStateFlow()
+
+    private val _eventChannel = Channel<HomeDetailEvent>()
+    val events = _eventChannel.receiveAsFlow()
+
+    init {
+        _state.update {
+            it.copy(
+                type = type ?: HomeDetailType.RECOMMENDS
+            )
+        }
+        loadDataByType()
+    }
+
+    private fun loadDataByType() {
+        viewModelScope.launch(Dispatchers.IO) {
+            when (type) {
+                HomeDetailType.SIMILAR_TO_WATCHED -> {
+                    getRecentAnime()
+                    initLoad()
+                }
+                HomeDetailType.RECOMMENDS -> {
+                    getNickname()
+                    initLoad()
+                }
+                else -> {
+                    initLoad()
+                }
+            }
+        }
+    }
+
+    fun onAction(action: HomeDetailAction) {
+        when (action) {
+            HomeDetailAction.OnRetryClicked -> viewModelScope.launch(Dispatchers.IO) { retry() }
+            is HomeDetailAction.OnSortClicked -> {
+                _state.update { it.copy(sort = action.type) }
+                viewModelScope.launch(Dispatchers.IO) { initLoad() }
+            }
+            HomeDetailAction.OnLoadMore -> loadMore()
+            is HomeDetailAction.OnReviewLikeClicked -> updateLikeState(
+                reviewId = action.reviewId,
+                liked = action.isLiked,
+                onResult = { action.callback(it) }
+            )
+            is HomeDetailAction.OnUserBlockClicked -> userBlockDialog(action.userId)
+            is HomeDetailAction.OnReviewReportClicked -> reportReviewDialog(action.reviewId)
+            is HomeDetailAction.OnReviewDeleteClicked -> deleteReviewDialog(action.reviewId)
+
+        }
+    }
+
+    private suspend fun getNickname() {
+        userPreferenceRepository.getUserNickName()
+            .fold(
+                onSuccess = { nickname ->
+                    _state.update { it.copy(nickname = nickname) }
+                },
+                onFailure = {
+                    throw it
+                }
+            )
+    }
+
+    private suspend fun getRecentAnime() {
+        detailRepository.loadRecentAnime()
+            .onSuccess { animeId ->
+                _state.update { it.copy(recentAnime = animeId) }
+            }
+            .onFailure {
+                throw it
+            }
+    }
+
+    private suspend fun initLoad() {
+        _state.update {
+            it.copy(
+                uiState = UiState.Loading,
+                animes = emptyList(),
+                reviews = emptyList(),
+                isMoreDataLoading = false,
+                hasMoreData = true,
+                cursor = null
+            )
+        }
+
+        homeRepository.getDetailData(
+            type = type ?: HomeDetailType.RECOMMENDS,
+            request = HomeDetailRequest(
+                animeId = _state.value.recentAnime,
+                lastId = _state.value.cursor?.lastId,
+                lastValue = _state.value.cursor?.lastValue,
+                sort = _state.value.sort.param,
+            ),
+        ).fold(
+            onSuccess = { response ->
+                when (type) {
+                    HomeDetailType.LATEST_REVIEWS -> {
+                        _state.update {
+                            it.copy(
+                                reviews = response.reviews,
+                                hasMoreData = response.reviews.size == 18,
+                                uiState = UiState.Success,
+                                cursor = response.cursor
+                            )
+                        }
+                    }
+                    else -> {
+                        _state.update {
+                            it.copy(
+                                animes = response.animes,
+                                hasMoreData = response.animes.size == 18,
+                                referenceAnimeTitle = response.referenceAnimeTitle,
+                                uiState = UiState.Success,
+                                cursor = response.cursor
+                            )
+                        }
+                    }
+                }
+            },
+            onFailure = {
+                _state.update {
+                    it.copy(
+                        uiState = UiState.Error // TODO 에러 종류 분기 처리
+                    )
+                }
+            }
+        )
+    }
+
+    private fun loadMore() {
+        _state.update {
+            it.copy(
+                isMoreDataLoading = true
+            )
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            homeRepository.getDetailData(
+                type = type ?: HomeDetailType.RECOMMENDS,
+                request = HomeDetailRequest(
+                    animeId = _state.value.recentAnime,
+                    lastId = _state.value.cursor?.lastId,
+                    lastValue = _state.value.cursor?.lastValue,
+                    sort = _state.value.sort.param,
+                ),
+            ).fold(
+                onSuccess = { response ->
+                    when (type) {
+                        HomeDetailType.LATEST_REVIEWS -> {
+                            _state.update {
+                                it.copy(
+                                    reviews = it.reviews + response.reviews,
+                                    hasMoreData = response.reviews.size == 18,
+                                    uiState = UiState.Success,
+                                    cursor = response.cursor,
+                                    isMoreDataLoading = false,
+                                )
+                            }
+                        }
+                        else -> {
+                            _state.update {
+                                it.copy(
+                                    animes = it.animes + response.animes,
+                                    hasMoreData = response.animes.size == 18,
+                                    referenceAnimeTitle = response.referenceAnimeTitle,
+                                    uiState = UiState.Success,
+                                    cursor = response.cursor,
+                                    isMoreDataLoading = false,
+                                )
+                            }
+                        }
+                    }
+                },
+                onFailure = { exception ->
+                    when (exception) {
+                        is ApiException -> {
+                            _eventChannel.send(
+                                HomeDetailEvent.DataLoadFailed(exception.errorValue)
+                            )
+                        }
+                        else -> {
+                            _eventChannel.send(
+                                HomeDetailEvent.DataLoadFailed("Unknown error") // TODO
+                            )
+                        }
+                    }
+                    _state.update {
+                        it.copy(
+                            isMoreDataLoading = false
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    private fun updateLikeState(reviewId: Int, liked: Boolean, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reviewRepository.updateReviewLike(
+                action = if (liked) ApiAction.CREATE else ApiAction.DELETE,
+                reviewId = reviewId
+            ).getOrThrow()
+
+            onResult(true)
+        }
+    }
+
+    private fun deleteReview(reviewId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reviewRepository.deleteReview(reviewId).fold(
+                onSuccess = {
+                    _eventChannel.send(
+                        HomeDetailEvent.ShowSnackBar(
+                            SnackBarData(
+                                text = UiText.StringResource(R.string.snackbar_delete_review_success)
+                            )
+                        )
+                    )
+                    initLoad()
+                },
+                onFailure = { exception ->
+                    _eventChannel.send(
+                        HomeDetailEvent.ShowSnackBar(
+                            SnackBarData(
+                                text = UiText.StringResource(R.string.snackbar_delete_review_failed)
+                            )
+                        )
+                    )
+                }
+            )
+        }
+    }
+
+    private fun reportReview(reviewId: Int, reason: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reviewRepository.reportReview(reviewId, ReportReviewRequest(message = reason)).fold(
+                onSuccess = {
+                    _eventChannel.send(
+                        HomeDetailEvent.ShowSnackBar(
+                            SnackBarData(
+                                text = UiText.StringResource(R.string.snackbar_review_report_success)
+                            )
+                        )
+                    )
+                    initLoad()
+                },
+                onFailure = { exception ->
+                    _eventChannel.send(
+                        HomeDetailEvent.ShowSnackBar(
+                            SnackBarData(
+                                text = UiText.StringResource(R.string.snackbar_review_report_failed)
+                            )
+                        )
+                    )
+                }
+            )
+        }
+    }
+
+    private fun blockUser(userId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reviewRepository.blockUser(userId).fold(
+                onSuccess = {
+                    _eventChannel.send(
+                        HomeDetailEvent.ShowSnackBar(
+                            SnackBarData(
+                                text = UiText.StringResource(R.string.snackbar_user_block_success)
+                            )
+                        )
+                    )
+                    initLoad()
+                },
+                onFailure = { exception ->
+                    _eventChannel.send(
+                        HomeDetailEvent.ShowSnackBar(
+                            SnackBarData(
+                                text = UiText.StringResource(R.string.snackbar_user_block_failed)
+                            )
+                        )
+                    )
+                }
+            )
+        }
+    }
+
+    private fun reportReviewDialog(reviewId: Int) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _eventChannel.send(
+                HomeDetailEvent.ShowDialog(
+                    dialogData = DialogData(
+                        type = DialogType.CONFIRM,
+                        title = UiText.StringResource(R.string.dialog_report_review_title),
+                        subTitle = UiText.StringResource(R.string.dialog_report_review_subtitle),
+                        dismiss = UiText.StringResource(R.string.dialog_report_review_dismiss),
+                        confirm = UiText.StringResource(R.string.dialog_report_review_next),
+                        onConfirm = {
+                            reportReviewReasonDialog(reviewId)
+                        }
+                    )
+                )
+            )
+        }
+    }
+
+    private fun reportReviewReasonDialog(reviewId: Int) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _eventChannel.send(
+                HomeDetailEvent.ShowDialog(
+                    dialogData = DialogData(
+                        type = DialogType.SELECT,
+                        title = UiText.StringResource(R.string.dialog_report_review_reason_title),
+                        subTitle = UiText.StringResource(R.string.dialog_report_review_subtitle),
+                        dismiss = UiText.StringResource(R.string.dialog_report_review_dismiss),
+                        confirm = UiText.StringResource(R.string.dialog_report_review_confirm),
+                        onConfirm = { reason ->
+                            reportReview(reviewId, reason.toString())
+                        }
+                    )
+                )
+            )
+        }
+    }
+
+    private fun deleteReviewDialog(reviewId: Int) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _eventChannel.send(
+                HomeDetailEvent.ShowDialog(
+                    dialogData = DialogData(
+                        type = DialogType.CONFIRM,
+                        title = UiText.StringResource(R.string.dialog_delete_review_title),
+                        subTitle = UiText.StringResource(R.string.dialog_delete_review_subtitle),
+                        dismiss = UiText.StringResource(R.string.dialog_delete_review_dismiss),
+                        confirm = UiText.StringResource(R.string.dialog_delete_review_confirm),
+                        onConfirm = { deleteReview(reviewId) }
+                    )
+                )
+            )
+        }
+    }
+
+    private fun userBlockDialog(userId: Int) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _eventChannel.send(
+                HomeDetailEvent.ShowDialog(
+                    dialogData = DialogData(
+                        type = DialogType.CONFIRM,
+                        title = UiText.StringResource(R.string.dialog_user_block_title),
+                        subTitle = UiText.StringResource(R.string.dialog_user_block_subtitle),
+                        dismiss = UiText.StringResource(R.string.dialog_user_block_dismiss),
+                        confirm = UiText.StringResource(R.string.dialog_user_block_confirm),
+                        onConfirm = { blockUser(userId) }
+                    )
+                )
+            )
+        }
+    }
+
+    private suspend fun retry() {
+        _state.update {
+            it.copy(
+                uiState = UiState.Loading
+            )
+        }
+        initLoad()
+    }
+}

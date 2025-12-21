@@ -93,6 +93,8 @@ internal fun LoginRoot(
                             }
                         )
                     }
+
+                    else -> Unit
                 }
             }
 
@@ -110,8 +112,8 @@ internal fun LoginRoot(
         activity = activity,
         onAction = { action ->
             when (action) {
-                LoginAction.OnEmailLoginClick -> onNavigateToEmailLogin()
-                LoginAction.OnEmailRegisterClick -> onNavigateToEmailRegister()
+                LoginAction.NavigateToEmailLogin -> onNavigateToEmailLogin()
+                LoginAction.NavigateToRegister -> onNavigateToEmailRegister()
                 is LoginAction.OnProblemClick -> {
                     val intent = Intent(Intent.ACTION_VIEW, "https://forms.gle/SJ7mbQfyfoe2HDLd7".toUri())
                     context.startActivity(intent)
@@ -132,6 +134,8 @@ internal fun LoginRoot(
             DialogType.CONFIRM -> {
                 APConfirmDialog(it)
             }
+
+            else -> Unit
         }
     }
 
@@ -228,7 +232,7 @@ private fun Content(
                     style = AniPick14Normal.copy(color = AniPickGray400),
                     modifier = Modifier
                         .clip(CircleShape)
-                        .clickable { onAction(LoginAction.OnEmailRegisterClick) }
+                        .clickable { onAction(LoginAction.NavigateToRegister) }
                         .padding(dimensionResource(R.dimen.padding_extra_small))
                 )
             }
@@ -248,7 +252,7 @@ private fun Content(
                     style = AniPick14Normal.copy(color = AniPickGray400),
                     modifier = Modifier
                         .clip(CircleShape)
-                        .clickable { onAction(LoginAction.OnEmailLoginClick) }
+                        .clickable { onAction(LoginAction.NavigateToEmailLogin) }
                         .padding(dimensionResource(R.dimen.padding_extra_small))
                 )
             }

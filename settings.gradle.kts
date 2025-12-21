@@ -49,3 +49,5 @@ include(":feature:main:detail")
 include(":feature:main:setting")
 include(":feature:main:review")
 
+include(":feature:main:shell:home:main")
+include(":feature:main:shell:home:detail")

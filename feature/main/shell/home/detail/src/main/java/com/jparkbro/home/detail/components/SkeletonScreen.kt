@@ -1,0 +1,99 @@
+package com.jparkbro.home.detail.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.unit.dp
+import com.jparkbro.home.detail.HomeDetailState
+import com.jparkbro.model.common.anime.Anime
+import com.jparkbro.model.enum.HomeDetailType
+import com.jparkbro.ui.R
+import com.jparkbro.ui.components.APTitleTopAppBar
+import com.jparkbro.ui.components.AnimeSkeleton
+import com.jparkbro.ui.components.ReviewSkeleton
+import com.jparkbro.ui.theme.AniPickSurface
+import com.jparkbro.ui.util.rememberGridInfo
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun SkeletonScreen(
+    state: HomeDetailState
+) {
+    val horizontalPadding = dimensionResource(R.dimen.padding_large)
+    val spacing = 8.dp
+
+    Scaffold(
+        topBar = {
+            APTitleTopAppBar(
+                title = state.type.title,
+                onNavigateBack = {},
+            )
+        },
+        containerColor = AniPickSurface
+    ) { innerPadding ->
+        when (state.type) {
+            HomeDetailType.LATEST_REVIEWS -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        start = dimensionResource(R.dimen.padding_large),
+                        end = dimensionResource(R.dimen.padding_large),
+                        top = innerPadding.calculateTopPadding() + dimensionResource(R.dimen.spacing_medium),
+                        bottom = innerPadding.calculateBottomPadding()
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium)),
+                    userScrollEnabled = false
+                ) {
+                    items(5) {
+                        ReviewSkeleton()
+                    }
+                }
+            }
+
+            else -> {
+                BoxWithConstraints( // TODO 경고 왜뜨는지.. ?
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+
+                    val gridInfo = rememberGridInfo(
+                        availableWidth = maxWidth,
+                        horizontalPadding = horizontalPadding * 2,
+                        spacing = spacing,
+                        defaultItemWidth = 128.dp,
+                        minColumns = 3,
+                        maxColumns = 5
+                    )
+
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(gridInfo.columns),
+                        horizontalArrangement = Arrangement.spacedBy(spacing),
+                        verticalArrangement = Arrangement.spacedBy(
+                            dimensionResource(R.dimen.spacing_extra_large)
+                        ),
+                        contentPadding = PaddingValues(
+                            start = horizontalPadding,
+                            end = horizontalPadding,
+                            top = dimensionResource(R.dimen.spacing_extra_large)
+                        )
+                    ) {
+                        items(40) {
+                            AnimeSkeleton(width = gridInfo.itemWidth)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

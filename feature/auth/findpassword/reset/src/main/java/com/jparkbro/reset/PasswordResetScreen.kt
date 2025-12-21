@@ -73,7 +73,7 @@ internal fun PasswordResetRoot(
         state = state,
         onAction = { action ->
             when (action) {
-                PasswordResetAction.OnBackClicked -> onNavigateBack()
+                PasswordResetAction.NavigateBack -> onNavigateBack()
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -90,7 +90,7 @@ private fun PasswordResetScreen(
     val focusManager = LocalFocusManager.current
 
     Scaffold(
-        topBar = { APBackStackTopAppBar(onNavigateBack = { onAction(PasswordResetAction.OnBackClicked) }) },
+        topBar = { APBackStackTopAppBar(onNavigateBack = { onAction(PasswordResetAction.NavigateBack) }) },
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(Unit) {

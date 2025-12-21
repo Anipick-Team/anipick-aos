@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
@@ -66,14 +65,14 @@ import com.jparkbro.model.home.ContentType
 import com.jparkbro.model.home.HomeDetailResponse
 import com.jparkbro.model.home.HomeReviewItem
 import com.jparkbro.model.home.Sort
-import com.jparkbro.ui.APCardItem
-import com.jparkbro.ui.APConfirmDialog
-import com.jparkbro.ui.APReviewItem
-import com.jparkbro.ui.APSnackBar
-import com.jparkbro.ui.APTitledBackTopAppBar
-import com.jparkbro.ui.DialogData
+import com.jparkbro.ui.components.APCardItem
+import com.jparkbro.ui.components.APConfirmDialog
+import com.jparkbro.ui.components.APReviewItem
+import com.jparkbro.ui.components.APSnackBar
+import com.jparkbro.ui.components.APTitleTopAppBar
+import com.jparkbro.ui.components.DialogData
 import com.jparkbro.ui.R
-import com.jparkbro.ui.SnackBarData
+import com.jparkbro.ui.components.SnackBarData
 import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.util.calculateCardWidth
 import com.jparkbro.ui.util.calculateItemSpacing
@@ -159,9 +158,9 @@ private fun HomeDetail(
 ) {
     Scaffold(
         topBar = {
-            APTitledBackTopAppBar(
+            APTitleTopAppBar(
                 title = type.title,
-                handleBackNavigation = { onNavigateBack() },
+                onNavigateBack = onNavigateBack,
             )
         },
     ) { innerPadding ->

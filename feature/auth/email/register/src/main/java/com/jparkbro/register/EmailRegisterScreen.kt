@@ -101,7 +101,7 @@ internal fun EmailRegisterRoot(
         state = state,
         onAction = { action ->
             when (action) {
-                EmailRegisterAction.OnBackClicked -> onNavigateBack()
+                EmailRegisterAction.NavigateBack -> onNavigateBack()
                 EmailRegisterAction.OnPrivacyPolicyLinkClicked -> {
                     val intent = Intent(Intent.ACTION_VIEW, "https://anipick.p-e.kr/privacy.html".toUri())
                     context.startActivity(intent)
@@ -130,7 +130,7 @@ private fun EmailRegisterScreen(
     val focusManager = LocalFocusManager.current
 
     Scaffold(
-        topBar = { APBackStackTopAppBar(onNavigateBack = { onAction(EmailRegisterAction.OnBackClicked) }) },
+        topBar = { APBackStackTopAppBar(onNavigateBack = { onAction(EmailRegisterAction.NavigateBack) }) },
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(Unit) {
