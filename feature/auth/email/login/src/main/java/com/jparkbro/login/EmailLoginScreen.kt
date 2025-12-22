@@ -80,9 +80,9 @@ internal fun EmailLoginRoot(
         when (event) {
             is EmailLoginEvent.LoginSuccess -> {
                 if (event.reviewCompletedYn) {
-                    onNavigateToPreferenceSetup()
-                } else {
                     onNavigateToHome()
+                } else {
+                    onNavigateToPreferenceSetup()
                 }
             }
             is EmailLoginEvent.LoginFailWithDialog -> {

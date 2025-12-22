@@ -70,9 +70,9 @@ internal fun LoginRoot(
         when (event) {
             is LoginEvent.LoginSuccess -> {
                 if (event.reviewCompletedYn) {
-                    onNavigateToPreferenceSetup()
-                } else {
                     onNavigateToHome()
+                } else {
+                    onNavigateToPreferenceSetup()
                 }
             }
 
