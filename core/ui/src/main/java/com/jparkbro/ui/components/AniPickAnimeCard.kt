@@ -32,6 +32,7 @@ import com.jparkbro.ui.theme.AniPickBlack
 import com.jparkbro.ui.theme.AniPickPrimary
 import com.jparkbro.ui.theme.AniPickSmallShape
 import com.jparkbro.ui.theme.AniPickWhite
+import kotlin.math.max
 
 /**
  * 애니메이션 용
@@ -44,7 +45,7 @@ fun APAnimeCard(
     rank: Int? = null,
     title: String? = null,
     isSmallTitle: Boolean = false,
-    maxLine: Int = 1,
+    maxLine: Int = 2,
     description: @Composable (() -> Unit)? = null,
     onClick: () -> Unit = {},
 ) {
@@ -87,6 +88,7 @@ fun APAnimeCard(
                 style = if (isSmallTitle) AniPick14Normal else AniPick16Normal,
                 color = AniPickBlack,
                 maxLines = maxLine,
+                minLines = maxLine,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .width(cardWidth)
