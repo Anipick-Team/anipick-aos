@@ -92,7 +92,7 @@ class HomeDetailViewModel @Inject constructor(
     fun onAction(action: HomeDetailAction) {
         when (action) {
             HomeDetailAction.OnRetryClicked -> viewModelScope.launch(Dispatchers.IO) { retry() }
-            is HomeDetailAction.OnSortClicked -> {
+            is HomeDetailAction.OnChangeSortType -> {
                 _state.update { it.copy(sort = action.type) }
                 viewModelScope.launch(Dispatchers.IO) { initLoad() }
             }

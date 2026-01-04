@@ -5,7 +5,7 @@ import com.jparkbro.model.enum.HomeDetailSortType
 
 interface HomeDetailAction {
     data object OnRetryClicked : HomeDetailAction
-    data class OnSortClicked(val type: HomeDetailSortType) : HomeDetailAction
+    data class OnChangeSortType(val type: HomeDetailSortType) : HomeDetailAction
     data class OnReviewLikeClicked(val reviewId: Int, val isLiked: Boolean, val callback: (Boolean) -> Unit) : HomeDetailAction
     data class OnReviewDeleteClicked(val reviewId: Int) : HomeDetailAction
     data class OnReviewEditClicked(val animeId: Int, val reviewId: Int, val type: FormType) : HomeDetailAction

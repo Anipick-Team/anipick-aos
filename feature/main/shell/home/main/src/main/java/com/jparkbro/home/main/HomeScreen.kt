@@ -56,10 +56,10 @@ import com.jparkbro.ui.theme.AniPickWhite
 internal fun HomeRoot(
     bottomNav: @Composable () -> Unit,
     onNavigateToSearch: () -> Unit,
-    onNavigateToAnimeDetail: (Int) -> Unit,
     onNavigateToRanking: () -> Unit,
     onNavigateToExplore: (year: String?, quarter: String?) -> Unit,
     onNavigateToHomeDetail: (HomeDetailType) -> Unit,
+    onNavigateToInfoAnime: (Int) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
@@ -81,7 +81,7 @@ internal fun HomeRoot(
                 onAction = { action ->
                     when (action) {
                         HomeAction.NavigateToSearch -> onNavigateToSearch()
-                        is HomeAction.NavigateToAnimeDetail -> { onNavigateToAnimeDetail(action.animeId) }
+                        is HomeAction.NavigateToAnimeDetail -> { onNavigateToInfoAnime(action.animeId) }
                         is HomeAction.NavigateToNextQuarter -> { onNavigateToExplore(action.year, action.quarter)}
                         HomeAction.NavigateToTrending -> onNavigateToRanking()
                         HomeAction.NavigateToRecommend -> onNavigateToHomeDetail(HomeDetailType.RECOMMENDS)

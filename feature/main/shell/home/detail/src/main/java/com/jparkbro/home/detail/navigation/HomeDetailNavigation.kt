@@ -17,13 +17,13 @@ fun NavHostController.navigateToHomeDetail(
 
 fun NavGraphBuilder.homeDetailScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToAnimeDetail: (Int) -> Unit,
+    onNavigateToInfoAnime: (Int) -> Unit,
     onNavigateToReviewForm: (Int, Int, FormType) -> Unit,
 ) {
     composable<HomeDetail> {
         HomeDetailRoot(
             onNavigateBack = onNavigateBack,
-            onNavigateToAnimeDetail = onNavigateToAnimeDetail,
+            onNavigateToInfoAnime = onNavigateToInfoAnime,
             onNavigateToReviewForm = onNavigateToReviewForm,
         )
     }

@@ -9,6 +9,10 @@ val AniPickLogoImg: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.anipick_logo)
 
+val AnimeDetailBannerDefaultImg: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.default_banner_img)
+
 val EmptyImage1: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.emptyimage1)

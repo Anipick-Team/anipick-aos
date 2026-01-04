@@ -35,7 +35,7 @@ object ApiConstants {
     const val TREND_ITEMS = "home/animes/trending"
     const val RECOMMENDATION_ANIMES = "home/recommendation/animes"
     const val RECOMMENDATION_ANIMES_RECENT = "home/recommendation/animes/{animeId}/recent"
-    const val REVIEW_RECENT = "home/reviews/recent"
+    const val RECENT_REVIEWS = "home/reviews/recent"
     const val UPCOMING_SEASON = "animes/upcoming-season"
     const val COMING_SOON = "home/animes/coming-soon"
 

@@ -1,4 +1,4 @@
-package com.jparkbro.model.common
+package com.jparkbro.model.enum
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

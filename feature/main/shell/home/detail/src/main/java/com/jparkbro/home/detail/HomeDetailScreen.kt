@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -69,7 +68,7 @@ import kotlinx.coroutines.flow.map
 @Composable
 internal fun HomeDetailRoot(
     onNavigateBack: () -> Unit,
-    onNavigateToAnimeDetail: (Int) -> Unit,
+    onNavigateToInfoAnime: (Int) -> Unit,
     onNavigateToReviewForm: (Int, Int, FormType) -> Unit,
     viewModel: HomeDetailViewModel = hiltViewModel()
 ) {
@@ -114,7 +113,7 @@ internal fun HomeDetailRoot(
                 onAction = { action ->
                     when (action) {
                         HomeDetailAction.NavigateBack -> onNavigateBack()
-                        is HomeDetailAction.NavigateToAnimeDetail -> onNavigateToAnimeDetail(action.animeId)
+                        is HomeDetailAction.NavigateToAnimeDetail -> onNavigateToInfoAnime(action.animeId)
                         is HomeDetailAction.OnReviewEditClicked -> onNavigateToReviewForm(action.animeId, action.reviewId, action.type)
                     }
                     viewModel.onAction(action)

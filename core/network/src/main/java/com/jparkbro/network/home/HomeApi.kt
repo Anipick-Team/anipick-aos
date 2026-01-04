@@ -27,7 +27,7 @@ interface HomeApi {
         @Path("animeId") animeId: Int
     ): Response<ApiResponse<RecommendedAnimesResponse>>
 
-    @GET(ApiConstants.REVIEW_RECENT)
+    @GET(ApiConstants.RECENT_REVIEWS)
     suspend fun getRecentReviews(
     ): Response<ApiResponse<List<HomeReviewDto>>>
 

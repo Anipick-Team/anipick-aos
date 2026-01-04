@@ -21,19 +21,19 @@ fun NavHostController.navigateToHome(
 fun NavGraphBuilder.homeScreen(
     bottomNav: @Composable () -> Unit,
     onNavigateToSearch: () -> Unit,
-    onNavigateToAnimeDetail: (Int) -> Unit,
     onNavigateToRanking: () -> Unit,
     onNavigateToExplore: (year: String?, quarter: String?) -> Unit,
     onNavigateToHomeDetail: (HomeDetailType) -> Unit,
+    onNavigateToInfoAnime: (Int) -> Unit,
 ) {
     composable<Home> {
         HomeRoot(
             bottomNav = bottomNav,
             onNavigateToSearch = onNavigateToSearch,
-            onNavigateToAnimeDetail = onNavigateToAnimeDetail,
             onNavigateToRanking = onNavigateToRanking,
             onNavigateToExplore = onNavigateToExplore,
             onNavigateToHomeDetail = onNavigateToHomeDetail,
+            onNavigateToInfoAnime = onNavigateToInfoAnime,
         )
     }
 }
