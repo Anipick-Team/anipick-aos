@@ -10,6 +10,6 @@ import retrofit2.http.Path
 interface ActorApi {
     @GET(ApiConstants.GET_DETAIL_ACTOR)
     suspend fun getDetailActor(
-        @Path("animeId") animeId: Int,
+        @Path("animeId") animeId: Long,
     ): Response<ApiResponse<List<InfoActorResponse>>>
 }
