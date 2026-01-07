@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Cursor(
     @SerialName("lastId")
-    val lastId: Int? = null,
+    val lastId: Long? = null,
     @SerialName("sort")
     val sort: String? = null,
     @SerialName("lastValue")

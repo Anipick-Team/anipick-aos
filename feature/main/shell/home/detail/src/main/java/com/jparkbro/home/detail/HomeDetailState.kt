@@ -14,7 +14,7 @@ data class HomeDetailState(
     val reviews: List<Review> = emptyList(),
     val isMoreDataLoading: Boolean = false,
     val hasMoreData: Boolean = true,
-    val recentAnime: Int = -1,
+    val recentAnime: Long = -1L,
     val referenceAnimeTitle: String? = null,
     val sort: HomeDetailSortType = HomeDetailSortType.LATEST,
     val nickname: String = "방랑자",

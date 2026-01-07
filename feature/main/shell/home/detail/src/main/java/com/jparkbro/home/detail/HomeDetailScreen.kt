@@ -68,8 +68,8 @@ import kotlinx.coroutines.flow.map
 @Composable
 internal fun HomeDetailRoot(
     onNavigateBack: () -> Unit,
-    onNavigateToInfoAnime: (Int) -> Unit,
-    onNavigateToReviewForm: (Int, Int, FormType) -> Unit,
+    onNavigateToInfoAnime: (Long) -> Unit,
+    onNavigateToReviewForm: (Long, Long, FormType) -> Unit,
     viewModel: HomeDetailViewModel = hiltViewModel()
 ) {
     var dialogData by rememberSaveable { mutableStateOf<DialogData?>(null) }
@@ -114,7 +114,7 @@ internal fun HomeDetailRoot(
                     when (action) {
                         HomeDetailAction.NavigateBack -> onNavigateBack()
                         is HomeDetailAction.NavigateToAnimeDetail -> onNavigateToInfoAnime(action.animeId)
-                        is HomeDetailAction.OnReviewEditClicked -> onNavigateToReviewForm(action.animeId, action.reviewId, action.type)
+                        is HomeDetailAction.NavigateToEditReview -> onNavigateToReviewForm(action.animeId, action.reviewId, action.type)
                     }
                     viewModel.onAction(action)
                 }
@@ -192,7 +192,7 @@ private fun ReviewsContent(
             }
             .distinctUntilChanged()
             .collect { shouldLoadMore ->
-                if (shouldLoadMore && !state.isMoreDataLoading && state.animes.isNotEmpty()) {
+                if (shouldLoadMore && !state.isMoreDataLoading && state.animes.isNotEmpty() && state.hasMoreData) {
                     onAction(HomeDetailAction.OnLoadMore)
                 }
             }
@@ -217,7 +217,7 @@ private fun ReviewsContent(
                 APReviewCard(
                     review = review,
                     onClickEdit = { animeId, reviewId ->
-                        onAction(HomeDetailAction.OnReviewEditClicked(animeId, reviewId, FormType.EDIT))
+                        onAction(HomeDetailAction.NavigateToEditReview(animeId, reviewId, FormType.EDIT))
                     },
                     onClickDelete = { reviewId ->
                         onAction(HomeDetailAction.OnReviewDeleteClicked(reviewId))

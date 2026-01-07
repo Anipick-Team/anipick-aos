@@ -11,7 +11,7 @@ import com.jparkbro.model.home.HomeDetailRequest
 interface HomeRepository {
     suspend fun getTrendItems(): Result<List<Anime>>
     suspend fun getRecommendItems(): Result<RecommendedAnimesResult>
-    suspend fun getRecentRecommendItems(animeId: Int): Result<RecommendedAnimesResult>
+    suspend fun getRecentRecommendItems(animeId: Long): Result<RecommendedAnimesResult>
     suspend fun getRecentReviews(): Result<List<Review>>
     suspend fun getNextQuarterAnimes(): Result<NextQuarterAnimesResult>
     suspend fun getComingSoonItems(): Result<List<Anime>>

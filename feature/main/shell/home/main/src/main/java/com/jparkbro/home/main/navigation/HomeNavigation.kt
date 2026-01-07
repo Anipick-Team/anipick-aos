@@ -24,7 +24,7 @@ fun NavGraphBuilder.homeScreen(
     onNavigateToRanking: () -> Unit,
     onNavigateToExplore: (year: String?, quarter: String?) -> Unit,
     onNavigateToHomeDetail: (HomeDetailType) -> Unit,
-    onNavigateToInfoAnime: (Int) -> Unit,
+    onNavigateToInfoAnime: (Long) -> Unit,
 ) {
     composable<Home> {
         HomeRoot(

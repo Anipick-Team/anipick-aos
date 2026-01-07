@@ -6,9 +6,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class HomeDetailRequest(
     @SerialName("animeId")
-    val animeId: Int? = null,
+    val animeId: Long? = null,
     @SerialName("lastId")
-    val lastId: Int? = null,
+    val lastId: Long? = null,
     @SerialName("lastValue")
     val lastValue: String? = null,
     @SerialName("sort")

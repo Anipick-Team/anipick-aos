@@ -27,7 +27,7 @@ class HomeRepositoryImpl @Inject constructor(
         return homeDataSource.getRecommendItems().map { it.toResult() }
     }
 
-    override suspend fun getRecentRecommendItems(animeId: Int): Result<RecommendedAnimesResult> {
+    override suspend fun getRecentRecommendItems(animeId: Long): Result<RecommendedAnimesResult> {
         return homeDataSource.getRecentRecommendItems(animeId).map { it.toResult() }
     }
 

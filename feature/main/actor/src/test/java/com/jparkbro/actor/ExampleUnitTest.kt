@@ -1,4 +1,4 @@
-package com.jparkbro.info.actor
+package com.jparkbro.actor
 
 import org.junit.Test
 

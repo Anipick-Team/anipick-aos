@@ -1,7 +1,7 @@
 package com.jparkbro.model.common.anime
 
 data class Anime(
-    val animeId: Int? = null,
+    val animeId: Long? = null,
     val title: String? = null,
     val titleKor: String? = null,
     val titleEng: String? = null,
@@ -14,7 +14,7 @@ data class Anime(
     val isAdult: Boolean = false,
     val change: String? = null,
     val trend: String? = null,
-    val popularity: Int? = null,
+    val popularity: Long? = null,
     val trending: Int? = null,
     val airDate: String? = null,
     val userAnimeStatusId: Int? = null,

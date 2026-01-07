@@ -27,9 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jparkbro.info.series.components.Banner
@@ -39,7 +37,6 @@ import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APAnimeCard
 import com.jparkbro.ui.components.APErrorScreen
 import com.jparkbro.ui.components.APTitleTopAppBar
-import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.theme.AniPick12Normal
 import com.jparkbro.ui.theme.AniPick14Normal
 import com.jparkbro.ui.theme.AniPickGray100
@@ -54,7 +51,7 @@ import kotlinx.coroutines.flow.map
 @Composable
 internal fun InfoSeriesRoot(
     onNavigateBack: () -> Unit,
-    onNavigateToInfoAnime: (Int) -> Unit,
+    onNavigateToInfoAnime: (Long) -> Unit,
     viewModel: InfoSeriesViewModel = hiltViewModel()
 ) {
 

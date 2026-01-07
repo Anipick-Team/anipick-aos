@@ -8,21 +8,21 @@ import com.jparkbro.info.anime.InfoAnimeRoot
 import com.jparkbro.model.common.FormType
 import kotlinx.serialization.Serializable
 
-@Serializable data class InfoAnime(val animeId: Int)
+@Serializable data class InfoAnime(val animeId: Long)
 
 fun NavHostController.navigateToInfoAnime(
-    animeId: Int, navOptions: NavOptions? = null
+    animeId: Long, navOptions: NavOptions? = null
 ) = navigate(InfoAnime(animeId), navOptions)
 
 fun NavGraphBuilder.infoAnimeScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToReviewForm: (Int, Int?, FormType) -> Unit,
-    onNavigateToStudioDetail: (Int) -> Unit,
-    onNavigateToAnimeActors: (Int) -> Unit,
-    onNavigateToActorDetail: (Int) -> Unit,
-    onNavigateToInfoAnime: (Int) -> Unit,
-    onNavigateToAnimeSeries: (Int, String) -> Unit,
-    onNavigateToAnimeRecommends: (Int) -> Unit,
+    onNavigateToReviewForm: (Long, Long?, FormType) -> Unit,
+    onNavigateToStudioDetail: (Long) -> Unit,
+    onNavigateToAnimeActors: (Long) -> Unit,
+    onNavigateToActorDetail: (Long) -> Unit,
+    onNavigateToInfoAnime: (Long) -> Unit,
+    onNavigateToInfoSeries: (Long, String) -> Unit,
+    onNavigateToInfoRecommend: (Long) -> Unit,
 ) {
     composable<InfoAnime> {
         InfoAnimeRoot(
@@ -32,8 +32,8 @@ fun NavGraphBuilder.infoAnimeScreen(
             onNavigateToAnimeActors = onNavigateToAnimeActors,
             onNavigateToActorDetail = onNavigateToActorDetail,
             onNavigateToInfoAnime = onNavigateToInfoAnime,
-            onNavigateToAnimeSeries = onNavigateToAnimeSeries,
-            onNavigateToAnimeRecommends = onNavigateToAnimeRecommends,
+            onNavigateToInfoSeries = onNavigateToInfoSeries,
+            onNavigateToInfoRecommend = onNavigateToInfoRecommend,
         )
     }
 }

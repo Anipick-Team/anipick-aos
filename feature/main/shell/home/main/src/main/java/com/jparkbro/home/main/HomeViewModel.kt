@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.UserPreferenceRepository
-import com.jparkbro.data.detail.DetailRepository
+import com.jparkbro.data.anime.AnimeRepository
 import com.jparkbro.data.home.HomeRepository
 import com.jparkbro.data.review.ReviewRepository
 import com.jparkbro.model.common.UiState
@@ -19,9 +19,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    private val animeRepository: AnimeRepository,
     private val reviewRepository: ReviewRepository,
     private val homeRepository: HomeRepository,
-    private val detailRepository: DetailRepository,
     private val userPreferenceRepository: UserPreferenceRepository,
 ) : ViewModel() {
     companion object {
@@ -33,6 +33,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         collectReviews()
+        collectRecentRecommendAnimes()
         initDataLoad()
     }
 
@@ -45,9 +46,18 @@ class HomeViewModel @Inject constructor(
     private fun collectReviews() {
         viewModelScope.launch(Dispatchers.IO) {
             reviewRepository.recentReviews.collect { reviews ->
+                _state.update { it.copy(recentReviews = reviews) }
+            }
+        }
+    }
+
+    private fun collectRecentRecommendAnimes() {
+        viewModelScope.launch(Dispatchers.IO) {
+            animeRepository.recentRecommendAnime.collect { result ->
                 _state.update {
                     it.copy(
-                        recentReviews = reviews
+                        similarAnimeTitle = result?.referenceAnimeTitle,
+                        similarAnimes = result?.animes ?: emptyList()
                     )
                 }
             }
@@ -111,8 +121,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun getRecentAnime() {
-        Log.d(TAG, "getRecentAnime: 시작")
-        detailRepository.loadRecentAnime()
+        animeRepository.loadRecentAnime()
             .onSuccess { animeId ->
                 Log.d(TAG, "getRecentAnime: 성공")
                 _state.update {
@@ -189,33 +198,13 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun getSimilarAnimes() {
-        Log.d(TAG, "getSimilarAnimes: 시작")
         val recentAnime = _state.value.recentAnime
 
-        if (recentAnime == -1) {
-            Log.d(TAG, "getSimilarAnimes: recentAnime이 -1이므로 빈 리스트 설정")
-            _state.update {
-                it.copy(
-                    similarAnimes = emptyList()
-                )
-            }
+        if (recentAnime == -1L) {
+            _state.update { it.copy(similarAnimes = emptyList()) }
         } else {
-            homeRepository.getRecentRecommendItems(recentAnime)
-                .fold(
-                    onSuccess = { response ->
-                        Log.d(TAG, "getSimilarAnimes: 성공 - size=${response.animes.size}")
-                        _state.update {
-                            it.copy(
-                                similarAnimeTitle = response.referenceAnimeTitle,
-                                similarAnimes = response.animes
-                            )
-                        }
-                    },
-                    onFailure = {
-                        Log.e(TAG, "getSimilarAnimes: 실패", it)
-                        throw it
-                    }
-                )
+            animeRepository.getRecentRecommendItems(recentAnime)
+                .onFailure { throw it }
         }
     }
 

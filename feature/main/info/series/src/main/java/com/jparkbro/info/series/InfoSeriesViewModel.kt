@@ -21,7 +21,7 @@ class InfoSeriesViewModel @Inject constructor(
     private val animeRepository: AnimeRepository,
 ) : ViewModel() {
 
-    private val _animeId = savedStateHandle.get<Int>("animeId")
+    private val _animeId = savedStateHandle.get<Long>("animeId")
     private val _title = savedStateHandle.get<String>("title")
 
     private val _state = MutableStateFlow(InfoSeriesState())
@@ -46,7 +46,7 @@ class InfoSeriesViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             animeRepository.getAnimeSeries(
-                animeId = _animeId ?: 0,
+                animeId = _animeId ?: 0L,
                 cursor = _state.value.cursor
             ).fold(
                 onSuccess = { result ->

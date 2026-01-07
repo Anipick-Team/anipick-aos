@@ -1,5 +1,6 @@
 package com.jparkbro.info.anime
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -38,6 +39,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -45,6 +47,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,6 +59,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -73,17 +77,25 @@ import com.jparkbro.info.anime.components.WatchStatusSelector
 import com.jparkbro.model.common.FormType
 import com.jparkbro.model.common.UiState
 import com.jparkbro.model.enum.AnimeInfoTab
+import com.jparkbro.model.enum.DialogType
 import com.jparkbro.model.enum.MyDropdownMenu
 import com.jparkbro.model.enum.ReviewSortType
 import com.jparkbro.model.enum.WatchStatus
 import com.jparkbro.ui.R
+import com.jparkbro.ui.components.APAlertDialog
+import com.jparkbro.ui.components.APAnimationLikeIcon
 import com.jparkbro.ui.components.APAnimeCard
 import com.jparkbro.ui.components.APCastPairCard
+import com.jparkbro.ui.components.APConfirmDialog
 import com.jparkbro.ui.components.APEmptyContent
 import com.jparkbro.ui.components.APErrorScreen
+import com.jparkbro.ui.components.APReportReasonDialog
 import com.jparkbro.ui.components.APReviewCard
+import com.jparkbro.ui.components.APSnackBarRe
 import com.jparkbro.ui.components.APToggleSwitch
 import com.jparkbro.ui.components.updateRatingFromPosition
+import com.jparkbro.ui.model.DialogData
+import com.jparkbro.ui.model.SnackBarData
 import com.jparkbro.ui.theme.AniPick12Normal
 import com.jparkbro.ui.theme.AniPick14Bold
 import com.jparkbro.ui.theme.AniPick14Normal
@@ -112,19 +124,45 @@ import com.jparkbro.ui.theme.MoreVerticalIcon
 import com.jparkbro.ui.theme.ShareIcon
 import com.jparkbro.ui.theme.StarFillIcon
 import com.jparkbro.ui.theme.StarOutlineIcon
+import com.jparkbro.ui.util.ObserveAsEvents
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 @Composable
 internal fun InfoAnimeRoot(
     onNavigateBack: () -> Unit,
-    onNavigateToReviewForm: (Int, Int?, FormType) -> Unit,
-    onNavigateToStudioDetail: (Int) -> Unit,
-    onNavigateToAnimeActors: (Int) -> Unit,
-    onNavigateToActorDetail: (Int) -> Unit,
-    onNavigateToInfoAnime: (Int) -> Unit,
-    onNavigateToAnimeSeries: (Int, String) -> Unit,
-    onNavigateToAnimeRecommends: (Int) -> Unit,
+    onNavigateToStudioDetail: (Long) -> Unit,
+    onNavigateToAnimeActors: (Long) -> Unit,
+    onNavigateToActorDetail: (Long) -> Unit,
+    onNavigateToInfoAnime: (Long) -> Unit,
+    onNavigateToInfoSeries: (Long, String) -> Unit,
+    onNavigateToInfoRecommend: (Long) -> Unit,
+    onNavigateToReviewForm: (Long, Long?, FormType) -> Unit,
     viewModel: InfoAnimeViewModel = hiltViewModel()
 ) {
+    var dialogData by rememberSaveable { mutableStateOf<DialogData?>(null) }
+    var snackBarData by rememberSaveable { mutableStateOf<List<SnackBarData>>(emptyList()) }
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is InfoAnimeEvent.ShowDialog -> {
+                dialogData = event.dialogData.copy(
+                    onDismiss = { dialogData = null },
+                    onConfirm = {
+                        event.dialogData.onConfirm(it)
+                        dialogData = null
+                    }
+                )
+            }
+            is InfoAnimeEvent.ShowSnackBar -> {
+                snackBarData = snackBarData + event.snackBarData.copy(
+                    onDismiss = { snackBarData = snackBarData.drop(1) }
+                )
+            }
+        }
+    }
+
+    val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
     var selectedTab by rememberSaveable { mutableStateOf(AnimeInfoTab.INFO) }
 
@@ -152,19 +190,40 @@ internal fun InfoAnimeRoot(
                     when (action) {
                         InfoAnimeAction.NavigateBack -> onNavigateBack()
                         is InfoAnimeAction.OnTabClicked -> selectedTab = action.tab
-                        InfoAnimeAction.OnShareClicked -> {}
-                        InfoAnimeAction.NavigateToStudio -> {}
-                        InfoAnimeAction.NavigateToCasts -> {}
-                        InfoAnimeAction.NavigateToSeries -> {}
-                        InfoAnimeAction.NavigateToRecommend -> {}
+                        is InfoAnimeAction.OnShareClicked -> {
+                            val sendIntent = Intent().apply {
+                                this.action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_TEXT, action.shareLink)
+                                type = "text/plain"
+                            }
+                            val shareIntent = Intent.createChooser(sendIntent, null)
+                            context.startActivity(shareIntent)
+                        }
+                        is InfoAnimeAction.NavigateToStudio -> {}
+                        is InfoAnimeAction.NavigateToCasts -> {}
+                        is InfoAnimeAction.NavigateToSeries -> onNavigateToInfoSeries(action.animeId, action.title)
+                        is InfoAnimeAction.NavigateToRecommend -> onNavigateToInfoRecommend(action.animeId)
                         is InfoAnimeAction.NavigateToActor -> {}
-                        is InfoAnimeAction.NavigateToAnimeDetail -> { onNavigateToInfoAnime(action.animeId) }
+                        is InfoAnimeAction.NavigateToEditReview -> {}
+                        is InfoAnimeAction.NavigateToAnimeDetail -> onNavigateToInfoAnime(action.animeId)
                     }
                     viewModel.onAction(action)
                 },
                 selectedTab = selectedTab,
             )
         }
+    }
+
+    dialogData?.let { dialogData ->
+        when (dialogData.type) {
+            DialogType.CONFIRM -> APConfirmDialog(dialogData)
+            DialogType.SELECT -> APReportReasonDialog(dialogData)
+            DialogType.ALERT -> APAlertDialog(dialogData)
+        }
+    }
+
+    snackBarData.firstOrNull()?.let { snackBarData ->
+        APSnackBarRe(snackBarData)
     }
 }
 
@@ -185,6 +244,22 @@ private fun InfoAnimeScreen(
         derivedStateOf {
             !isTopComponentVisible
         }
+    }
+
+    LaunchedEffect(lazyListState, state.reviews.size) {
+        snapshotFlow { lazyListState.layoutInfo }
+            .map { layoutInfo ->
+                val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                val totalItemsCount = layoutInfo.totalItemsCount
+
+                lastVisibleItemIndex >= totalItemsCount - 2
+            }
+            .distinctUntilChanged()
+            .collect { shouldLoadMore ->
+                if (shouldLoadMore && !state.isLoadingMoreReviews && state.reviews.isNotEmpty()) {
+                    onAction(InfoAnimeAction.LoadMoreReviews)
+                }
+            }
     }
 
     LazyColumn(
@@ -235,6 +310,8 @@ private fun ExpandedHeader(
     state: InfoAnimeState,
     onAction: (InfoAnimeAction) -> Unit,
 ) {
+    val shareLink = stringResource(R.string.anime_detail_shared_link, state.animeInfo?.animeId ?: 0)
+
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -313,15 +390,10 @@ private fun ExpandedHeader(
                             style = AniPick20Bold.copy(color = AniPickBlack),
                         )
                     }
-                    Icon(
-                        imageVector = if (state.animeInfo?.isLiked == true) FavoriteOnIcon else FavoriteOffIcon,
-                        contentDescription = stringResource(R.string.favorite_icon),
-                        tint = Color.Unspecified,
-                        modifier = Modifier
-                            .size(dimensionResource(R.dimen.icon_size_medium))
-                            .clickable {
-
-                            }
+                    APAnimationLikeIcon(
+                        isLiked = state.animeInfo?.isLiked ?: false,
+                        isLikingAnime = state.isLikingAnime,
+                        onClick = { onAction(InfoAnimeAction.OnAnimeLikeClicked(it)) }
                     )
                 }
                 Icon(
@@ -330,9 +402,8 @@ private fun ExpandedHeader(
                     tint = Color.Unspecified,
                     modifier = Modifier
                         .size(dimensionResource(R.dimen.icon_size_extra_large))
-                        .clickable {
-
-                        }
+                        .clip(AniPickSmallShape)
+                        .clickable { onAction(InfoAnimeAction.OnShareClicked(shareLink)) }
                 )
             }
             Row(
@@ -345,9 +416,6 @@ private fun ExpandedHeader(
                     tint = Color.Unspecified,
                     modifier = Modifier
                         .size(dimensionResource(R.dimen.icon_size_medium))
-                        .clickable {
-
-                        }
                 )
                 Text(
                     text = if (state.animeInfo?.averageRating == null) "0.0" else state.animeInfo.averageRating.toString(),
@@ -365,20 +433,20 @@ private fun ExpandedHeader(
             WatchStatusSelector(
                 text = stringResource(R.string.watch_list_anime),
                 status = state.animeInfo?.watchStatus == WatchStatus.WATCHLIST,
-                enabled = true,
-                onClick = {}
+                enabled = !state.isWatchStatusChanging,
+                onClick = { onAction(InfoAnimeAction.OnWatchStatusClicked(WatchStatus.WATCHLIST)) }
             )
             WatchStatusSelector(
                 text = stringResource(R.string.watching_anime),
                 status = state.animeInfo?.watchStatus == WatchStatus.WATCHING,
-                enabled = true,
-                onClick = {}
+                enabled = !state.isWatchStatusChanging,
+                onClick = { onAction(InfoAnimeAction.OnWatchStatusClicked(WatchStatus.WATCHING)) }
             )
             WatchStatusSelector(
                 text = stringResource(R.string.finished_anime),
                 status = state.animeInfo?.watchStatus == WatchStatus.FINISHED,
-                enabled = true,
-                onClick = {}
+                enabled = !state.isWatchStatusChanging,
+                onClick = { onAction(InfoAnimeAction.OnWatchStatusClicked(WatchStatus.FINISHED)) }
             )
         }
         HorizontalDivider(
@@ -403,7 +471,7 @@ private fun CollapseHeader(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(AniPickWhite)
-                .padding(dimensionResource(R.dimen.padding_large))
+                .padding(dimensionResource(R.dimen.padding_default))
         ) {
             Icon(
                 imageVector = ChevronLeftIcon,
@@ -429,15 +497,10 @@ private fun CollapseHeader(
                         modifier = Modifier.weight(1f, fill = false)
                     )
                 }
-                Icon(
-                    imageVector = if (state.animeInfo?.isLiked == true) FavoriteOnIcon else FavoriteOffIcon,
-                    contentDescription = stringResource(R.string.favorite_icon),
-                    tint = Color.Unspecified,
-                    modifier = Modifier
-                        .size(dimensionResource(R.dimen.icon_size_medium))
-                        .clickable {
-
-                        }
+                APAnimationLikeIcon(
+                    isLiked = state.animeInfo?.isLiked ?: false,
+                    isLikingAnime = state.isLikingAnime,
+                    onClick = { onAction(InfoAnimeAction.OnAnimeLikeClicked(it)) }
                 )
             }
         }
@@ -645,7 +708,7 @@ private fun InfoTab(
                                     text = it,
                                     style = AniPick14Normal.copy(color = AniPickSecondary),
                                     modifier = Modifier
-                                        .clickable { }
+                                        .clickable { onAction(InfoAnimeAction.NavigateToStudio(studio.studioId)) }
                                         .drawBehind {
                                             val strokeWidth = 1.dp.toPx()
                                             val y = size.height - strokeWidth / 2
@@ -684,12 +747,12 @@ private fun InfoTab(
                             items(state.casts) { cast ->
                                 APCastPairCard(
                                     casts = cast,
-                                    onClick = { }
+                                    onClick = { onAction(InfoAnimeAction.NavigateToActor(cast.voiceActor.id)) }
                                 )
                             }
                         }
                     },
-                    onNavigateClick = {}
+                    onNavigateClick = { onAction(InfoAnimeAction.NavigateToCasts(state.animeInfo?.animeId ?: 0)) }
                 )
             }
             if (state.series.isNotEmpty()) {
@@ -725,12 +788,12 @@ private fun InfoTab(
                                             }
                                         }
                                     },
-                                    onClick = { }
+                                    onClick = { onAction(InfoAnimeAction.NavigateToAnimeDetail(anime.animeId ?: 0)) }
                                 )
                             }
                         }
                     },
-                    onNavigateClick = {}
+                    onNavigateClick = { onAction(InfoAnimeAction.NavigateToSeries(state.animeInfo?.animeId ?: 0, state.animeInfo?.title ?: "")) }
                 )
             }
             if (state.recommendations.isNotEmpty()) {
@@ -752,12 +815,12 @@ private fun InfoTab(
                                     imageUrl = anime.coverImageUrl,
                                     title = anime.titleKor ?: anime.titleEng ?: anime.title,
                                     maxLine = 2,
-                                    onClick = { }
+                                    onClick = { onAction(InfoAnimeAction.NavigateToAnimeDetail(anime.animeId ?: 0)) }
                                 )
                             }
                         }
                     },
-                    onNavigateClick = {}
+                    onNavigateClick = { onAction(InfoAnimeAction.NavigateToRecommend(state.animeInfo?.animeId ?: 0))}
                 )
             }
         }
@@ -901,6 +964,12 @@ private fun MyReviewSection(
                         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_extra_small)),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        /*APAnimationLikeIcon(
+                            size = dimensionResource(R.dimen.icon_size_small),
+                            isLiked = TODO(),
+                            isLikingAnime = TODO(),
+                            onClick = TODO()
+                        )*/
                         Icon(
                             imageVector = FavoriteOffIcon,
                             contentDescription = stringResource(R.string.favorite_icon),
@@ -940,7 +1009,7 @@ private fun MyReviewSection(
                                     .fillMaxWidth()
                                     .clickable {
                                         showDropDown = !showDropDown
-
+                                        onAction(InfoAnimeAction.OnReviewDeleteClicked(state.myReview.reviewId ?: 0))
                                     }
                                     .padding(horizontal = dimensionResource(R.dimen.padding_huge), vertical = dimensionResource(R.dimen.padding_medium))
                             )
@@ -959,6 +1028,11 @@ private fun MyReviewSection(
                                     .fillMaxWidth()
                                     .clickable {
                                         showDropDown = !showDropDown
+                                        onAction(InfoAnimeAction.NavigateToEditReview(
+                                            animeId = state.animeInfo?.animeId ?: 0,
+                                            reviewId = state.myReview.reviewId ?: 0,
+                                            type = FormType.EDIT
+                                        ))
                                     }
                                     .padding(horizontal = dimensionResource(R.dimen.padding_huge), vertical = dimensionResource(R.dimen.padding_medium))
                             )
@@ -969,7 +1043,6 @@ private fun MyReviewSection(
         }
     } else {
         var rating by rememberSaveable { mutableFloatStateOf(state.myReview.rating ?: 0f) }
-        var isAnimeRatingLoading by rememberSaveable { mutableStateOf(false) }
 
         Column(
             modifier = Modifier
@@ -987,8 +1060,8 @@ private fun MyReviewSection(
             ) {
                 Row(
                     modifier = Modifier
-                        .pointerInput(isAnimeRatingLoading) {
-                            if (!isAnimeRatingLoading) {
+                        .pointerInput(state.isAnimeRatingLoading) {
+                            if (!state.isAnimeRatingLoading) {
                                 detectDragGestures(
                                     onDragStart = { offset ->
                                         // 드래그 시작 위치에서 별점 계산
@@ -997,14 +1070,12 @@ private fun MyReviewSection(
                                         }
                                     },
                                     onDragEnd = {
-                                        isAnimeRatingLoading = false
-                                        /*onRateAnime(rating) { result ->
-                                            if (result) {
-                                                onChangeSnackBarData(SnackBarData(text = "리뷰가 성공적으로 작성되었습니다!"))
-                                            } else {
-                                                rating = initRating
-                                            }
-                                        }*/
+                                        onAction(
+                                            InfoAnimeAction.OnRatingChanged(
+                                                rating = rating,
+                                                onFailure = { rating = state.myReview.rating ?: 0f }
+                                            )
+                                        )
                                     },
                                     onDragCancel = { rating = state.myReview.rating ?: 0f },
                                     onDrag = { change, _ ->
@@ -1024,13 +1095,9 @@ private fun MyReviewSection(
                         Box(
                             modifier = Modifier
                                 .size(dimensionResource(R.dimen.icon_size_extra_large))
-                                .pointerInput(isAnimeRatingLoading) {
-
-                                    if (!isAnimeRatingLoading) {
+                                .pointerInput(state.isAnimeRatingLoading) {
+                                    if (!state.isAnimeRatingLoading) {
                                         detectTapGestures { offset ->
-                                            isAnimeRatingLoading = false
-
-                                            // 별의 왼쪽 절반 또는 오른쪽 절반인지 확인
                                             val position = offset.x / size.width
                                             val newRating = if (position < 0.5f) {
                                                 // 왼쪽 절반 (0.5점)
@@ -1040,13 +1107,12 @@ private fun MyReviewSection(
                                                 i + 1.0f
                                             }
                                             rating = newRating
-                                            /*onRateAnime(rating) { result ->
-                                                if (result) {
-                                                    onChangeSnackBarData(SnackBarData(text = "리뷰가 성공적으로 작성되었습니다!"))
-                                                } else {
-                                                    rating = initRating
-                                                }
-                                            }*/
+                                            onAction(
+                                                InfoAnimeAction.OnRatingChanged(
+                                                    rating = rating,
+                                                    onFailure = { rating = state.myReview.rating ?: 0f }
+                                                )
+                                            )
                                         }
                                     }
                                 }
@@ -1103,8 +1169,12 @@ private fun MyReviewSection(
                     .fillMaxWidth()
                     .clip(AniPickSmallShape)
                     .background(if (state.myReview.rating == 0f) AniPickGray100 else AniPickPrimary, AniPickSmallShape)
-                    .clickable(enabled = state.myReview.rating != 0f && !isAnimeRatingLoading) {
-
+                    .clickable(enabled = state.myReview.rating != 0f && !state.isAnimeRatingLoading) {
+                        onAction(InfoAnimeAction.NavigateToEditReview(
+                            animeId = state.myReview.animeId ?: 0,
+                            reviewId = state.myReview.reviewId ?: 0,
+                            type = FormType.CREATE
+                        ))
                     }
                     .padding(vertical = dimensionResource(R.dimen.spacing_default)),
                 contentAlignment = Alignment.Center
@@ -1216,7 +1286,7 @@ private fun AnimeReviews(
                             .fillMaxWidth()
                             .clickable {
                                 showDropDown = !showDropDown
-//                                onChangeSort(ReviewSort.LATEST)
+                                onAction(InfoAnimeAction.OnChangeReviewSortType(ReviewSortType.LATEST))
                             }
                             .padding(dimensionResource(R.dimen.padding_default))
                     )
@@ -1235,7 +1305,7 @@ private fun AnimeReviews(
                             .fillMaxWidth()
                             .clickable {
                                 showDropDown = !showDropDown
-//                                onChangeSort(ReviewSort.LATEST)
+                                onAction(InfoAnimeAction.OnChangeReviewSortType(ReviewSortType.LIKES))
                             }
                             .padding(dimensionResource(R.dimen.padding_default))
                     )
@@ -1254,7 +1324,7 @@ private fun AnimeReviews(
                             .fillMaxWidth()
                             .clickable {
                                 showDropDown = !showDropDown
-//                                onChangeSort(ReviewSort.LATEST)
+                                onAction(InfoAnimeAction.OnChangeReviewSortType(ReviewSortType.RATING_DESC))
                             }
                             .padding(dimensionResource(R.dimen.padding_default))
                     )
@@ -1273,7 +1343,7 @@ private fun AnimeReviews(
                             .fillMaxWidth()
                             .clickable {
                                 showDropDown = !showDropDown
-//                                onChangeSort(ReviewSort.LATEST)
+                                onAction(InfoAnimeAction.OnChangeReviewSortType(ReviewSortType.RATING_ASC))
                             }
                             .padding(dimensionResource(R.dimen.padding_default))
                     )
@@ -1292,17 +1362,20 @@ private fun AnimeReviews(
                     APReviewCard(
                         review = review,
                         onClickEdit = { animeId, reviewId ->
+                            onAction(InfoAnimeAction.NavigateToEditReview(animeId, reviewId, FormType.EDIT))
                         },
                         onClickDelete = { reviewId ->
+                            onAction(InfoAnimeAction.OnReviewDeleteClicked(reviewId))
                         },
                         onCLickReport = { reviewId ->
+                            onAction(InfoAnimeAction.OnReviewReportClicked(reviewId))
                         },
                         onClickBlock = { userId ->
+                            onAction(InfoAnimeAction.OnUserBlockClicked(userId))
                         },
                         onClickLiked = { reviewId, isLiked , result ->
+                            onAction(InfoAnimeAction.OnReviewLikeClicked(reviewId, isLiked, result))
                         },
-                        onNavigateAnimeDetail = { animeId ->
-                        }
                     )
                 }
             }

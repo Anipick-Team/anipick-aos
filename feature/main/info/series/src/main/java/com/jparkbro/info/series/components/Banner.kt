@@ -24,7 +24,6 @@ import com.jparkbro.ui.theme.AniPickSmallShape
 import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.theme.HomeBannerMascotImg
 
-
 @Composable
 internal fun Banner(
     state: InfoSeriesState

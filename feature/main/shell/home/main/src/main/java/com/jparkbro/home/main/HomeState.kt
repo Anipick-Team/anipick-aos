@@ -13,7 +13,7 @@ data class HomeState(
     val similarAnimes: List<Anime> = emptyList(),
     val upcomingAnimes: List<Anime> = emptyList(),
     // 최근 확인한 애니메이션
-    val recentAnime: Int = -1,
+    val recentAnime: Long = -1L,
     val year: Int = 0,
     val season: Int = 0,
     val referenceAnimeTitle: String? = null,

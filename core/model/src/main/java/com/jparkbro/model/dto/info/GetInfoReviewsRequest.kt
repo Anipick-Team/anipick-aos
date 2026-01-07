@@ -7,15 +7,15 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GetInfoReviewsRequest(
     @SerialName("animeId")
-    val animeId: Int,
+    val animeId: Long,
     @SerialName("sort")
     val sort: String = ReviewSortType.LATEST.param,
     @SerialName("isSpoiler")
-    val isSpoiler: Boolean = false,
+    val isSpoiler: Boolean = true,
     @SerialName("lastValue")
     val lastValue: String? = null,
     @SerialName("lastId")
-    val lastId: Int? = null,
+    val lastId: Long? = null,
     @SerialName("size")
     val size: Int? = 20,
 )

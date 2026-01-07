@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.UserPreferenceRepository
-import com.jparkbro.data.detail.DetailRepository
+import com.jparkbro.data.anime.AnimeRepository
 import com.jparkbro.data.home.HomeRepository
 import com.jparkbro.data.review.ReviewRepository
 import com.jparkbro.model.common.ApiAction
@@ -31,10 +31,10 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val homeRepository: HomeRepository,
-    private val detailRepository: DetailRepository,
-    private val userPreferenceRepository: UserPreferenceRepository,
+    private val animeRepository: AnimeRepository,
     private val reviewRepository: ReviewRepository,
+    private val userPreferenceRepository: UserPreferenceRepository,
+    private val homeRepository: HomeRepository,
 ) : ViewModel() {
 
     private val type = savedStateHandle.get<HomeDetailType>("type")
@@ -122,7 +122,7 @@ class HomeDetailViewModel @Inject constructor(
     }
 
     private suspend fun getRecentAnime() {
-        detailRepository.loadRecentAnime()
+        animeRepository.loadRecentAnime()
             .onSuccess { animeId ->
                 _state.update { it.copy(recentAnime = animeId) }
             }
@@ -163,7 +163,7 @@ class HomeDetailViewModel @Inject constructor(
                         _state.update {
                             it.copy(
                                 animes = response.animes,
-                                hasMoreData = response.animes.size == 18,
+                                hasMoreData = response.animes.size >= 18,
                                 referenceAnimeTitle = response.referenceAnimeTitle,
                                 uiState = UiState.Success,
                                 cursor = response.cursor
@@ -183,11 +183,9 @@ class HomeDetailViewModel @Inject constructor(
     }
 
     private fun loadMore() {
-        _state.update {
-            it.copy(
-                isMoreDataLoading = true
-            )
-        }
+        if (_state.value.isMoreDataLoading || !_state.value.hasMoreData) return
+
+        _state.update { it.copy(isMoreDataLoading = true) }
 
         viewModelScope.launch(Dispatchers.IO) {
             when (type) {
@@ -211,7 +209,7 @@ class HomeDetailViewModel @Inject constructor(
                             _state.update {
                                 it.copy(
                                     animes = it.animes + response.animes,
-                                    hasMoreData = response.animes.size == 18,
+                                    hasMoreData = response.animes.size >= 18,
                                     referenceAnimeTitle = response.referenceAnimeTitle,
                                     uiState = UiState.Success,
                                     cursor = response.cursor,
@@ -244,7 +242,7 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun updateLikeState(reviewId: Int, liked: Boolean, onResult: (Boolean) -> Unit) {
+    private fun updateLikeState(reviewId: Long, liked: Boolean, onResult: (Boolean) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             reviewRepository.updateReviewLike(
                 action = if (liked) ApiAction.CREATE else ApiAction.DELETE,
@@ -255,7 +253,7 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun deleteReview(reviewId: Int) {
+    private fun deleteReview(reviewId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             reviewRepository.deleteReview(reviewId).fold(
                 onSuccess = {
@@ -281,7 +279,7 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun reportReview(reviewId: Int, reason: String) {
+    private fun reportReview(reviewId: Long, reason: String) {
         viewModelScope.launch(Dispatchers.IO) {
             reviewRepository.reportReview(reviewId, ReportReviewRequest(message = reason)).fold(
                 onSuccess = {
@@ -307,7 +305,7 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun blockUser(userId: Int) {
+    private fun blockUser(userId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             reviewRepository.blockUser(userId).fold(
                 onSuccess = {
@@ -333,7 +331,7 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun reportReviewDialog(reviewId: Int) {
+    private fun reportReviewDialog(reviewId: Long) {
         viewModelScope.launch(Dispatchers.Main) {
             _eventChannel.send(
                 HomeDetailEvent.ShowDialog(
@@ -352,7 +350,7 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun reportReviewReasonDialog(reviewId: Int) {
+    private fun reportReviewReasonDialog(reviewId: Long) {
         viewModelScope.launch(Dispatchers.Main) {
             _eventChannel.send(
                 HomeDetailEvent.ShowDialog(
@@ -371,7 +369,7 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun deleteReviewDialog(reviewId: Int) {
+    private fun deleteReviewDialog(reviewId: Long) {
         viewModelScope.launch(Dispatchers.Main) {
             _eventChannel.send(
                 HomeDetailEvent.ShowDialog(
@@ -388,7 +386,7 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun userBlockDialog(userId: Int) {
+    private fun userBlockDialog(userId: Long) {
         viewModelScope.launch(Dispatchers.Main) {
             _eventChannel.send(
                 HomeDetailEvent.ShowDialog(

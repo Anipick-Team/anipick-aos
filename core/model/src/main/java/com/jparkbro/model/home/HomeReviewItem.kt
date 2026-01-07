@@ -7,11 +7,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class HomeReviewItem(
     @SerialName("userId")
-    val userId: Int? = null,
+    val userId: Long? = null,
     @SerialName("reviewId")
-    override val reviewId: Int,
+    override val reviewId: Long,
     @SerialName("animeId")
-    val animeId: Int,
+    val animeId: Long,
     @SerialName("animeTitle")
     val animeTitle: String?,
     @SerialName("animeCoverImageUrl")

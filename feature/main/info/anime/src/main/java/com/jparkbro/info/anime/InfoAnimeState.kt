@@ -12,6 +12,12 @@ data class InfoAnimeState(
     val uiState: UiState = UiState.Loading,
     val reviewSort: ReviewSortType = ReviewSortType.LATEST,
 
+    /* API 통신 로딩 */
+    val isLoadingMoreReviews: Boolean = false,
+    val isLikingAnime: Boolean = false,
+    val isWatchStatusChanging: Boolean = false,
+    val isAnimeRatingLoading: Boolean = false,
+
     /* API 통신 데이터 */
     val animeInfo: AnimeInfoResponse? = null,
     val casts: List<InfoActorResult> = emptyList(),
@@ -21,5 +27,4 @@ data class InfoAnimeState(
     val reviews: List<Review> = emptyList(),
     val reviewCount: Int = 0,
     val reviewCursor: Cursor? = null,
-    val isLoadingMoreReviews: Boolean = false,
 )

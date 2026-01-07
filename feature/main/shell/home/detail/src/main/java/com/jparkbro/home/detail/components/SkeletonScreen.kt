@@ -22,6 +22,7 @@ import com.jparkbro.ui.components.APTitleTopAppBar
 import com.jparkbro.ui.components.AnimeSkeleton
 import com.jparkbro.ui.components.ReviewSkeleton
 import com.jparkbro.ui.theme.AniPickSurface
+import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.util.rememberGridInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +40,7 @@ internal fun SkeletonScreen(
                 onNavigateBack = {},
             )
         },
-        containerColor = AniPickSurface
+        containerColor = AniPickWhite
     ) { innerPadding ->
         when (state.type) {
             HomeDetailType.RECENT_REVIEWS -> {
@@ -77,6 +78,7 @@ internal fun SkeletonScreen(
                     )
 
                     LazyVerticalGrid(
+                        userScrollEnabled = false,
                         columns = GridCells.Fixed(gridInfo.columns),
                         horizontalArrangement = Arrangement.spacedBy(spacing),
                         verticalArrangement = Arrangement.spacedBy(

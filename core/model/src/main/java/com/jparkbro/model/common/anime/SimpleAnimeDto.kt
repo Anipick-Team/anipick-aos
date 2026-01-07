@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SimpleAnimeDto(
     @SerialName("animeId")
-    val animeId: Int? = null,
+    val animeId: Long? = null,
     @SerialName("title")
     val title: String? = null,
     @SerialName("coverImageUrl")

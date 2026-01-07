@@ -7,15 +7,15 @@ import androidx.navigation.compose.composable
 import com.jparkbro.info.series.InfoSeriesRoot
 import kotlinx.serialization.Serializable
 
-@Serializable data class InfoSeries(val animeId: Int, val title: String)
+@Serializable data class InfoSeries(val animeId: Long, val title: String)
 
 fun NavHostController.navigateToInfoSeries(
-    animeId: Int, title: String, navOptions: NavOptions? = null
+    animeId: Long, title: String, navOptions: NavOptions? = null
 ) = navigate(InfoSeries(animeId, title), navOptions)
 
 fun NavGraphBuilder.infoSeriesScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToInfoAnime: (Int) -> Unit
+    onNavigateToInfoAnime: (Long) -> Unit
 ) {
     composable<InfoSeries> {
         InfoSeriesRoot(

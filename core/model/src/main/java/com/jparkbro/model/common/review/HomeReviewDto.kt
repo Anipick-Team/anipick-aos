@@ -6,11 +6,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class HomeReviewDto(
     @SerialName("reviewId")
-    val reviewId: Int? = null,
+    val reviewId: Long? = null,
     @SerialName("userId")
-    val userId: Int? = null,
+    val userId: Long? = null,
     @SerialName("animeId")
-    val animeId: Int? = null,
+    val animeId: Long? = null,
     @SerialName("animeTitle")
     val animeTitle: String? = null,
     @SerialName("reviewContent")

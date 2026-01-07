@@ -30,10 +30,10 @@
             <option value="$PROJECT_DIR$/feature/auth/login" />
             <option value="$PROJECT_DIR$/feature/auth/preferencesetup" />
             <option value="$PROJECT_DIR$/feature/main" />
+            <option value="$PROJECT_DIR$/feature/main/actor" />
             <option value="$PROJECT_DIR$/feature/main/detail" />
             <option value="$PROJECT_DIR$/feature/main/explore" />
             <option value="$PROJECT_DIR$/feature/main/info" />
-            <option value="$PROJECT_DIR$/feature/main/info/actor" />
             <option value="$PROJECT_DIR$/feature/main/info/anime" />
             <option value="$PROJECT_DIR$/feature/main/info/character" />
             <option value="$PROJECT_DIR$/feature/main/info/recommend" />

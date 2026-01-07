@@ -15,12 +15,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,7 +61,7 @@ internal fun HomeRoot(
     onNavigateToRanking: () -> Unit,
     onNavigateToExplore: (year: String?, quarter: String?) -> Unit,
     onNavigateToHomeDetail: (HomeDetailType) -> Unit,
-    onNavigateToInfoAnime: (Int) -> Unit,
+    onNavigateToInfoAnime: (Long) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
@@ -390,6 +392,14 @@ private fun SimilarToWatched(
     state: HomeState,
     onAction: (HomeAction) -> Unit
 ) {
+    val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(state.similarAnimes) {
+        if (state.similarAnimes.isNotEmpty()) {
+            lazyListState.animateScrollToItem(0)
+        }
+    }
+
     AnimesSection(
         title = {
             Column(
@@ -427,6 +437,7 @@ private fun SimilarToWatched(
         },
         itemList = {
             LazyRow(
+                state = lazyListState,
                 contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.padding_large)),
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
             ) {

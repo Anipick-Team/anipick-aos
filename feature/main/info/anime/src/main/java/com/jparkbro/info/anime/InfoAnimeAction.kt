@@ -10,20 +10,20 @@ interface InfoAnimeAction {
     data object NavigateBack : InfoAnimeAction
     data class OnTabClicked(val tab: AnimeInfoTab) : InfoAnimeAction
     data object LoadMoreReviews : InfoAnimeAction
-    data class OnAnimeLikeClicked(val state: Boolean) : InfoAnimeAction
-    data object OnShareClicked : InfoAnimeAction
-    data class OnWatchStatusClicked(val status: WatchStatus) : InfoAnimeAction
-    data object NavigateToStudio : InfoAnimeAction
-    data object NavigateToCasts : InfoAnimeAction
-    data object NavigateToSeries : InfoAnimeAction
-    data object NavigateToRecommend : InfoAnimeAction
-    data class NavigateToActor(val actorId: Int) : InfoAnimeAction
-    data class NavigateToAnimeDetail(val animeId: Int) : InfoAnimeAction
-    data class OnRatingChanged(val rating: Float) : InfoAnimeAction
+    data class OnAnimeLikeClicked(val isLiked: Boolean) : InfoAnimeAction
+    data class OnShareClicked(val shareLink: String) : InfoAnimeAction
+    data class OnWatchStatusClicked(val watchStatus: WatchStatus) : InfoAnimeAction
+    data class NavigateToStudio(val studioId: Long) : InfoAnimeAction
+    data class NavigateToCasts(val animeId: Long) : InfoAnimeAction
+    data class NavigateToSeries(val animeId: Long, val title: String) : InfoAnimeAction
+    data class NavigateToRecommend(val animeId: Long) : InfoAnimeAction
+    data class NavigateToActor(val actorId: Long) : InfoAnimeAction
+    data class NavigateToAnimeDetail(val animeId: Long) : InfoAnimeAction
+    data class OnRatingChanged(val rating: Float, val onFailure: () -> Unit) : InfoAnimeAction
     data class OnChangeReviewSortType(val sortType: ReviewSortType) : InfoAnimeAction
-    data class OnReviewLikeClicked(val reviewId: Int, val isLiked: Boolean, val callback: (Boolean) -> Unit) : InfoAnimeAction
-    data class OnReviewDeleteClicked(val reviewId: Int) : InfoAnimeAction
-    data class OnReviewEditClicked(val animeId: Int, val reviewId: Int, val type: FormType) : InfoAnimeAction
-    data class OnReviewReportClicked(val reviewId: Int) : InfoAnimeAction
-    data class OnUserBlockClicked(val userId: Int) : InfoAnimeAction
+    data class OnReviewLikeClicked(val reviewId: Long, val isLiked: Boolean, val callback: (Boolean) -> Unit) : InfoAnimeAction
+    data class NavigateToEditReview(val animeId: Long, val reviewId: Long, val type: FormType) : InfoAnimeAction
+    data class OnReviewDeleteClicked(val reviewId: Long) : InfoAnimeAction
+    data class OnReviewReportClicked(val reviewId: Long) : InfoAnimeAction
+    data class OnUserBlockClicked(val userId: Long) : InfoAnimeAction
 }

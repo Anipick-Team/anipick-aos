@@ -13,12 +13,16 @@
     <string name="fill_star_icon">색 채움 별 아이콘</string>
     <string name="outline_star_icon">빈 별 아이콘</string>
     <string name="more_vert_icon">더보기 아이콘</string>
+    <string name="favorite_icon">좋아요 아이콘</string>
+    <string name="share_icon">공유 아이콘</string>
 
     <string name="app_logo">앱 로고</string>
     <string name="kakao_login_button">카카오 로그인 버튼</string>
     <string name="google_login_button">구글 로그인 버튼</string>
     <string name="anime_cover_img">애니메이션 커버 이미지</string>
     <string name="anime_banner_img">애니메이션 배너 이미지</string>
+    <string name="actor_img">배우 이미지</string>
+    <string name="character_img">캐릭터 이미지</string>
     <string name="profile_img">프로필 이미지</string>
     <string name="error_image">에러 이미지</string>
     <string name="empty_recommend_img">추천 애니가 없어요.</string>
@@ -41,6 +45,9 @@
     <string name="skip">건너뛰기</string>
     <string name="collapse">접기</string>
     <string name="expand">더보기</string>
+    <string name="watch_list_anime">볼 애니</string>
+    <string name="watching_anime">보는 중</string>
+    <string name="finished_anime">다 본 애니</string>
 
     <!-- Validation -->
     <string name="error_email_blank">이메일을 입력해주세요.</string>
@@ -194,9 +201,41 @@
     <string name="home_main_latest_review">최근 리뷰</string>
     <string name="home_main_next_quarter">%d년 %d분기 방영예정</string>
     <string name="home_main_similar_to_watched_prefix">"최근 찾아보신 "</string>
-    <string name="home_main_similar_to_watched_mid">" 과"</string>
+    <string name="home_main_similar_to_watched_mid">" 과(와)"</string>
     <string name="home_main_similar_to_watched_suffix">비슷한 작품이에요!</string>
     <string name="home_main_upcoming_release">공개 예정</string>
 
+    <!-- Anime Detail -->
+    <string name="anime_detail_tab_info">작품 정보</string>
+    <string name="anime_detail_tab_review">리뷰(%d개)</string>
+    <string name="anime_detail_label_type">타입</string>
+    <string name="anime_detail_label_genre">장르</string>
+    <string name="anime_detail_label_date">방영 시기</string>
+    <string name="anime_detail_label_episode">에피소드</string>
+    <string name="anime_detail_label_age">연령 등급</string>
+    <string name="anime_detail_label_studio">제작사</string>
+    <string name="anime_detail_episode_count">%d회차</string>
+    <string name="anime_detail_section_actor_character">캐릭터/성우진</string>
+    <string name="anime_detail_section_series">시리즈 정보</string>
+    <string name="anime_detail_section_recommend">함께 볼 만한 작품</string>
+    <string name="anime_detail_my_review">내 리뷰</string>
+    <string name="anime_detail_reviews">리뷰</string>
+    <string name="anime_detail_reviews_count">%d개</string>
+    <string name="anime_detail_review_spoiler">스포일러</string>
+    <string name="anime_detail_review_write_button">상세 리뷰 작성하기</string>
+    <string name="anime_detail_rating_format">(%1$.1f/5.0)</string>
+    <string name="anime_detail_empty_reviews">아직 리뷰가 없어요!\n첫 번째 리뷰의 주인공이 되어볼까요?</string>
+    <string name="anime_detail_shared_link">https://anipick.p-e.kr/app/anime/detail/%d</string>
+
+    <!-- Info Series -->
+    <string name="info_series_header">시리즈 정보</string>
+    <string name="info_series_banner_mid">" 의"</string>
+    <string name="info_series_banner_suffix">시리즈에요!</string>
+    <string name="info_series_total_count">총 %d개</string>
+
+    <!-- Info Recommend -->
+    <string name="info_recommend_header">함께 볼만한 작품</string>
+    <string name="info_recommend_banner_mid">" 과(와)"</string>
+    <string name="info_recommend_banner_suffix">함께 보기 좋은 작품</string>
 
 </resources>
