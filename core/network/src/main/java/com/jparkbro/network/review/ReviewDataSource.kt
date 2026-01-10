@@ -1,19 +1,36 @@
 package com.jparkbro.network.review
 
+import com.jparkbro.model.common.review.AnimeDetailMyReviewDto
+import com.jparkbro.model.dto.info.GetInfoReviewsRequest
+import com.jparkbro.model.dto.info.GetInfoReviewsResponse
+import com.jparkbro.model.dto.info.ReviewRatingRequest
 import com.jparkbro.model.review.EditMyReviewRequest
 import com.jparkbro.model.review.MyReview
 import com.jparkbro.model.review.ReportReviewRequest
 
 interface ReviewDataSource {
-    suspend fun getMyReview(animeId: Int): Result<MyReview>
+    /** Anime detail My Review */
+    suspend fun getAnimeDetailMyReview(animeId: Long): Result<AnimeDetailMyReviewDto>
+    suspend fun createAnimeRating(animeId: Long, request: ReviewRatingRequest): Result<Unit>
+    suspend fun updateAnimeRating(reviewId: Long, request: ReviewRatingRequest): Result<Unit>
+    suspend fun deleteAnimeRating(reviewId: Long): Result<Unit>
 
-    suspend fun editMyReview(animeId: Int, request: EditMyReviewRequest): Result<Unit>
+    /** Anime detail Reviews */
+    suspend fun getAnimeDetailReviews(request: GetInfoReviewsRequest): Result<GetInfoReviewsResponse>
 
-    suspend fun likedReview(reviewId: Int): Result<Unit>
-    suspend fun unLikedReview(reviewId: Int): Result<Unit>
 
-    suspend fun deleteReview(reviewId: Int): Result<Unit>
 
-    suspend fun reportReview(reviewId: Int, request: ReportReviewRequest): Result<Unit>
-    suspend fun blockUser(userId: Int): Result<Unit>
+
+
+    suspend fun getMyReview(animeId: Long): Result<MyReview>
+
+    suspend fun editMyReview(animeId: Long, request: EditMyReviewRequest): Result<Unit>
+
+    suspend fun likedReview(reviewId: Long): Result<Unit>
+    suspend fun unLikedReview(reviewId: Long): Result<Unit>
+
+    suspend fun deleteReview(reviewId: Long): Result<Unit>
+
+    suspend fun reportReview(reviewId: Long, request: ReportReviewRequest): Result<Unit>
+    suspend fun blockUser(userId: Long): Result<Unit>
 }

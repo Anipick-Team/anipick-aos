@@ -14,7 +14,7 @@ data class SimpleAnimeDto(
 )
 
 fun SimpleAnimeDto.toAnime(): Anime = Anime(
-    animeId = animeId ?: -1,
-    title = title ?: "애니메이션 제목",
+    animeId = animeId,
+    title = title,
     coverImageUrl = coverImageUrl
 )

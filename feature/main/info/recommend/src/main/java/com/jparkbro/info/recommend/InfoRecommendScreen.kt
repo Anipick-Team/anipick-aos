@@ -131,7 +131,7 @@ private fun InfoRecommendScreen(
 
             val gridInfo = rememberGridInfo(
                 availableWidth = maxWidth,
-                horizontalPadding = horizontalPadding,
+                horizontalPadding = horizontalPadding * 2,
                 spacing = spacing,
                 defaultItemWidth = 128.dp,
                 minColumns = 3,

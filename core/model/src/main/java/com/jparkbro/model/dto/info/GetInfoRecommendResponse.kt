@@ -9,15 +9,15 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GetInfoRecommendResponse(
     @SerialName("referenceAnimeTitle")
-    val referenceAnimeTitle: String?,
+    val referenceAnimeTitle: String? = null,
     @SerialName("cursor")
-    val cursor: Cursor?,
+    val cursor: Cursor? = null,
     @SerialName("animes")
     val animes: List<SimpleAnimeDto> = emptyList()
 )
 
 fun GetInfoRecommendResponse.toResult() : GetInfoRecommendResult = GetInfoRecommendResult(
-    referenceAnimeTitle = referenceAnimeTitle ?: "",
-    cursor = cursor ?: Cursor(),
+    referenceAnimeTitle = referenceAnimeTitle,
+    cursor = cursor,
     animes = animes.map { it.toAnime() }
 )

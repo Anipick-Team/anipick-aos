@@ -20,8 +20,8 @@ plugins {
 buildscript {
     val targetSdk = 36
     val minSdk = 28
-    val versionCode = 31
-    val versionName = "1.0.12"
+    val versionCode = 32
+    val versionName = "1.0.13"
 
     extra.apply {
         set("targetSdk", targetSdk)

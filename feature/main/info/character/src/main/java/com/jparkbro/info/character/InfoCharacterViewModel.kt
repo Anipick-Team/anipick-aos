@@ -3,6 +3,7 @@ package com.jparkbro.info.character
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jparkbro.data.actor.ActorRepository
 import com.jparkbro.data.anime.AnimeRepository
 import com.jparkbro.model.common.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class InfoCharacterViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val animeRepository: AnimeRepository
+    private val actorRepository: ActorRepository
 ) : ViewModel() {
 
     private val _animeId = savedStateHandle.get<Long>("animeId")
@@ -41,10 +42,10 @@ class InfoCharacterViewModel @Inject constructor(
     }
 
     private fun initDataLoad() {
-        /*_state.update { InfoCharacterState() }
+        _state.update { InfoCharacterState() }
 
         viewModelScope.launch(Dispatchers.IO) {
-            animeRepository.getAnimeSeries(
+            actorRepository.getInfoCharacters(
                 animeId = _animeId ?: 0,
                 cursor = _state.value.cursor
             ).fold(
@@ -53,8 +54,8 @@ class InfoCharacterViewModel @Inject constructor(
                         it.copy(
                             uiState = UiState.Success,
                             cursor = result.cursor,
-                            casts = result.animes,
-                            hasMoreData = result.count > result.animes.size
+                            casts = result.casts,
+                            hasMoreData = result.casts.size >= 18,
                         )
                     }
                 },
@@ -63,16 +64,16 @@ class InfoCharacterViewModel @Inject constructor(
                     _state.update { it.copy(uiState = UiState.Error) }
                 }
             )
-        }*/
+        }
     }
 
     private fun loadMore() {
-        /*if (!_state.value.hasMoreData || _state.value.isLoading) return
+        if (!_state.value.hasMoreData || _state.value.isLoading) return
 
         _state.update { it.copy(isLoading = true) }
 
         viewModelScope.launch(Dispatchers.IO) {
-            animeRepository.getAnimeSeries(
+            actorRepository.getInfoCharacters(
                 animeId = _animeId ?: 0,
                 cursor = _state.value.cursor
             ).fold(
@@ -80,8 +81,8 @@ class InfoCharacterViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             cursor = result.cursor,
-                            animes = it.animes + result.animes,
-                            hasMoreData = result.count > (it.animes + result.animes).size,
+                            casts = it.casts + result.casts,
+                            hasMoreData = result.casts.size >= 18,
                             isLoading = false
                         )
                     }
@@ -91,6 +92,6 @@ class InfoCharacterViewModel @Inject constructor(
                     _state.update { it.copy(isLoading = false) }
                 }
             )
-        }*/
+        }
     }
 }

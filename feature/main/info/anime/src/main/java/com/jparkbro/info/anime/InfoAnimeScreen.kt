@@ -119,7 +119,6 @@ import com.jparkbro.ui.theme.ChevronDownIcon
 import com.jparkbro.ui.theme.ChevronLeftIcon
 import com.jparkbro.ui.theme.ChevronUpIcon
 import com.jparkbro.ui.theme.FavoriteOffIcon
-import com.jparkbro.ui.theme.FavoriteOnIcon
 import com.jparkbro.ui.theme.MoreVerticalIcon
 import com.jparkbro.ui.theme.ShareIcon
 import com.jparkbro.ui.theme.StarFillIcon
@@ -132,12 +131,12 @@ import kotlinx.coroutines.flow.map
 internal fun InfoAnimeRoot(
     onNavigateBack: () -> Unit,
     onNavigateToStudioDetail: (Long) -> Unit,
-    onNavigateToAnimeActors: (Long) -> Unit,
-    onNavigateToActorDetail: (Long) -> Unit,
     onNavigateToInfoAnime: (Long) -> Unit,
     onNavigateToInfoSeries: (Long, String) -> Unit,
     onNavigateToInfoRecommend: (Long) -> Unit,
     onNavigateToReviewForm: (Long, Long?, FormType) -> Unit,
+    onNavigateToInfoCharacter: (Long) -> Unit,
+    onNavigateToActor: (Long) -> Unit,
     viewModel: InfoAnimeViewModel = hiltViewModel()
 ) {
     var dialogData by rememberSaveable { mutableStateOf<DialogData?>(null) }
@@ -200,10 +199,10 @@ internal fun InfoAnimeRoot(
                             context.startActivity(shareIntent)
                         }
                         is InfoAnimeAction.NavigateToStudio -> {}
-                        is InfoAnimeAction.NavigateToCasts -> {}
+                        is InfoAnimeAction.NavigateToCasts -> onNavigateToInfoCharacter(action.animeId)
                         is InfoAnimeAction.NavigateToSeries -> onNavigateToInfoSeries(action.animeId, action.title)
                         is InfoAnimeAction.NavigateToRecommend -> onNavigateToInfoRecommend(action.animeId)
-                        is InfoAnimeAction.NavigateToActor -> {}
+                        is InfoAnimeAction.NavigateToActor -> onNavigateToActor(action.actorId)
                         is InfoAnimeAction.NavigateToEditReview -> {}
                         is InfoAnimeAction.NavigateToAnimeDetail -> onNavigateToInfoAnime(action.animeId)
                     }
@@ -346,9 +345,10 @@ private fun ExpandedHeader(
                     .clickable { onAction(InfoAnimeAction.NavigateBack) }
             )
             AsyncImage(
-                model = state.animeInfo?.coverImageUrl,
+                model = state.animeInfo?.coverImageUrl?.takeIf { !it.contains("default.jpg") },
                 contentDescription = stringResource(R.string.anime_cover_img),
                 error = painterResource(R.drawable.thumbnail_img),
+                placeholder = painterResource(R.drawable.thumbnail_img),
                 modifier = Modifier
                     .padding(
                         bottom = dimensionResource(R.dimen.padding_large),
@@ -746,8 +746,8 @@ private fun InfoTab(
                         ) {
                             items(state.casts) { cast ->
                                 APCastPairCard(
-                                    casts = cast,
-                                    onClick = { onAction(InfoAnimeAction.NavigateToActor(cast.voiceActor.id)) }
+                                    cast = cast,
+                                    onClick = { onAction(InfoAnimeAction.NavigateToActor(cast.voiceActor?.id ?: 0)) }
                                 )
                             }
                         }

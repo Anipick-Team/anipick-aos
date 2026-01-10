@@ -7,18 +7,20 @@ import androidx.navigation.compose.composable
 import com.jparkbro.info.character.InfoCharacterRoot
 import kotlinx.serialization.Serializable
 
-@Serializable data class InfoCharacter(val animeId: Int)
+@Serializable data class InfoCharacter(val animeId: Long)
 
 fun NavHostController.navigateToInfoCharacter(
-    animeId: Int, navOptions: NavOptions? = null
+    animeId: Long, navOptions: NavOptions? = null
 ) = navigate(InfoCharacter(animeId), navOptions)
 
 fun NavGraphBuilder.infoCharacterScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToActor: (Long) -> Unit,
 ) {
     composable<InfoCharacter> {
         InfoCharacterRoot(
-            onNavigateBack = onNavigateBack
+            onNavigateBack = onNavigateBack,
+            onNavigateToActor = onNavigateToActor
         )
     }
 }

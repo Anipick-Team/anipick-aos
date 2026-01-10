@@ -1,7 +1,8 @@
 package com.jparkbro.model.common.actor
 
 data class Person(
-    val id: Int,
-    val name: String?,
-    val imageUrl: String?,
+    val id: Long? = null,
+    val name: String? = null,
+    val imageUrl: String? = null,
+    val userLikedVoiceActorId: Int? = null,
 )

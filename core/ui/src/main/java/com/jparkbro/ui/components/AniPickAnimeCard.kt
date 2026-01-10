@@ -72,9 +72,10 @@ fun APAnimeCard(
                 }
             }
             AsyncImage(
-                model = imageUrl,
+                model = imageUrl?.takeIf { !it.contains("default.jpg") },
                 contentDescription = stringResource(R.string.anime_cover_img),
                 error = painterResource(R.drawable.thumbnail_img),
+                placeholder = painterResource(R.drawable.thumbnail_img),
                 modifier = Modifier
                     .width(cardWidth)
                     .clip(AniPickSmallShape)
@@ -99,21 +100,6 @@ fun APAnimeCard(
         }
     }
 }
-
-/**
- * 성우/캐릭터 용
- */
-@Composable
-fun APCastCard(
-    modifier: Modifier = Modifier
-) {
-    Column(
-
-    ) {
-
-    }
-}
-
 
 @Preview(showBackground = true)
 @Composable

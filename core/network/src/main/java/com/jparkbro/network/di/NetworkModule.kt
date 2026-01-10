@@ -1,6 +1,12 @@
 package com.jparkbro.network.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.jparkbro.network.actor.ActorApi
+import com.jparkbro.network.actor.ActorDataSource
+import com.jparkbro.network.actor.RetrofitActorDataSource
+import com.jparkbro.network.anime.AnimeApi
+import com.jparkbro.network.anime.AnimeDataSource
+import com.jparkbro.network.anime.RetrofitAnimeDataSource
 import com.jparkbro.network.auth.AuthApi
 import com.jparkbro.network.auth.AuthDataSource
 import com.jparkbro.network.auth.RetrofitAuthDataSource
@@ -221,5 +227,29 @@ internal object NetworkModule {
     @Singleton
     fun provideSettingDataSource(settingApi: SettingApi): SettingDataSource {
         return RetrofitSettingDataSource(settingApi)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAnimeApi(retrofit: Retrofit): AnimeApi {
+        return retrofit.create(AnimeApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAnimeDataSource(animeApi: AnimeApi): AnimeDataSource {
+        return RetrofitAnimeDataSource(animeApi)
+    }
+
+    @Provides
+    @Singleton
+    fun provideActorApi(retrofit: Retrofit): ActorApi {
+        return retrofit.create(ActorApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideActorDataSource(actorApi: ActorApi): ActorDataSource {
+        return RetrofitActorDataSource(actorApi)
     }
 }

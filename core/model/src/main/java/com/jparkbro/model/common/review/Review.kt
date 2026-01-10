@@ -1,9 +1,9 @@
 package com.jparkbro.model.common.review
 
 data class Review(
-    val reviewId: Int? = null,
-    val userId: Int? = null,
-    val animeId: Int? = null,
+    val reviewId: Long? = null,
+    val userId: Long? = null,
+    val animeId: Long? = null,
     val animeTitle: String? = null,
     val animeCoverImageUrl: String? = null,
     val content: String? = null,
@@ -13,7 +13,7 @@ data class Review(
     val rating: Float? = null,
     val likeCount: Int? = null,
     val likedByCurrentUser: Boolean = false,
+    val isLiked: Boolean = false,
     val isMine: Boolean = false,
     val isSpoiler: Boolean = false,
-    val isLiked: Boolean = false,
 )

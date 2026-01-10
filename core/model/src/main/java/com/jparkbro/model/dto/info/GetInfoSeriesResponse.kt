@@ -9,15 +9,15 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GetInfoSeriesResponse(
     @SerialName("count")
-    val count: Int?,
+    val count: Int? = null,
     @SerialName("cursor")
-    val cursor: Cursor?,
+    val cursor: Cursor? = null,
     @SerialName("animes")
-    val animes: List<InfoSeriesAnimeDto>
+    val animes: List<InfoSeriesAnimeDto> = emptyList()
 )
 
 fun GetInfoSeriesResponse.toResult() : GetInfoSeriesResult = GetInfoSeriesResult(
-    count = count ?: 0,
-    cursor = cursor ?: Cursor(),
+    count = count,
+    cursor = cursor,
     animes = animes.map { it.toAnime() }
 )

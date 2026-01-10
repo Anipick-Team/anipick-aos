@@ -2,7 +2,7 @@ package com.jparkbro.info.character
 
 import com.jparkbro.model.common.Cursor
 import com.jparkbro.model.common.UiState
-import com.jparkbro.model.common.actor.Person
+import com.jparkbro.model.common.actor.Cast
 
 data class InfoCharacterState(
     val uiState: UiState = UiState.Loading,
@@ -13,5 +13,5 @@ data class InfoCharacterState(
 
     /* API 통신 데이터 */
     val cursor: Cursor? = null,
-    val casts: List<Person> = emptyList()
+    val casts: List<Cast> = emptyList()
 )

@@ -301,7 +301,7 @@ class PreferenceSetupViewModel @Inject constructor(
         }
     }
 
-    private fun removeRateAnime(animeId: Int) {
+    private fun removeRateAnime(animeId: Long) {
         _state.update {
             it.copy(
                 ratedAnimes = it.ratedAnimes.filter { it.animeId != animeId }

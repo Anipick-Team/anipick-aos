@@ -54,10 +54,10 @@ class InfoSeriesViewModel @Inject constructor(
                         it.copy(
                             uiState = UiState.Success,
                             title = _title ?: "",
-                            totalCount = result.count,
+                            totalCount = result.count ?: 0,
                             cursor = result.cursor,
                             animes = result.animes,
-                            hasMoreData = result.count > result.animes.size
+                            hasMoreData = (result.count ?: 0) > result.animes.size
                         )
                     }
                 },
@@ -84,7 +84,7 @@ class InfoSeriesViewModel @Inject constructor(
                         it.copy(
                             cursor = result.cursor,
                             animes = it.animes + result.animes,
-                            hasMoreData = result.count > (it.animes + result.animes).size,
+                            hasMoreData = (result.count ?: 0) > (it.animes + result.animes).size,
                             isLoading = false
                         )
                     }

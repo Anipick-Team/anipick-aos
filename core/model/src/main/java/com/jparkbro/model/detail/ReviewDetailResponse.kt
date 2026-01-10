@@ -18,9 +18,9 @@ data class ReviewDetailResponse(
 @Serializable
 data class DetailReviewItem(
     @SerialName("userId")
-    val userId: Int? = null,
+    val userId: Long? = null,
     @SerialName("reviewId")
-    override val reviewId: Int,
+    override val reviewId: Long,
     @SerialName("nickname")
     override val nickname: String,
     @SerialName("profileImageUrl")

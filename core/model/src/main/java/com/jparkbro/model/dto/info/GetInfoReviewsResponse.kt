@@ -8,9 +8,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GetInfoReviewsResponse(
     @SerialName("count")
-    val count: Int,
+    val count: Int? = null,
     @SerialName("cursor")
-    val cursor: Cursor,
+    val cursor: Cursor? = null,
     @SerialName("reviews")
-    val reviews: List<AnimeDetailReviewDto>,
+    val reviews: List<AnimeDetailReviewDto> = emptyList(),
 )

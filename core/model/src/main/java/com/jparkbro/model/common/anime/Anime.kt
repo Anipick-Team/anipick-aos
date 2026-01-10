@@ -11,7 +11,7 @@ data class Anime(
     val releaseDate: String? = null,
     val clickLog: String? = null,
     val impressionLog: String? = null,
-    val isAdult: Boolean = false,
+    val isAdult: Boolean? = false,
     val change: String? = null,
     val trend: String? = null,
     val popularity: Long? = null,

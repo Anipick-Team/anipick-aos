@@ -216,7 +216,7 @@
     <string name="anime_detail_label_studio">제작사</string>
     <string name="anime_detail_episode_count">%d회차</string>
     <string name="anime_detail_section_actor_character">캐릭터/성우진</string>
-    <string name="anime_detail_section_series">시리즈 정보</string>
+    <string name="anime_detail_section_series">관련 작품</string>
     <string name="anime_detail_section_recommend">함께 볼 만한 작품</string>
     <string name="anime_detail_my_review">내 리뷰</string>
     <string name="anime_detail_reviews">리뷰</string>
@@ -228,14 +228,20 @@
     <string name="anime_detail_shared_link">https://anipick.p-e.kr/app/anime/detail/%d</string>
 
     <!-- Info Series -->
-    <string name="info_series_header">시리즈 정보</string>
+    <string name="info_series_header">관련 작품</string>
     <string name="info_series_banner_mid">" 의"</string>
-    <string name="info_series_banner_suffix">시리즈에요!</string>
+    <string name="info_series_banner_suffix">관련 작품이에요!</string>
     <string name="info_series_total_count">총 %d개</string>
 
     <!-- Info Recommend -->
     <string name="info_recommend_header">함께 볼만한 작품</string>
     <string name="info_recommend_banner_mid">" 과(와)"</string>
     <string name="info_recommend_banner_suffix">함께 보기 좋은 작품</string>
+
+    <!-- Actor -->
+    <string name="actor_header">성우</string>
+    <string name="actor_works_title">참여 작품 목록</string>
+    <string name="actor_count">총 %d개</string>
+
 
 </resources>

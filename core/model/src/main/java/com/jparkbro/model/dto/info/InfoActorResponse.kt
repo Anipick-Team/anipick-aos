@@ -1,6 +1,7 @@
 package com.jparkbro.model.dto.info
 
-import com.jparkbro.model.common.actor.DetailPersonDto
+import com.jparkbro.model.common.actor.Cast
+import com.jparkbro.model.common.actor.SimplePersonDto
 import com.jparkbro.model.common.actor.toPerson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -8,12 +9,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class InfoActorResponse(
     @SerialName("character")
-    val character: DetailPersonDto,
+    val character: SimplePersonDto? = null,
     @SerialName("voiceActor")
-    val voiceActor: DetailPersonDto
+    val voiceActor: SimplePersonDto? = null
 )
 
-fun InfoActorResponse.toResult() : InfoActorResult = InfoActorResult(
-    character = character.toPerson(),
-    voiceActor = voiceActor.toPerson()
+fun InfoActorResponse.toCast() : Cast = Cast(
+    character = character?.toPerson(),
+    voiceActor = voiceActor?.toPerson(),
 )

@@ -103,7 +103,7 @@ class InfoAnimeViewModel @Inject constructor(
                         it.copy(
                             reviews = response.reviews.map { it.toReview() },
                             reviewCursor = response.cursor,
-                            reviewCount = response.count
+                            reviewCount = response.count ?: 0
                         )
                     }
                 }

@@ -4,16 +4,16 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DetailPersonDto(
+data class SimplePersonDto(
     @SerialName("id")
-    val id: Long,
+    val id: Long? = null,
     @SerialName("name")
-    val name: String?,
+    val name: String? = null,
     @SerialName("imageUrl")
-    val imageUrl: String?,
+    val imageUrl: String? = null,
 )
 
-fun DetailPersonDto.toPerson() : Person = Person(
+fun SimplePersonDto.toPerson() : Person = Person(
     id = id,
     name = name,
     imageUrl = imageUrl,

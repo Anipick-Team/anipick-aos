@@ -12,7 +12,7 @@ interface PreferenceSetupAction {
     data object OnClearFilterClicked : PreferenceSetupAction
     data class OnFilterCompleteClicked(val params: BottomSheetParams) : PreferenceSetupAction
     data class OnRatingAddClicked(val rate: RatedAnime) : PreferenceSetupAction
-    data class OnRatingRemoveClicked(val animeId: Int) : PreferenceSetupAction
+    data class OnRatingRemoveClicked(val animeId: Long) : PreferenceSetupAction
     data object OnCompleteClicked : PreferenceSetupAction
     data object OnLoadMore : PreferenceSetupAction
     data object OnRetryClicked : PreferenceSetupAction
