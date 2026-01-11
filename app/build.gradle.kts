@@ -109,11 +109,11 @@ dependencies {
     implementation(project(":feature:main:shell:home:detail"))
 
     implementation(project(":feature:main:info:anime"))
-    implementation(project(":feature:main:info:studio"))
     implementation(project(":feature:main:info:character"))
     implementation(project(":feature:main:info:series"))
     implementation(project(":feature:main:info:recommend"))
     implementation(project(":feature:main:actor"))
+    implementation(project(":feature:main:studio"))
 
     implementation(project(":feature:main:detail"))
     implementation(project(":feature:main:explore"))

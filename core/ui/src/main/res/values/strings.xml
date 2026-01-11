@@ -243,5 +243,7 @@
     <string name="actor_works_title">참여 작품 목록</string>
     <string name="actor_count">총 %d개</string>
 
+    <!-- Studio -->
+    <string name="studio_header">스튜디오</string>
 
 </resources>

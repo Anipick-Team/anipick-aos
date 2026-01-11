@@ -11,7 +11,7 @@ plugins {
 }
 
 android {
-    namespace = "com.jparkbro.info.studio"
+    namespace = "com.jparkbro.studio"
     compileSdk = rootProject.extra["targetSdk"] as Int
 
     defaultConfig {

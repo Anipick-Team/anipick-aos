@@ -1,4 +1,4 @@
-package com.jparkbro.info.studio
+package com.jparkbro.studio
 
 import org.junit.Test
 
