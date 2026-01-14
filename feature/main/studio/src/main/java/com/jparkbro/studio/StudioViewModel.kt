@@ -3,7 +3,6 @@ package com.jparkbro.studio
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jparkbro.data.anime.AnimeRepository
 import com.jparkbro.data.studio.StudioRepository
 import com.jparkbro.model.common.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel

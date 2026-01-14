@@ -18,7 +18,7 @@ fun NavHostController.navigateToHomeDetail(
 fun NavGraphBuilder.homeDetailScreen(
     onNavigateBack: () -> Unit,
     onNavigateToInfoAnime: (Long) -> Unit,
-    onNavigateToReviewForm: (Long, Long, FormType) -> Unit,
+    onNavigateToReviewForm: (Long, FormType) -> Unit,
 ) {
     composable<HomeDetail> {
         HomeDetailRoot(

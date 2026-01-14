@@ -1,95 +1,118 @@
 package com.jparkbro.review
 
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.jparkbro.data.review.ReviewRepository
-import com.jparkbro.model.review.EditMyReviewRequest
-import com.jparkbro.model.review.MyReview
+import com.jparkbro.model.common.FormType
+import com.jparkbro.model.common.UiState
+import com.jparkbro.model.dto.review.SaveMyReviewRequest
 import com.jparkbro.review.navigation.ReviewForm
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import com.jparkbro.ui.R
+import com.jparkbro.ui.model.SnackBarData
+import com.jparkbro.ui.snackbar.GlobalSnackbarManager
+import com.jparkbro.ui.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-@HiltViewModel(assistedFactory = ReviewFormViewModel.Factory::class)
-class ReviewFormViewModel @AssistedInject constructor(
+@HiltViewModel
+class ReviewFormViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val reviewRepository: ReviewRepository,
-    @Assisted val infoData: ReviewForm
+    private val globalSnackbarManager: GlobalSnackbarManager
 ) : ViewModel() {
 
-    private val _review = MutableStateFlow<MyReview?>(null)
-    val review: StateFlow<MyReview?> = _review.asStateFlow()
+    private val _reviewForm = savedStateHandle.toRoute<ReviewForm>()
+    private val _animeId = _reviewForm.animeId
+    private val _formType = _reviewForm.formType
 
-    private val _newRating = MutableStateFlow(0f)
-    val newRating: StateFlow<Float> = _newRating.asStateFlow()
+    private val _state = MutableStateFlow(ReviewFormState(formType = _formType))
+    val state = _state.asStateFlow()
 
-    private val _newReviewContent = MutableStateFlow("")
-    val newReviewContent: StateFlow<String> = _newReviewContent.asStateFlow()
-
-    private val _includeSpoiler = MutableStateFlow(false)
-    val includeSpoiler: StateFlow<Boolean> = _includeSpoiler.asStateFlow()
-
-    fun updateRating(rating: Float) {
-        _newRating.value = rating
-    }
-
-    fun updateReviewContent(content: String) {
-        _newReviewContent.value = content
-    }
-
-    fun toggleIncludeSpoiler() {
-        _includeSpoiler.value = !_includeSpoiler.value
-    }
+    private val _eventChannel = Channel<ReviewFormEvent>()
+    val events = _eventChannel.receiveAsFlow()
 
     init {
-        getMyReview()
+        loadMyReview()
     }
 
-    private fun getMyReview() {
-        viewModelScope.launch {
-            reviewRepository.getMyReview(infoData.animeId).fold(
-                onSuccess = {
-                    _review.value = it
-                    _newRating.value = it.rating
-                    _newReviewContent.value = it.content ?: ""
-                    _includeSpoiler.value = it.isSpoiler
+    fun onAction(action: ReviewFormAction) {
+        when (action) {
+            is ReviewFormAction.OnRatingChanged -> {
+                _state.update { it.copy(animeReview = it.animeReview?.copy(rating = action.rating)) }
+            }
+
+            ReviewFormAction.OnSpoilerClicked -> {
+                _state.update { it.copy(animeReview = it.animeReview?.copy(isSpoiler = !(it.animeReview.isSpoiler))) }
+            }
+
+            ReviewFormAction.OnSaveReviewClicked -> saveReview()
+        }
+    }
+
+    private fun loadMyReview() {
+        viewModelScope.launch(Dispatchers.IO) {
+            reviewRepository.getReviewFormAnimeReview(
+                animeId = _animeId
+            ).fold(
+                onSuccess = { review ->
+                    _state.update {
+                        it.copy(
+                            uiState = UiState.Success,
+                            animeReview = review,
+                            content = TextFieldState(initialText = review.content ?: "")
+                        )
+                    }
                 },
                 onFailure = {
-                    // TODO
+                    // TODO taost
+                    _state.update { it.copy(uiState = UiState.Error) }
                 }
             )
         }
     }
 
-    fun editReview(onResult: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            reviewRepository.editMyReview(
-                animeId = infoData.animeId,
-                request = EditMyReviewRequest(
-                    content = _newReviewContent.value,
-                    rating = _newRating.value,
-                    isSpoiler = _includeSpoiler.value
+    private fun saveReview() {
+        _state.update {
+            it.copy(
+                isLoading = true
+            )
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            reviewRepository.saveMyReview(
+                animeId = _animeId,
+                request = SaveMyReviewRequest(
+                    content = _state.value.content.text.toString(),
+                    rating = _state.value.animeReview?.rating ?: 0f,
+                    isSpoiler = _state.value.animeReview?.isSpoiler ?: false
                 )
             ).fold(
                 onSuccess = {
-                    onResult(true)
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_create_review_success)
+                        )
+                    )
+                    _eventChannel.send(ReviewFormEvent.NavigateBack)
                 },
                 onFailure = {
-                    // TODO
-                    onResult(false)
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_http_500_error)
+                        )
+                    )
                 }
             )
         }
-    }
-
-    @AssistedFactory
-    interface Factory {
-        fun create(
-            infoData: ReviewForm
-        ): ReviewFormViewModel
     }
 }

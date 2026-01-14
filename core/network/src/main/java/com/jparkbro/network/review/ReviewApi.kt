@@ -1,8 +1,10 @@
 package com.jparkbro.network.review
 
 import com.jparkbro.model.common.review.AnimeDetailMyReviewDto
+import com.jparkbro.model.common.review.ReviewFormAnimeReviewDto
 import com.jparkbro.model.dto.info.GetInfoReviewsResponse
 import com.jparkbro.model.dto.info.ReviewRatingRequest
+import com.jparkbro.model.dto.review.SaveMyReviewRequest
 import com.jparkbro.model.review.EditMyReviewRequest
 import com.jparkbro.model.review.MyReview
 import com.jparkbro.model.review.ReportReviewRequest
@@ -49,6 +51,17 @@ interface ReviewApi {
         @Query("lastId") lastId: Long?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<GetInfoReviewsResponse>>
+
+    @GET(ApiConstants.GET_MY_REVIEW)
+    suspend fun getReviewFormAnimeReview(
+        @Path("animeId") animeId: Long
+    ): Response<ApiResponse<ReviewFormAnimeReviewDto>>
+
+    @PATCH(ApiConstants.EDIT_MY_REVEIW)
+    suspend fun updateMyReview(
+        @Path("animeId") animeId: Long,
+        @Body request: SaveMyReviewRequest
+    ): Response<ApiResponse<Unit>>
 
 
 

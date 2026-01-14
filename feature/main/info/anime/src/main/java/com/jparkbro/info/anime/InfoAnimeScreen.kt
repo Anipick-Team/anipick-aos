@@ -42,6 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -130,13 +131,13 @@ import kotlinx.coroutines.flow.map
 @Composable
 internal fun InfoAnimeRoot(
     onNavigateBack: () -> Unit,
-    onNavigateToStudioDetail: (Long) -> Unit,
     onNavigateToInfoAnime: (Long) -> Unit,
     onNavigateToInfoSeries: (Long, String) -> Unit,
     onNavigateToInfoRecommend: (Long) -> Unit,
-    onNavigateToReviewForm: (Long, Long?, FormType) -> Unit,
+    onNavigateToReviewForm: (Long, FormType) -> Unit,
     onNavigateToInfoCharacter: (Long) -> Unit,
     onNavigateToActor: (Long) -> Unit,
+    onNavigateToStudio: (Long) -> Unit,
     viewModel: InfoAnimeViewModel = hiltViewModel()
 ) {
     var dialogData by rememberSaveable { mutableStateOf<DialogData?>(null) }
@@ -198,12 +199,12 @@ internal fun InfoAnimeRoot(
                             val shareIntent = Intent.createChooser(sendIntent, null)
                             context.startActivity(shareIntent)
                         }
-                        is InfoAnimeAction.NavigateToStudio -> {}
+                        is InfoAnimeAction.NavigateToStudio -> onNavigateToStudio(action.studioId)
                         is InfoAnimeAction.NavigateToCasts -> onNavigateToInfoCharacter(action.animeId)
                         is InfoAnimeAction.NavigateToSeries -> onNavigateToInfoSeries(action.animeId, action.title)
                         is InfoAnimeAction.NavigateToRecommend -> onNavigateToInfoRecommend(action.animeId)
                         is InfoAnimeAction.NavigateToActor -> onNavigateToActor(action.actorId)
-                        is InfoAnimeAction.NavigateToEditReview -> {}
+                        is InfoAnimeAction.NavigateToEditReview -> onNavigateToReviewForm(action.animeId, action.type)
                         is InfoAnimeAction.NavigateToAnimeDetail -> onNavigateToInfoAnime(action.animeId)
                     }
                     viewModel.onAction(action)
@@ -964,18 +965,18 @@ private fun MyReviewSection(
                         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_extra_small)),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        /*APAnimationLikeIcon(
+                        APAnimationLikeIcon(
                             size = dimensionResource(R.dimen.icon_size_small),
-                            isLiked = TODO(),
-                            isLikingAnime = TODO(),
-                            onClick = TODO()
-                        )*/
-                        Icon(
-                            imageVector = FavoriteOffIcon,
-                            contentDescription = stringResource(R.string.favorite_icon),
-                            tint = AniPickGray100,
-                            modifier = Modifier
-                                .size(dimensionResource(R.dimen.icon_size_small))
+                            isLiked = state.myReview.isLiked,
+                            isLikingAnime = state.isLikingAnime,
+                            onClick = {
+                                onAction(InfoAnimeAction.OnReviewLikeClicked(
+                                    reviewId = state.myReview.reviewId ?: -1,
+                                    animeId = state.animeInfo?.animeId ?: -1,
+                                    isLiked = !state.myReview.isLiked,
+                                    callback = {}
+                                ))
+                            }
                         )
                         state.myReview.likeCount?.let {
                             Text(
@@ -1030,7 +1031,6 @@ private fun MyReviewSection(
                                         showDropDown = !showDropDown
                                         onAction(InfoAnimeAction.NavigateToEditReview(
                                             animeId = state.animeInfo?.animeId ?: 0,
-                                            reviewId = state.myReview.reviewId ?: 0,
                                             type = FormType.EDIT
                                         ))
                                     }
@@ -1171,8 +1171,7 @@ private fun MyReviewSection(
                     .background(if (state.myReview.rating == 0f) AniPickGray100 else AniPickPrimary, AniPickSmallShape)
                     .clickable(enabled = state.myReview.rating != 0f && !state.isAnimeRatingLoading) {
                         onAction(InfoAnimeAction.NavigateToEditReview(
-                            animeId = state.myReview.animeId ?: 0,
-                            reviewId = state.myReview.reviewId ?: 0,
+                            animeId = state.animeInfo?.animeId ?: 0,
                             type = FormType.CREATE
                         ))
                     }
@@ -1358,25 +1357,27 @@ private fun AnimeReviews(
                     .padding(horizontal = dimensionResource(R.dimen.padding_large)),
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_default))
             ) {
-                state.reviews.forEach { review ->
-                    APReviewCard(
-                        review = review,
-                        onClickEdit = { animeId, reviewId ->
-                            onAction(InfoAnimeAction.NavigateToEditReview(animeId, reviewId, FormType.EDIT))
-                        },
-                        onClickDelete = { reviewId ->
-                            onAction(InfoAnimeAction.OnReviewDeleteClicked(reviewId))
-                        },
-                        onCLickReport = { reviewId ->
-                            onAction(InfoAnimeAction.OnReviewReportClicked(reviewId))
-                        },
-                        onClickBlock = { userId ->
-                            onAction(InfoAnimeAction.OnUserBlockClicked(userId))
-                        },
-                        onClickLiked = { reviewId, isLiked , result ->
-                            onAction(InfoAnimeAction.OnReviewLikeClicked(reviewId, isLiked, result))
-                        },
-                    )
+                filteredReviews.forEach { review ->
+                    key(review.reviewId) {
+                        APReviewCard(
+                            review = review,
+                            onClickEdit = { animeId, reviewId ->
+                                onAction(InfoAnimeAction.NavigateToEditReview(state.animeInfo?.animeId ?: -1, FormType.EDIT))
+                            },
+                            onClickDelete = { reviewId ->
+                                onAction(InfoAnimeAction.OnReviewDeleteClicked(reviewId))
+                            },
+                            onCLickReport = { reviewId ->
+                                onAction(InfoAnimeAction.OnReviewReportClicked(reviewId))
+                            },
+                            onClickBlock = { userId ->
+                                onAction(InfoAnimeAction.OnUserBlockClicked(userId))
+                            },
+                            onClickLiked = { reviewId, animeId, isLiked, result ->
+                                onAction(InfoAnimeAction.OnReviewLikeClicked(reviewId, state.animeInfo?.animeId ?: -1, isLiked, result))
+                            },
+                        )
+                    }
                 }
             }
         } else {

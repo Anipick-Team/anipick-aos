@@ -119,7 +119,7 @@ private fun HomeScreen(
                 HorizontalDivider(
                     modifier = Modifier.fillMaxWidth(),
                     thickness = dimensionResource(R.dimen.border_width_default),
-                    color = AniPickGray100
+                    color = AniPickSurface
                 )
             }
             item {

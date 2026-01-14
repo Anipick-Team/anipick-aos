@@ -9,5 +9,5 @@ interface HomeAction {
     data class NavigateToNextQuarter(val year: String, val quarter: String) : HomeAction
     data object NavigateToSimilar : HomeAction
     data object NavigateToUpcoming : HomeAction
-    data class NavigateToAnimeDetail(val animeId: Int) : HomeAction
+    data class NavigateToAnimeDetail(val animeId: Long) : HomeAction
 }

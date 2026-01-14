@@ -39,6 +39,9 @@ import com.jparkbro.network.search.SearchDataSource
 import com.jparkbro.network.setting.RetrofitSettingDataSource
 import com.jparkbro.network.setting.SettingApi
 import com.jparkbro.network.setting.SettingDataSource
+import com.jparkbro.network.studio.RetrofitStudioDataSource
+import com.jparkbro.network.studio.StudioApi
+import com.jparkbro.network.studio.StudioDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -251,5 +254,17 @@ internal object NetworkModule {
     @Singleton
     fun provideActorDataSource(actorApi: ActorApi): ActorDataSource {
         return RetrofitActorDataSource(actorApi)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStudioApi(retrofit: Retrofit): StudioApi {
+        return retrofit.create(StudioApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStudioDataSource(studioApi: StudioApi): StudioDataSource {
+        return RetrofitStudioDataSource(studioApi)
     }
 }

@@ -24,7 +24,7 @@ interface HomeApi {
 
     @GET(ApiConstants.RECOMMENDATION_ANIMES_RECENT)
     suspend fun getRecentRecommendItems(
-        @Path("animeId") animeId: Int
+        @Path("animeId") animeId: Long
     ): Response<ApiResponse<RecommendedAnimesResponse>>
 
     @GET(ApiConstants.RECENT_REVIEWS)
@@ -41,29 +41,29 @@ interface HomeApi {
 
     @GET(ApiConstants.HOME_DETAIL_RECOMMENDATION_ANIMES)
     suspend fun getDetailRecommends(
-        @Query("lastId") lastId: Int?,
+        @Query("lastId") lastId: Long?,
         @Query("lastValue") lastValue: String?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<ListDataResponse>>
 
     @GET(ApiConstants.HOME_DETAIL_RECOMMENDATION_ANIMES_RECENT)
     suspend fun getDetailRecentRecommends(
-        @Path("animeId") animeId: Int,
-        @Query("lastId") lastId: Int?,
+        @Path("animeId") animeId: Long,
+        @Query("lastId") lastId: Long?,
         @Query("lastValue") lastValue: String?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<ListDataResponse>>
 
     @GET(ApiConstants.HOME_DETAIL_REVIEWS)
     suspend fun getDetailRecentReviews(
-        @Query("lastId") lastId: Int?,
+        @Query("lastId") lastId: Long?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<ListDataResponse>>
 
     @GET(ApiConstants.HOME_DETAIL_COMING_SOON)
     suspend fun getDetailComingSoon(
         @Query("sort") sort: String,
-        @Query("lastId") lastId: Int?,
+        @Query("lastId") lastId: Long?,
         @Query("lastValue") lastValue: String?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<ListDataResponse>>

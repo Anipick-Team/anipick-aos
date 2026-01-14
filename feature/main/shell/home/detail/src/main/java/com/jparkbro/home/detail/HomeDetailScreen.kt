@@ -69,7 +69,7 @@ import kotlinx.coroutines.flow.map
 internal fun HomeDetailRoot(
     onNavigateBack: () -> Unit,
     onNavigateToInfoAnime: (Long) -> Unit,
-    onNavigateToReviewForm: (Long, Long, FormType) -> Unit,
+    onNavigateToReviewForm: (Long, FormType) -> Unit,
     viewModel: HomeDetailViewModel = hiltViewModel()
 ) {
     var dialogData by rememberSaveable { mutableStateOf<DialogData?>(null) }
@@ -114,7 +114,7 @@ internal fun HomeDetailRoot(
                     when (action) {
                         HomeDetailAction.NavigateBack -> onNavigateBack()
                         is HomeDetailAction.NavigateToAnimeDetail -> onNavigateToInfoAnime(action.animeId)
-                        is HomeDetailAction.NavigateToEditReview -> onNavigateToReviewForm(action.animeId, action.reviewId, action.type)
+                        is HomeDetailAction.NavigateToEditReview -> onNavigateToReviewForm(action.animeId, action.type)
                     }
                     viewModel.onAction(action)
                 }
@@ -217,7 +217,7 @@ private fun ReviewsContent(
                 APReviewCard(
                     review = review,
                     onClickEdit = { animeId, reviewId ->
-                        onAction(HomeDetailAction.NavigateToEditReview(animeId, reviewId, FormType.EDIT))
+                        onAction(HomeDetailAction.NavigateToEditReview(animeId, FormType.EDIT))
                     },
                     onClickDelete = { reviewId ->
                         onAction(HomeDetailAction.OnReviewDeleteClicked(reviewId))
@@ -228,8 +228,8 @@ private fun ReviewsContent(
                     onClickBlock = { userId ->
                         onAction(HomeDetailAction.OnUserBlockClicked(userId))
                     },
-                    onClickLiked = { reviewId, isLiked , result ->
-                        onAction(HomeDetailAction.OnReviewLikeClicked(reviewId, isLiked, result))
+                    onClickLiked = { reviewId, animeId, isLiked , result ->
+                        onAction(HomeDetailAction.OnReviewLikeClicked(reviewId, animeId, isLiked, result))
                     },
                     onNavigateAnimeDetail = { animeId ->
                         onAction(HomeDetailAction.NavigateToAnimeDetail(animeId))
@@ -287,7 +287,7 @@ private fun AnimesContent(
 
         val gridInfo = rememberGridInfo(
             availableWidth = maxWidth,
-            horizontalPadding = horizontalPadding,
+            horizontalPadding = horizontalPadding * 2,
             spacing = spacing,
             defaultItemWidth = 128.dp,
             minColumns = 3,

@@ -350,6 +350,8 @@ private fun Footer(
             text = stringResource(R.string.preference_setup_complete_btn),
             onClick = { onAction(PreferenceSetupAction.OnCompleteClicked) },
             isLoading = state.isRating,
+            modifier = Modifier
+                .padding(horizontal = dimensionResource(R.dimen.padding_large))
         )
     }
 }

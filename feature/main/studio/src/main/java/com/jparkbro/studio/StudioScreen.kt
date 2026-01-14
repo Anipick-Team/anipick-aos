@@ -65,7 +65,6 @@ internal fun StudioRoot(
     onNavigateToInfoAnime: (Long) -> Unit,
     viewModel: StudioViewModel = hiltViewModel()
 ) {
-
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     when (state.uiState) {

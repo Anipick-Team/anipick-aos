@@ -1,9 +1,11 @@
 package com.jparkbro.network.review
 
 import com.jparkbro.model.common.review.AnimeDetailMyReviewDto
+import com.jparkbro.model.common.review.ReviewFormAnimeReviewDto
 import com.jparkbro.model.dto.info.GetInfoReviewsRequest
 import com.jparkbro.model.dto.info.GetInfoReviewsResponse
 import com.jparkbro.model.dto.info.ReviewRatingRequest
+import com.jparkbro.model.dto.review.SaveMyReviewRequest
 import com.jparkbro.model.enum.ReviewSortType
 import com.jparkbro.model.review.EditMyReviewRequest
 import com.jparkbro.model.review.MyReview
@@ -46,6 +48,17 @@ class RetrofitReviewDataSource @Inject constructor(
             size = request.size
         ).toResult(TAG, "getAnimeDetailReviews")
     }
+
+    override suspend fun getReviewFormAnimeReview(animeId: Long): Result<ReviewFormAnimeReviewDto> {
+        return reviewApi.getReviewFormAnimeReview(animeId).toResult(TAG, "getReviewFormAnimeReview")
+    }
+
+    override suspend fun updateMyReview(animeId: Long, request: SaveMyReviewRequest): Result<Unit> {
+        return reviewApi.updateMyReview(animeId, request).toUnitResult(TAG, "updateMyReview")
+    }
+
+
+
 
 
 

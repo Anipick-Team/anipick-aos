@@ -309,6 +309,8 @@ private fun Footer(
             onClick = { onAction(PasswordVerificationAction.OnNextClicked) },
             isLoading = state.isVerifyingCode,
             enabled = state.isNextEnabled,
+            modifier = Modifier
+                .padding(horizontal = dimensionResource(R.dimen.padding_large))
         )
     }
 }

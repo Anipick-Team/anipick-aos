@@ -250,7 +250,9 @@ private fun Footer(
             text = stringResource(R.string.password_reset_change_btn),
             onClick = { onAction(PasswordResetAction.OnCompleteClicked) },
             enabled = state.isChangeEnabled,
-            isLoading = state.isChangeIng
+            isLoading = state.isChangeIng,
+            modifier = Modifier
+                .padding(horizontal = dimensionResource(R.dimen.padding_large))
         )
     }
 }

@@ -21,8 +21,8 @@ interface InfoAnimeAction {
     data class NavigateToAnimeDetail(val animeId: Long) : InfoAnimeAction
     data class OnRatingChanged(val rating: Float, val onFailure: () -> Unit) : InfoAnimeAction
     data class OnChangeReviewSortType(val sortType: ReviewSortType) : InfoAnimeAction
-    data class OnReviewLikeClicked(val reviewId: Long, val isLiked: Boolean, val callback: (Boolean) -> Unit) : InfoAnimeAction
-    data class NavigateToEditReview(val animeId: Long, val reviewId: Long, val type: FormType) : InfoAnimeAction
+    data class OnReviewLikeClicked(val reviewId: Long, val animeId: Long, val isLiked: Boolean, val callback: (Boolean) -> Unit) : InfoAnimeAction
+    data class NavigateToEditReview(val animeId: Long, val type: FormType) : InfoAnimeAction
     data class OnReviewDeleteClicked(val reviewId: Long) : InfoAnimeAction
     data class OnReviewReportClicked(val reviewId: Long) : InfoAnimeAction
     data class OnUserBlockClicked(val userId: Long) : InfoAnimeAction

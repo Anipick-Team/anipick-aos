@@ -99,6 +99,7 @@ class HomeDetailViewModel @Inject constructor(
             HomeDetailAction.OnLoadMore -> loadMore()
             is HomeDetailAction.OnReviewLikeClicked -> updateLikeState(
                 reviewId = action.reviewId,
+                animeId = action.animeId,
                 liked = action.isLiked,
                 onResult = { action.callback(it) }
             )
@@ -242,11 +243,12 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun updateLikeState(reviewId: Long, liked: Boolean, onResult: (Boolean) -> Unit) {
+    private fun updateLikeState(reviewId: Long, animeId: Long, liked: Boolean, onResult: (Boolean) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             reviewRepository.updateReviewLike(
                 action = if (liked) ApiAction.CREATE else ApiAction.DELETE,
-                reviewId = reviewId
+                reviewId = reviewId,
+                animeId = animeId
             ).getOrThrow()
 
             onResult(true)
@@ -270,7 +272,7 @@ class HomeDetailViewModel @Inject constructor(
                     _eventChannel.send(
                         HomeDetailEvent.ShowSnackBar(
                             SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_delete_review_failed)
+                                text = UiText.StringResource(R.string.snackbar_http_500_error)
                             )
                         )
                     )
@@ -296,7 +298,7 @@ class HomeDetailViewModel @Inject constructor(
                     _eventChannel.send(
                         HomeDetailEvent.ShowSnackBar(
                             SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_review_report_failed)
+                                text = UiText.StringResource(R.string.snackbar_http_500_error)
                             )
                         )
                     )
@@ -322,7 +324,7 @@ class HomeDetailViewModel @Inject constructor(
                     _eventChannel.send(
                         HomeDetailEvent.ShowSnackBar(
                             SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_user_block_failed)
+                                text = UiText.StringResource(R.string.snackbar_http_500_error)
                             )
                         )
                     )

@@ -4,6 +4,7 @@
     <dimen name="border_width_default">1dp</dimen>
     <dimen name="border_width_thick">2dp</dimen>
     <dimen name="border_width_large">4dp</dimen>
+    <dimen name="border_width_extra_large">8dp</dimen>
 
     <!-- Corner Radius -->
     <dimen name="corner_radius_extra_small">4dp</dimen>

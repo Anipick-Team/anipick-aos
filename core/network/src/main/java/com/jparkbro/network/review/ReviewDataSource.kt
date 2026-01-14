@@ -1,9 +1,11 @@
 package com.jparkbro.network.review
 
 import com.jparkbro.model.common.review.AnimeDetailMyReviewDto
+import com.jparkbro.model.common.review.ReviewFormAnimeReviewDto
 import com.jparkbro.model.dto.info.GetInfoReviewsRequest
 import com.jparkbro.model.dto.info.GetInfoReviewsResponse
 import com.jparkbro.model.dto.info.ReviewRatingRequest
+import com.jparkbro.model.dto.review.SaveMyReviewRequest
 import com.jparkbro.model.review.EditMyReviewRequest
 import com.jparkbro.model.review.MyReview
 import com.jparkbro.model.review.ReportReviewRequest
@@ -18,8 +20,9 @@ interface ReviewDataSource {
     /** Anime detail Reviews */
     suspend fun getAnimeDetailReviews(request: GetInfoReviewsRequest): Result<GetInfoReviewsResponse>
 
-
-
+    /** Review Form */
+    suspend fun getReviewFormAnimeReview(animeId: Long): Result<ReviewFormAnimeReviewDto>
+    suspend fun updateMyReview(animeId: Long, request: SaveMyReviewRequest): Result<Unit>
 
 
     suspend fun getMyReview(animeId: Long): Result<MyReview>

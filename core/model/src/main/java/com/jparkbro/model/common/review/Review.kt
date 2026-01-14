@@ -12,7 +12,7 @@ data class Review(
     val createdAt: String? = null,
     val rating: Float? = null,
     val likeCount: Int? = null,
-    val likedByCurrentUser: Boolean = false,
+    val likedByCurrentUser: Boolean? = null,
     val isLiked: Boolean = false,
     val isMine: Boolean = false,
     val isSpoiler: Boolean = false,

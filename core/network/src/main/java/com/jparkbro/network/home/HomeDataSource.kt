@@ -12,7 +12,7 @@ import com.jparkbro.model.home.HomeDetailRequest
 interface HomeDataSource {
     suspend fun getTrendItems(): Result<List<TrendingAnimeDto>>
     suspend fun getRecommendItems(): Result<RecommendedAnimesResponse>
-    suspend fun getRecentRecommendItems(animeId: Int): Result<RecommendedAnimesResponse>
+    suspend fun getRecentRecommendItems(animeId: Long): Result<RecommendedAnimesResponse>
     suspend fun getRecentReviews(): Result<List<HomeReviewDto>>
     suspend fun getNextQuarterAnimes(): Result<NextQuarterAnimesResponse>
     suspend fun getComingSoonItems(): Result<List<UpcomingReleasesAnimeDto>>

@@ -1,12 +1,12 @@
 package com.jparkbro.network.home
 
-import com.jparkbro.model.common.DefaultAnime
-import com.jparkbro.model.home.ComingSoonItem
+import com.jparkbro.model.common.anime.TrendingAnimeDto
+import com.jparkbro.model.common.anime.UpcomingReleasesAnimeDto
+import com.jparkbro.model.common.review.HomeReviewDto
+import com.jparkbro.model.dto.home.detail.ListDataResponse
+import com.jparkbro.model.dto.home.main.NextQuarterAnimesResponse
+import com.jparkbro.model.dto.home.main.RecommendedAnimesResponse
 import com.jparkbro.model.home.HomeDetailRequest
-import com.jparkbro.model.home.HomeDetailResponse
-import com.jparkbro.model.home.HomeRecommendResponse
-import com.jparkbro.model.home.HomeReviewItem
-import com.jparkbro.model.home.UpcomingSeasonItems
 import com.jparkbro.network.util.toResult
 import javax.inject.Inject
 
@@ -17,31 +17,31 @@ class RetrofitHomeDataSource @Inject constructor(
         private const val TAG = "RetrofitHomeDataSource"
     }
 
-    override suspend fun getTrendItems(): Result<List<DefaultAnime>> {
+    override suspend fun getTrendItems(): Result<List<TrendingAnimeDto>> {
         return homeApi.getTrendItems().toResult(TAG, "getTrendItems")
     }
 
-    override suspend fun getRecommendItems(): Result<HomeRecommendResponse> {
+    override suspend fun getRecommendItems(): Result<RecommendedAnimesResponse> {
         return homeApi.getRecommendItems().toResult(TAG, "getRecommendItems")
     }
 
-    override suspend fun getRecentRecommendItems(animeId: Int): Result<HomeRecommendResponse> {
+    override suspend fun getRecentRecommendItems(animeId: Long): Result<RecommendedAnimesResponse> {
         return homeApi.getRecentRecommendItems(animeId).toResult(TAG, "getRecentRecommendItems")
     }
 
-    override suspend fun getRecentReviews(): Result<List<HomeReviewItem>> {
+    override suspend fun getRecentReviews(): Result<List<HomeReviewDto>> {
         return homeApi.getRecentReviews().toResult(TAG, "getRecentReviews")
     }
 
-    override suspend fun getUpcomingSeasonItems(): Result<UpcomingSeasonItems> {
-        return homeApi.getUpcomingSeasonItems().toResult(TAG, "getUpcomingSeasonItems")
+    override suspend fun getNextQuarterAnimes(): Result<NextQuarterAnimesResponse> {
+        return homeApi.getNextQuarterAnimes().toResult(TAG, "getUpcomingSeasonItems")
     }
 
-    override suspend fun getComingSoonItems(): Result<List<ComingSoonItem>> {
+    override suspend fun getComingSoonItems(): Result<List<UpcomingReleasesAnimeDto>> {
         return homeApi.getComingSoonItems().toResult(TAG, "getComingSoonItems")
     }
 
-    override suspend fun getDetailRecommends(request: HomeDetailRequest): Result<HomeDetailResponse> {
+    override suspend fun getDetailRecommends(request: HomeDetailRequest): Result<ListDataResponse> {
         return homeApi.getDetailRecommends(
             lastId = request.lastId,
             lastValue = request.lastValue,
@@ -49,23 +49,23 @@ class RetrofitHomeDataSource @Inject constructor(
         ).toResult(TAG, "getDetailRecommends")
     }
 
-    override suspend fun getDetailRecentRecommends(request: HomeDetailRequest): Result<HomeDetailResponse> {
+    override suspend fun getDetailRecentRecommends(request: HomeDetailRequest): Result<ListDataResponse> {
         return homeApi.getDetailRecentRecommends(
-            animeId = request.animeId as Int,
+            animeId = request.animeId as Long,
             lastId = request.lastId,
             lastValue = request.lastValue,
             size = request.size
         ).toResult(TAG, "getDetailRecentRecommends")
     }
 
-    override suspend fun getDetailRecentReviews(request: HomeDetailRequest): Result<HomeDetailResponse> {
+    override suspend fun getDetailRecentReviews(request: HomeDetailRequest): Result<ListDataResponse> {
         return homeApi.getDetailRecentReviews(
             lastId = request.lastId,
             size = request.size
         ).toResult(TAG, "getDetailRecentReviews")
     }
 
-    override suspend fun getDetailComingSoon(request: HomeDetailRequest): Result<HomeDetailResponse> {
+    override suspend fun getDetailComingSoon(request: HomeDetailRequest): Result<ListDataResponse> {
         return homeApi.getDetailComingSoon(
             sort = request.sort,
             lastId = request.lastId,

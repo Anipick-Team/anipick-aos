@@ -115,7 +115,6 @@ dependencies {
     implementation(project(":feature:main:actor"))
     implementation(project(":feature:main:studio"))
 
-    implementation(project(":feature:main:detail"))
     implementation(project(":feature:main:explore"))
     implementation(project(":feature:main:mypage"))
     implementation(project(":feature:main:ranking"))

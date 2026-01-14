@@ -6,31 +6,31 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class HomeDetailReviewDto(
     @SerialName("reviewId")
-    val reviewId: Long? = null,
+    val reviewId: Long?,
     @SerialName("userId")
-    val userId: Long? = null,
+    val userId: Long?,
     @SerialName("animeId")
-    val animeId: Long? = null,
+    val animeId: Long?,
     @SerialName("animeTitle")
-    val animeTitle: String? = null,
+    val animeTitle: String?,
     @SerialName("animeCoverImageUrl")
-    val animeCoverImageUrl: String? = null,
+    val animeCoverImageUrl: String?,
     @SerialName("rating")
-    val rating: Float? = null,
+    val rating: Float?,
     @SerialName("reviewContent")
-    val content: String? = null,
+    val content: String?,
     @SerialName("nickname")
-    val nickname: String? = null,
+    val nickname: String?,
     @SerialName("profileImageUrl")
-    val profileImageUrl: String? = null,
+    val profileImageUrl: String?,
     @SerialName("createdAt")
-    val createdAt: String? = null,
+    val createdAt: String?,
     @SerialName("likeCount")
-    val likeCount: Int? = null,
+    val likeCount: Int?,
     @SerialName("likedByCurrentUser")
-    val likedByCurrentUser: Boolean = false,
+    val likedByCurrentUser: Boolean?,
     @SerialName("isMine")
-    val isMine: Boolean = false,
+    val isMine: Boolean?,
 )
 
 fun HomeDetailReviewDto.toReview(): Review = Review(
@@ -45,6 +45,6 @@ fun HomeDetailReviewDto.toReview(): Review = Review(
     profileImageUrl = profileImageUrl,
     createdAt = createdAt,
     likeCount = likeCount,
-    likedByCurrentUser = likedByCurrentUser,
-    isMine = isMine
+    likedByCurrentUser = likedByCurrentUser ?: false,
+    isMine = isMine ?: false
 )
