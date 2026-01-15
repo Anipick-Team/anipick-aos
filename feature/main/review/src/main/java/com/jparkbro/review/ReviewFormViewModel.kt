@@ -4,12 +4,10 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.jparkbro.data.review.ReviewRepository
 import com.jparkbro.model.common.FormType
 import com.jparkbro.model.common.UiState
 import com.jparkbro.model.dto.review.SaveMyReviewRequest
-import com.jparkbro.review.navigation.ReviewForm
 import com.jparkbro.ui.R
 import com.jparkbro.ui.model.SnackBarData
 import com.jparkbro.ui.snackbar.GlobalSnackbarManager
@@ -31,11 +29,10 @@ class ReviewFormViewModel @Inject constructor(
     private val globalSnackbarManager: GlobalSnackbarManager
 ) : ViewModel() {
 
-    private val _reviewForm = savedStateHandle.toRoute<ReviewForm>()
-    private val _animeId = _reviewForm.animeId
-    private val _formType = _reviewForm.formType
+    private val _animeId = savedStateHandle.get<Long>("animeId")
+    private val _formType = savedStateHandle.get<FormType>("formType")
 
-    private val _state = MutableStateFlow(ReviewFormState(formType = _formType))
+    private val _state = MutableStateFlow(ReviewFormState(formType = _formType ?: FormType.CREATE))
     val state = _state.asStateFlow()
 
     private val _eventChannel = Channel<ReviewFormEvent>()
@@ -62,7 +59,7 @@ class ReviewFormViewModel @Inject constructor(
     private fun loadMyReview() {
         viewModelScope.launch(Dispatchers.IO) {
             reviewRepository.getReviewFormAnimeReview(
-                animeId = _animeId
+                animeId = _animeId ?: 0
             ).fold(
                 onSuccess = { review ->
                     _state.update {
@@ -74,7 +71,11 @@ class ReviewFormViewModel @Inject constructor(
                     }
                 },
                 onFailure = {
-                    // TODO taost
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_create_review_success)
+                        )
+                    )
                     _state.update { it.copy(uiState = UiState.Error) }
                 }
             )
@@ -90,7 +91,7 @@ class ReviewFormViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             reviewRepository.saveMyReview(
-                animeId = _animeId,
+                animeId = _animeId ?: 0,
                 request = SaveMyReviewRequest(
                     content = _state.value.content.text.toString(),
                     rating = _state.value.animeReview?.rating ?: 0f,

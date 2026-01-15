@@ -20,4 +20,5 @@ data class Anime(
     val userAnimeStatusId: Int? = null,
     val myRating: Float? = null,
     val animeLikeId: Int? = null,
+    val seasonYear: String = "",
 )

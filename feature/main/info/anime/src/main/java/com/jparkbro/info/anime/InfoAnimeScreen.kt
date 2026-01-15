@@ -1042,7 +1042,7 @@ private fun MyReviewSection(
             }
         }
     } else {
-        var rating by rememberSaveable { mutableFloatStateOf(state.myReview.rating ?: 0f) }
+        var rating by rememberSaveable(state.myReview.rating) { mutableFloatStateOf(state.myReview.rating ?: 0f) }
 
         Column(
             modifier = Modifier
@@ -1070,12 +1070,14 @@ private fun MyReviewSection(
                                         }
                                     },
                                     onDragEnd = {
-                                        onAction(
-                                            InfoAnimeAction.OnRatingChanged(
-                                                rating = rating,
-                                                onFailure = { rating = state.myReview.rating ?: 0f }
+                                        if (rating != (state.myReview.rating ?: 0f)) {
+                                            onAction(
+                                                InfoAnimeAction.OnRatingChanged(
+                                                    rating = rating,
+                                                    onFailure = { rating = state.myReview.rating ?: 0f }
+                                                )
                                             )
-                                        )
+                                        }
                                     },
                                     onDragCancel = { rating = state.myReview.rating ?: 0f },
                                     onDrag = { change, _ ->
@@ -1106,13 +1108,15 @@ private fun MyReviewSection(
                                                 // 오른쪽 절반 (1.0점)
                                                 i + 1.0f
                                             }
-                                            rating = newRating
-                                            onAction(
-                                                InfoAnimeAction.OnRatingChanged(
-                                                    rating = rating,
-                                                    onFailure = { rating = state.myReview.rating ?: 0f }
+                                            if (rating != newRating) {
+                                                rating = newRating
+                                                onAction(
+                                                    InfoAnimeAction.OnRatingChanged(
+                                                        rating = rating,
+                                                        onFailure = { rating = state.myReview.rating ?: 0f }
+                                                    )
                                                 )
-                                            )
+                                            }
                                         }
                                     }
                                 }

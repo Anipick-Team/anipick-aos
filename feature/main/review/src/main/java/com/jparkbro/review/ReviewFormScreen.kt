@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -55,9 +56,11 @@ import com.jparkbro.review.components.SkeletonScreen
 import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APErrorScreen
 import com.jparkbro.ui.components.APPrimaryActionButton
+import com.jparkbro.ui.components.APSnackBarRe
 import com.jparkbro.ui.components.APTitleTopAppBar
 import com.jparkbro.ui.components.APToggleSwitch
 import com.jparkbro.ui.components.updateRatingFromPosition
+import com.jparkbro.ui.model.SnackBarData
 import com.jparkbro.ui.theme.AniPick12Normal
 import com.jparkbro.ui.theme.AniPick14Normal
 import com.jparkbro.ui.theme.AniPick16Bold
@@ -82,6 +85,8 @@ internal fun ReviewFormRoot(
     onNavigateBack: () -> Unit,
     viewModel: ReviewFormViewModel = hiltViewModel()
 ) {
+    var snackBarData by rememberSaveable { mutableStateOf<List<SnackBarData>>(emptyList()) }
+
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             ReviewFormEvent.NavigateBack -> { onNavigateBack() }
@@ -361,7 +366,7 @@ private fun ReviewContentSection(
                     .weight(1f),
                 state = state.content,
                 textStyle = AniPick16Normal.copy(color = AniPickBlack),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
                 onKeyboardAction = KeyboardActionHandler {
                     focusManager.clearFocus()
                 },

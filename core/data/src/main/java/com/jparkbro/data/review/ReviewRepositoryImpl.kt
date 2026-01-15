@@ -9,7 +9,6 @@ import com.jparkbro.model.common.review.toReview
 import com.jparkbro.model.dto.home.detail.ListDataResult
 import com.jparkbro.model.dto.home.detail.toResult
 import com.jparkbro.model.dto.info.GetInfoReviewsRequest
-import com.jparkbro.model.dto.info.GetInfoReviewsResponse
 import com.jparkbro.model.dto.info.GetInfoReviewsResult
 import com.jparkbro.model.dto.info.ReviewRatingRequest
 import com.jparkbro.model.dto.info.toResult
@@ -148,14 +147,7 @@ class ReviewRepositoryImpl @Inject constructor(
 
         return result.fold(
             onSuccess = {
-                animeDetailMyReviewCache.update { cache ->
-                    val review = cache[animeId]
-                    if (review != null) {
-                        cache + (animeId to review.copy(rating = request.rating))
-                    } else {
-                        cache
-                    }
-                }
+                loadAnimeDetailMyReview(animeId)
                 animeRepository.loadDetailInfo(animeId)
                 Result.success(Unit)
             },

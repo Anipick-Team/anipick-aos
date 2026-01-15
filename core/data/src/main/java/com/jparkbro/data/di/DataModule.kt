@@ -5,6 +5,10 @@ import com.jparkbro.data.AuthRepositoryImpl
 import com.jparkbro.data.TokenRepositoryImpl
 import com.jparkbro.data.UserPreferenceRepository
 import com.jparkbro.data.UserPreferenceRepositoryImpl
+import com.jparkbro.data.actor.ActorRepository
+import com.jparkbro.data.actor.ActorRepositoryImpl
+import com.jparkbro.data.anime.AnimeRepository
+import com.jparkbro.data.anime.AnimeRepositoryImpl
 import com.jparkbro.data.common.CommonRepository
 import com.jparkbro.data.common.CommonRepositoryImpl
 import com.jparkbro.data.detail.DetailRepository
@@ -23,6 +27,8 @@ import com.jparkbro.data.search.SearchRepository
 import com.jparkbro.data.search.SearchRepositoryImpl
 import com.jparkbro.data.setting.SettingRepository
 import com.jparkbro.data.setting.SettingRepositoryImpl
+import com.jparkbro.data.studio.StudioRepository
+import com.jparkbro.data.studio.StudioRepositoryImpl
 import com.jparkbro.network.repository.TokenRepository
 import dagger.Binds
 import dagger.Module
@@ -105,4 +111,22 @@ abstract class DataModule {
     internal abstract fun bindsSettingRepository(
         settingRepositoryImpl: SettingRepositoryImpl
     ): SettingRepository
+
+    @Binds
+    @Singleton
+    internal abstract fun bindsAnimeRepository(
+        animeRepositoryImpl: AnimeRepositoryImpl
+    ): AnimeRepository
+
+    @Binds
+    @Singleton
+    internal abstract fun bindsActorRepository(
+        actorRepositoryImpl: ActorRepositoryImpl
+    ): ActorRepository
+
+    @Binds
+    @Singleton
+    internal abstract fun bindsStudioRepository(
+        studioRepositoryImpl: StudioRepositoryImpl
+    ): StudioRepository
 }

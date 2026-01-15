@@ -8,6 +8,7 @@ import com.jparkbro.data.anime.AnimeRepository
 import com.jparkbro.data.review.ReviewRepository
 import com.jparkbro.model.common.ApiAction
 import com.jparkbro.model.common.UiState
+import com.jparkbro.model.common.review.Review
 import com.jparkbro.model.common.review.toReview
 import com.jparkbro.model.dto.info.GetInfoReviewsRequest
 import com.jparkbro.model.dto.info.ReviewRatingRequest
@@ -22,9 +23,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -81,7 +80,7 @@ class InfoAnimeViewModel @Inject constructor(
 
     private fun collectAnimeInfo() {
         viewModelScope.launch(Dispatchers.IO) {
-            animeRepository.detailInfo.collect { result ->
+            animeRepository.getDetailInfo(_animeId ?: 0).collect { result ->
                 _state.update { it.copy(animeInfo = result) }
             }
         }
@@ -89,8 +88,8 @@ class InfoAnimeViewModel @Inject constructor(
 
     private fun collectMyReview() {
         viewModelScope.launch(Dispatchers.IO) {
-            reviewRepository.detailMyReview.collect { result ->
-                _state.update { it.copy(myReview = result) }
+            reviewRepository.getAnimeDetailMyReview(_animeId ?: 0).collect { result ->
+                _state.update { it.copy(myReview = result ?: Review()) }
             }
         }
     }
@@ -101,7 +100,7 @@ class InfoAnimeViewModel @Inject constructor(
                 result?.let { response ->
                     _state.update {
                         it.copy(
-                            reviews = response.reviews.map { it.toReview() },
+                            reviews = response.reviews,
                             reviewCursor = response.cursor,
                             reviewCount = response.count ?: 0
                         )
@@ -144,7 +143,7 @@ class InfoAnimeViewModel @Inject constructor(
     }
 
     private suspend fun getAnimeInfo() {
-        animeRepository.getDetailInfo(_animeId ?: 0)
+        animeRepository.loadDetailInfo(_animeId ?: 0)
             .onFailure { throw it }
     }
 
@@ -179,9 +178,8 @@ class InfoAnimeViewModel @Inject constructor(
     }
 
     private suspend fun getMyReview() {
-        reviewRepository.getAnimeDetailMyReview(_animeId ?: 0)
+        reviewRepository.loadAnimeDetailMyReview(_animeId ?: 0)
             .onFailure { throw it }
-
     }
 
     private suspend fun getAnimeReviews() {
@@ -256,10 +254,22 @@ class InfoAnimeViewModel @Inject constructor(
                 request = ReviewRatingRequest(rating)
             ).fold(
                 onSuccess = {
-                    // TODO Toast
+                    _eventChannel.send(
+                        InfoAnimeEvent.ShowSnackBar(
+                            SnackBarData(
+                                text = UiText.StringResource(R.string.snackbar_create_review_success)
+                            )
+                        )
+                    )
                 },
                 onFailure = {
-                    // TODO 에러처리
+                    _eventChannel.send(
+                        InfoAnimeEvent.ShowSnackBar(
+                            SnackBarData(
+                                text = UiText.StringResource(R.string.snackbar_http_500_error)
+                            )
+                        )
+                    )
                     onFailure()
                 }
             )
@@ -272,7 +282,8 @@ class InfoAnimeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             reviewRepository.updateReviewLike(
                 action = if (liked) ApiAction.CREATE else ApiAction.DELETE,
-                reviewId = reviewId
+                reviewId = reviewId,
+                animeId = _animeId ?: 0
             ).getOrThrow()
 
             onResult(true)
@@ -296,7 +307,7 @@ class InfoAnimeViewModel @Inject constructor(
                     _eventChannel.send(
                         InfoAnimeEvent.ShowSnackBar(
                             SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_delete_review_failed)
+                                text = UiText.StringResource(R.string.snackbar_http_500_error)
                             )
                         )
                     )
@@ -322,7 +333,7 @@ class InfoAnimeViewModel @Inject constructor(
                     _eventChannel.send(
                         InfoAnimeEvent.ShowSnackBar(
                             SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_review_report_failed)
+                                text = UiText.StringResource(R.string.snackbar_http_500_error)
                             )
                         )
                     )
@@ -348,7 +359,7 @@ class InfoAnimeViewModel @Inject constructor(
                     _eventChannel.send(
                         InfoAnimeEvent.ShowSnackBar(
                             SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_user_block_failed)
+                                text = UiText.StringResource(R.string.snackbar_http_500_error)
                             )
                         )
                     )
