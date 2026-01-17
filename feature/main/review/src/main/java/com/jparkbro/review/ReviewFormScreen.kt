@@ -85,8 +85,6 @@ internal fun ReviewFormRoot(
     onNavigateBack: () -> Unit,
     viewModel: ReviewFormViewModel = hiltViewModel()
 ) {
-    var snackBarData by rememberSaveable { mutableStateOf<List<SnackBarData>>(emptyList()) }
-
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             ReviewFormEvent.NavigateBack -> { onNavigateBack() }
@@ -176,8 +174,9 @@ private fun ReviewFormScreen(
             item {
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = dimensionResource(R.dimen.padding_large), vertical = dimensionResource(R.dimen.padding_extra_large)),
+                        .fillParentMaxSize()
+                        .padding(top = dimensionResource(R.dimen.padding_extra_large))
+                        .padding(horizontal = dimensionResource(R.dimen.padding_large)),
                     verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_36))
                 ) {
                     RatingContainer(
@@ -187,7 +186,6 @@ private fun ReviewFormScreen(
                     ReviewContentSection(
                         state = state,
                         onAction = onAction,
-                        focusManager = focusManager
                     )
                     APPrimaryActionButton(
                         text = stringResource(
@@ -197,7 +195,8 @@ private fun ReviewFormScreen(
                             }
                         ),
                         onClick = { onAction(ReviewFormAction.OnSaveReviewClicked) },
-                        enabled = state.isSaveEnabled
+                        enabled = state.isSaveEnabled,
+                        isLoading = state.isLoading
                     )
                 }
             }
@@ -326,7 +325,6 @@ private fun RatingContainer(
 private fun ReviewContentSection(
     state: ReviewFormState,
     onAction: (ReviewFormAction) -> Unit,
-    focusManager: FocusManager
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_default))
@@ -367,9 +365,6 @@ private fun ReviewContentSection(
                 state = state.content,
                 textStyle = AniPick16Normal.copy(color = AniPickBlack),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
-                onKeyboardAction = KeyboardActionHandler {
-                    focusManager.clearFocus()
-                },
                 cursorBrush = SolidColor(AniPickPrimary),
                 decorator = { innerBox ->
                     Box(

@@ -342,7 +342,9 @@ private fun Footer(
             text = stringResource(R.string.email_register_register_btn),
             onClick = { onAction(EmailRegisterAction.OnRegisterClicked) },
             enabled = state.isRegisterEnabled,
-            isLoading = state.isRegisterIng
+            isLoading = state.isRegisterIng,
+            modifier = Modifier
+                .padding(horizontal = dimensionResource(R.dimen.padding_large))
         )
     }
 }

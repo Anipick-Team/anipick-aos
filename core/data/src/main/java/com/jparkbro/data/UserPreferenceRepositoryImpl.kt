@@ -2,7 +2,7 @@ package com.jparkbro.data
 
 import com.jparkbro.datastore.JwtTokenDataStore
 import com.jparkbro.datastore.UserDataStore
-import com.jparkbro.model.auth.AuthToken
+import com.jparkbro.model.common.AuthToken
 import com.jparkbro.network.common.CommonDataSource
 import javax.inject.Inject
 
@@ -12,7 +12,7 @@ class UserPreferenceRepositoryImpl @Inject constructor(
     private val userDataStore: UserDataStore,
 ) : UserPreferenceRepository {
     override suspend fun saveToken(token: AuthToken): Result<Unit> {
-        return jwtTokenDataStore.saveToken(token)
+        return jwtTokenDataStore.setToken(token)
     }
 
     override suspend fun getAccessToken(): Result<String?> {
@@ -27,11 +27,11 @@ class UserPreferenceRepositoryImpl @Inject constructor(
         return commonDataSource.requestToken(refreshToken)
     }
 
-    override suspend fun saveUserInfo(userId: Int, nickname: String): Result<Unit> {
+    override suspend fun saveUserInfo(userId: Long, nickname: String): Result<Unit> {
         return userDataStore.saveUserInfo(userId, nickname)
     }
 
-    override suspend fun getUserId(): Result<Int> {
+    override suspend fun getUserId(): Result<Long> {
         return userDataStore.getUserId()
     }
 
@@ -41,7 +41,7 @@ class UserPreferenceRepositoryImpl @Inject constructor(
 
     override suspend fun clearAllData(): Result<Unit> {
         return runCatching {
-            jwtTokenDataStore.clearToken().getOrThrow()
+            jwtTokenDataStore.setToken().getOrThrow()
             userDataStore.clearUserInfo().getOrThrow()
         }
     }

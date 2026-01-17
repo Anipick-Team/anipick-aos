@@ -15,6 +15,7 @@
     <string name="more_vert_icon">더보기 아이콘</string>
     <string name="favorite_icon">좋아요 아이콘</string>
     <string name="share_icon">공유 아이콘</string>
+    <string name="edit_icon">수정 아이콘</string>
 
     <string name="app_logo">앱 로고</string>
     <string name="kakao_login_button">카카오 로그인 버튼</string>
@@ -25,6 +26,7 @@
     <string name="character_img">캐릭터 이미지</string>
     <string name="profile_img">프로필 이미지</string>
     <string name="error_image">에러 이미지</string>
+    <string name="empty_list_item_img">아이템 비어있는 이미지</string>
     <string name="empty_recommend_img">추천 애니가 없어요.</string>
 
     <!-- Common -->
@@ -48,6 +50,8 @@
     <string name="watch_list_anime">볼 애니</string>
     <string name="watching_anime">보는 중</string>
     <string name="finished_anime">다 본 애니</string>
+    <string name="total_count">총 %d개</string>
+    <string name="total_count_actor">총 %d명</string>
 
     <!-- Validation -->
     <string name="error_email_blank">이메일을 입력해주세요.</string>
@@ -239,7 +243,6 @@
     <!-- Actor -->
     <string name="actor_header">성우</string>
     <string name="actor_works_title">참여 작품 목록</string>
-    <string name="actor_count">총 %d개</string>
 
     <!-- Studio -->
     <string name="studio_header">스튜디오</string>
@@ -261,5 +264,33 @@
     <string name="review_form_btn_guideline">커뮤니티 가이드라인 전체보기</string>
     <string name="review_form_btn_create">리뷰 작성하기</string>
     <string name="review_form_btn_update">리뷰 수정하기</string>
+
+    <!-- MyPage -->
+    <string name="mypage_welcome_title">" 님, 애니픽과 함께\n행복한 애니메이션 생활 즐기세요!"</string>
+    <string name="mypage_watch_list_anime">볼 애니</string>
+    <string name="mypage_watching_anime">보는 중</string>
+    <string name="mypage_finished_anime">다 본 애니</string>
+    <string name="mypage_watch_status_count">%d개</string>
+    <string name="mypage_rated_works">평가한 작품</string>
+    <string name="mypage_liked_anime">좋아요한 작품</string>
+    <string name="mypage_liked_actor">좋아요한 인물</string>
+    <string name="mypage_empty_liked_anime">아직 좋아요한 작품이 없어요.\n좋아요를 누르러 가볼까요?</string>
+    <string name="mypage_empty_liked_actor">아직 좋아요한 인물이 없어요.\n좋아요를 누르러 가볼까요?</string>
+
+    <!-- User Content -->
+    <string name="user_content_header_watch_list_anime">볼 애니</string>
+    <string name="user_content_header_watching_anime">보는 중</string>
+    <string name="user_content_header_finished_anime">다 본 애니</string>
+    <string name="user_content_header_rated_works">평가한 작품</string>
+    <string name="user_content_header_liked_anime">좋아요한 작품</string>
+    <string name="user_content_header_liked_actor">좋아요한 인물</string>
+    <string name="user_content_only_review">리뷰만 보기</string>
+    <string name="user_content_empty_review">앗! 아직 평가한 작품이 없네요.</string>
+    <string name="user_content_rating_null">아직 평가가 없어요.</string>
+    <string name="user_content_my_rating">내 평가</string>
+    <string name="user_content_empty_watch_list">아직 볼 애니가 없어요.</string>
+    <string name="user_content_empty_watching">아직 보는 중인 애니가 없어요.</string>
+    <string name="user_content_empty_finished">아직 다 본 애니가 없어요.</string>
+
 
 </resources>

@@ -4,7 +4,9 @@ import com.jparkbro.model.common.review.AnimeDetailMyReviewDto
 import com.jparkbro.model.common.review.ReviewFormAnimeReviewDto
 import com.jparkbro.model.dto.info.GetInfoReviewsResponse
 import com.jparkbro.model.dto.info.ReviewRatingRequest
+import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
 import com.jparkbro.model.dto.review.SaveMyReviewRequest
+import com.jparkbro.model.mypage.MyReviewsResponse
 import com.jparkbro.model.review.EditMyReviewRequest
 import com.jparkbro.model.review.MyReview
 import com.jparkbro.model.review.ReportReviewRequest
@@ -62,6 +64,17 @@ interface ReviewApi {
         @Path("animeId") animeId: Long,
         @Body request: SaveMyReviewRequest
     ): Response<ApiResponse<Unit>>
+
+    @GET(ApiConstants.MY_RATED_REVIEWS)
+    suspend fun loadUserContentReviews(
+        @Query("lastId") lastId: Long?,
+        @Query("lastLikeCount") lastLikeCount: String?,
+        @Query("lastRating") lastRating: String?,
+        @Query("sort") sort: String,
+        @Query("reviewOnly") reviewOnly: Boolean,
+        @Query("size") size: Int?
+    ): Response<ApiResponse<GetUserContentResponse>>
+
 
 
 

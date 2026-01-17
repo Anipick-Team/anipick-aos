@@ -231,7 +231,7 @@ private fun ReviewsContent(
                     onClickLiked = { reviewId, animeId, isLiked , result ->
                         onAction(HomeDetailAction.OnReviewLikeClicked(reviewId, animeId, isLiked, result))
                     },
-                    onNavigateAnimeDetail = { animeId ->
+                    onNavigateInfoAnime = { animeId ->
                         onAction(HomeDetailAction.NavigateToAnimeDetail(animeId))
                     }
                 )

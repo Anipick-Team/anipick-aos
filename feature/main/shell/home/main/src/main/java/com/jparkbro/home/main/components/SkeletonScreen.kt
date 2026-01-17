@@ -58,7 +58,6 @@ internal fun SkeletonScreen(
             Column(
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
             ) {
-
                 repeat(6) {
                     Column(
                         modifier = Modifier

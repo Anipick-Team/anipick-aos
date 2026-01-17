@@ -223,7 +223,7 @@ private fun ActorScreen(
                                 style = AniPick16Normal.copy(color = AniPickBlack),
                             )
                             Text(
-                                text = stringResource(R.string.actor_count, state.result.count ?: 0),
+                                text = stringResource(R.string.total_count, state.result.count ?: 0),
                                 style = AniPick14Normal.copy(color = AniPickGray400),
                             )
                         }

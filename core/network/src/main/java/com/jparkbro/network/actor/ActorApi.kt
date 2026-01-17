@@ -3,6 +3,8 @@ package com.jparkbro.network.actor
 import com.jparkbro.model.dto.actor.GetActorResponse
 import com.jparkbro.model.dto.info.GetInfoCharactersResponse
 import com.jparkbro.model.dto.info.InfoActorResponse
+import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
+import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResult
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
 import retrofit2.Response
@@ -40,4 +42,9 @@ interface ActorApi {
     suspend fun unLikeActor(
         @Path("personId") personId: Long
     ): Response<ApiResponse<Unit>>
+
+    @GET(ApiConstants.LIKE_PERSONS)
+    suspend fun loadUserContentActors(
+        @Query("lastId") lastId: Long?,
+    ): Response<ApiResponse<GetUserContentResponse>>
 }

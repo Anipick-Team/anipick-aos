@@ -225,7 +225,9 @@ private fun EmailPasswordInputSection(
             ),
             onKeyboardAction = {
                 focusManager.clearFocus()
-                onAction(EmailLoginAction.OnLoginClicked)
+                if (state.email.text.isNotEmpty()) {
+                    onAction(EmailLoginAction.OnLoginClicked)
+                }
             },
             placeholder = stringResource(R.string.email_login_password_placeholder),
             trailingIcon = {
@@ -310,7 +312,9 @@ private fun Footer(
             text = stringResource(R.string.email_login_login_btn),
             onClick = { onAction(EmailLoginAction.OnLoginClicked) },
             enabled = state.isLoginEnabled,
-            isLoading = state.isLoggingIn
+            isLoading = state.isLoggingIn,
+            modifier = Modifier
+                .padding(horizontal = dimensionResource(R.dimen.padding_large))
         )
     }
 }

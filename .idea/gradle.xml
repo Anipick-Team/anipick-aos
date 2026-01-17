@@ -37,7 +37,6 @@
             <option value="$PROJECT_DIR$/feature/main/info/character" />
             <option value="$PROJECT_DIR$/feature/main/info/recommend" />
             <option value="$PROJECT_DIR$/feature/main/info/series" />
-            <option value="$PROJECT_DIR$/feature/main/mypage" />
             <option value="$PROJECT_DIR$/feature/main/ranking" />
             <option value="$PROJECT_DIR$/feature/main/review" />
             <option value="$PROJECT_DIR$/feature/main/search" />
@@ -46,6 +45,13 @@
             <option value="$PROJECT_DIR$/feature/main/shell/home" />
             <option value="$PROJECT_DIR$/feature/main/shell/home/detail" />
             <option value="$PROJECT_DIR$/feature/main/shell/home/main" />
+            <option value="$PROJECT_DIR$/feature/main/shell/mypage" />
+            <option value="$PROJECT_DIR$/feature/main/shell/mypage/mypage" />
+            <option value="$PROJECT_DIR$/feature/main/shell/mypage/mypage/detail" />
+            <option value="$PROJECT_DIR$/feature/main/shell/mypage/mypage/main" />
+            <option value="$PROJECT_DIR$/feature/main/shell/mypage/setting" />
+            <option value="$PROJECT_DIR$/feature/main/shell/mypage/setting/detail" />
+            <option value="$PROJECT_DIR$/feature/main/shell/mypage/setting/main" />
             <option value="$PROJECT_DIR$/feature/main/studio" />
           </set>
         </option>

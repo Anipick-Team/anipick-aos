@@ -5,11 +5,14 @@ import com.jparkbro.model.common.review.ReviewFormAnimeReviewDto
 import com.jparkbro.model.dto.info.GetInfoReviewsRequest
 import com.jparkbro.model.dto.info.GetInfoReviewsResponse
 import com.jparkbro.model.dto.info.ReviewRatingRequest
+import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
+import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
 import com.jparkbro.model.dto.review.SaveMyReviewRequest
 import com.jparkbro.model.enum.ReviewSortType
 import com.jparkbro.model.review.EditMyReviewRequest
 import com.jparkbro.model.review.MyReview
 import com.jparkbro.model.review.ReportReviewRequest
+import com.jparkbro.network.actor.RetrofitActorDataSource
 import com.jparkbro.network.detail.RetrofitDetailDataSource
 import com.jparkbro.network.util.toResult
 import com.jparkbro.network.util.toUnitResult
@@ -57,7 +60,16 @@ class RetrofitReviewDataSource @Inject constructor(
         return reviewApi.updateMyReview(animeId, request).toUnitResult(TAG, "updateMyReview")
     }
 
-
+    override suspend fun loadUserContentReviews(request: GetUserContentRequest): Result<GetUserContentResponse> {
+        return reviewApi.loadUserContentReviews(
+            lastId = request.lastId,
+            lastLikeCount = request.lastLikeCount,
+            lastRating = request.lastRating,
+            sort = request.sort,
+            reviewOnly = request.reviewOnly,
+            size = request.size
+        ).toResult(TAG, "loadUserContentReviews")
+    }
 
 
 

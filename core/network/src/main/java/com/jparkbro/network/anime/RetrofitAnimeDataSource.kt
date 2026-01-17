@@ -9,6 +9,8 @@ import com.jparkbro.model.dto.home.main.RecommendedAnimesResponse
 import com.jparkbro.model.dto.info.AnimeInfoResponse
 import com.jparkbro.model.dto.info.GetInfoRecommendResponse
 import com.jparkbro.model.dto.info.GetInfoSeriesResponse
+import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
+import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
 import com.jparkbro.model.enum.WatchStatus
 import com.jparkbro.network.detail.RetrofitDetailDataSource
 import com.jparkbro.network.home.RetrofitHomeDataSource
@@ -77,5 +79,32 @@ class RetrofitAnimeDataSource @Inject constructor(
             animeId = animeId,
             lastId = cursor?.lastId
         ).toResult(TAG, "getAnimeRecommends")
+    }
+
+    override suspend fun loadWatchListAnimes(request: GetUserContentRequest): Result<GetUserContentResponse> {
+        return animeApi.loadWatchListAnimes(
+            status = "WATCHLIST",
+            lastId = request.lastId
+        ).toResult(TAG, "loadWatchListAnimes")
+    }
+
+    override suspend fun loadWatchingAnimes(request: GetUserContentRequest): Result<GetUserContentResponse> {
+        return animeApi.loadWatchingAnimes(
+            status = "WATCHING",
+            lastId = request.lastId
+        ).toResult(TAG, "loadWatchingAnimes")
+    }
+
+    override suspend fun loadFinishedAnimes(request: GetUserContentRequest): Result<GetUserContentResponse> {
+        return animeApi.loadFinishedAnimes(
+            status = "FINISHED",
+            lastId = request.lastId
+        ).toResult(TAG, "loadFinishedAnimes")
+    }
+
+    override suspend fun loadLikedAnimes(request: GetUserContentRequest): Result<GetUserContentResponse> {
+        return animeApi.loadLikedAnimes(
+            lastId = request.lastId
+        ).toResult(TAG, "loadLikedAnimes")
     }
 }

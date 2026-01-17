@@ -108,15 +108,21 @@ dependencies {
     implementation(project(":feature:main:shell:home:main"))
     implementation(project(":feature:main:shell:home:detail"))
 
+    implementation(project(":feature:main:shell:mypage:mypage:main"))
+    implementation(project(":feature:main:shell:mypage:mypage:detail"))
+    implementation(project(":feature:main:shell:mypage:setting:main"))
+    implementation(project(":feature:main:shell:mypage:setting:detail"))
+
     implementation(project(":feature:main:info:anime"))
     implementation(project(":feature:main:info:character"))
     implementation(project(":feature:main:info:series"))
     implementation(project(":feature:main:info:recommend"))
+
     implementation(project(":feature:main:actor"))
+
     implementation(project(":feature:main:studio"))
 
     implementation(project(":feature:main:explore"))
-    implementation(project(":feature:main:mypage"))
     implementation(project(":feature:main:ranking"))
     implementation(project(":feature:main:review"))
     implementation(project(":feature:main:search"))

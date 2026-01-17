@@ -19,6 +19,8 @@ val AniPickGray300 = Color(0xFFC3C3CA)
 /** TextGray (0xFFB1B6C1) */
 val AniPickGray400 = Color(0xFFB1B6C1)
 /** DarkGray (0xFF667080) */
+val AniPickGray450 = Color(0x4D667080)
+/** DarkGray (0xFF667080) */
 val AniPickGray500 = Color(0xFF667080)
 
 

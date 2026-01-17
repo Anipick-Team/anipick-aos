@@ -2,6 +2,7 @@ package com.jparkbro.data.review
 
 import android.util.Log
 import com.jparkbro.data.anime.AnimeRepository
+import com.jparkbro.data.user.UserRepository
 import com.jparkbro.model.common.ApiAction
 import com.jparkbro.model.common.Cursor
 import com.jparkbro.model.common.review.Review
@@ -12,14 +13,15 @@ import com.jparkbro.model.dto.info.GetInfoReviewsRequest
 import com.jparkbro.model.dto.info.GetInfoReviewsResult
 import com.jparkbro.model.dto.info.ReviewRatingRequest
 import com.jparkbro.model.dto.info.toResult
+import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
+import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResult
+import com.jparkbro.model.dto.mypage.usercontent.toResult
 import com.jparkbro.model.dto.review.SaveMyReviewRequest
 import com.jparkbro.model.home.HomeDetailRequest
 import com.jparkbro.model.review.EditMyReviewRequest
 import com.jparkbro.model.review.MyReview
 import com.jparkbro.model.review.ReportReviewRequest
-import com.jparkbro.network.detail.DetailDataSource
 import com.jparkbro.network.home.HomeDataSource
-import com.jparkbro.network.mypage.MyPageDataSource
 import com.jparkbro.network.review.ReviewDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,8 +35,7 @@ import javax.inject.Singleton
 class ReviewRepositoryImpl @Inject constructor(
     private val reviewDataSource: ReviewDataSource,
     private val homeDataSource: HomeDataSource,
-    private val detailDataSource: DetailDataSource,
-    private val myPageDataSource: MyPageDataSource,
+    private val userRepository: UserRepository,
     private val animeRepository: AnimeRepository,
 ) : ReviewRepository {
 
@@ -159,7 +160,6 @@ class ReviewRepositoryImpl @Inject constructor(
     override suspend fun getReviewFormAnimeReview(animeId: Long): Result<Review> {
         return reviewDataSource.getReviewFormAnimeReview(animeId).map { it.toReview() }
     }
-
     override suspend fun saveMyReview(animeId: Long, request: SaveMyReviewRequest): Result<Unit> {
         return reviewDataSource.updateMyReview(animeId, request)
             .fold(
@@ -176,6 +176,32 @@ class ReviewRepositoryImpl @Inject constructor(
                     Result.failure(it)
                 }
             )
+    }
+
+    /** User Content */
+    override suspend fun loadUserContentReviews(request: GetUserContentRequest): Result<Unit> {
+        return reviewDataSource.loadUserContentReviews(request)
+            .map { it.toResult() }
+            .fold(
+                onSuccess = { result ->
+                    userRepository.userContentCache.update { cache ->
+                        cache.copy(
+                            contentType = request.contentType,
+                            reviews = if (request.lastId == null) result.reviews else cache.reviews + result.reviews,
+                            cursor = result.cursor,
+                            count = result.count
+                        )
+                    }
+                    Result.success(Unit)
+                },
+                onFailure = { Result.failure(it) }
+            )
+    }
+
+    override suspend fun invalidateUserContent() {
+        val currentType = userRepository.userContentCache.value.contentType ?: return
+        userRepository.userContentCache.update { GetUserContentResult(contentType = currentType) }
+        loadUserContentReviews(GetUserContentRequest(contentType = currentType))
     }
 
 
@@ -271,4 +297,6 @@ class ReviewRepositoryImpl @Inject constructor(
     override suspend fun blockUser(userId: Long): Result<Unit> {
         return reviewDataSource.blockUser(userId)
     }
+
+
 }

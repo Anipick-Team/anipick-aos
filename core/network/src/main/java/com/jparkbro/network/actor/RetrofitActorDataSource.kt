@@ -4,6 +4,9 @@ import com.jparkbro.model.common.Cursor
 import com.jparkbro.model.dto.actor.GetActorResponse
 import com.jparkbro.model.dto.info.GetInfoCharactersResponse
 import com.jparkbro.model.dto.info.InfoActorResponse
+import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
+import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
+import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResult
 import com.jparkbro.network.detail.RetrofitDetailDataSource
 import com.jparkbro.network.util.toResult
 import com.jparkbro.network.util.toUnitResult
@@ -42,5 +45,11 @@ class RetrofitActorDataSource @Inject constructor(
 
     override suspend fun unLikeActor(personId: Long): Result<Unit> {
         return actorApi.unLikeActor(personId).toUnitResult(TAG, "likeActor")
+    }
+
+    override suspend fun loadUserContentActors(request: GetUserContentRequest): Result<GetUserContentResponse> {
+        return actorApi.loadUserContentActors(
+            lastId = request.lastId,
+        ).toResult(TAG, "loadUserContentActors")
     }
 }

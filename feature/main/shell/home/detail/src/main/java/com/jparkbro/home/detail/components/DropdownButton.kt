@@ -1,15 +1,12 @@
 package com.jparkbro.home.detail.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -17,26 +14,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jparkbro.home.detail.HomeDetailAction
 import com.jparkbro.home.detail.HomeDetailState
 import com.jparkbro.model.enum.HomeDetailSortType
-import com.jparkbro.model.home.Sort
 import com.jparkbro.ui.R
-import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.theme.AniPick14Normal
 import com.jparkbro.ui.theme.AniPickBlack
 import com.jparkbro.ui.theme.AniPickGray400
@@ -99,7 +89,7 @@ internal fun DropdownButton(
                         .fillMaxWidth()
                         .clickable {
                             showDropdown = !showDropdown
-                            onAction(HomeDetailAction.OnSortClicked(HomeDetailSortType.LATEST))
+                            onAction(HomeDetailAction.OnChangeSortType(HomeDetailSortType.LATEST))
                         }
                         .padding(dimensionResource(R.dimen.padding_medium))
                 )
@@ -120,7 +110,7 @@ internal fun DropdownButton(
                         .fillMaxWidth()
                         .clickable {
                             showDropdown = !showDropdown
-                            onAction(HomeDetailAction.OnSortClicked(HomeDetailSortType.POPULARITY))
+                            onAction(HomeDetailAction.OnChangeSortType(HomeDetailSortType.POPULARITY))
                         }
                         .padding(dimensionResource(R.dimen.padding_medium))
                 )
@@ -141,7 +131,7 @@ internal fun DropdownButton(
                         .fillMaxWidth()
                         .clickable {
                             showDropdown = !showDropdown
-                            onAction(HomeDetailAction.OnSortClicked(HomeDetailSortType.START_DATE))
+                            onAction(HomeDetailAction.OnChangeSortType(HomeDetailSortType.START_DATE))
                         }
                         .padding(dimensionResource(R.dimen.padding_medium))
                 )

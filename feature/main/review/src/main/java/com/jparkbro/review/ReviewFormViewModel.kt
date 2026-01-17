@@ -99,6 +99,7 @@ class ReviewFormViewModel @Inject constructor(
                 )
             ).fold(
                 onSuccess = {
+                    _state.update { it.copy(isLoading = false) }
                     globalSnackbarManager.showSnackbar(
                         SnackBarData(
                             text = UiText.StringResource(R.string.snackbar_create_review_success)

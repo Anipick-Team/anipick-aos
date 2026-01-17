@@ -9,6 +9,8 @@ import com.jparkbro.model.dto.home.main.RecommendedAnimesResponse
 import com.jparkbro.model.dto.info.AnimeInfoResponse
 import com.jparkbro.model.dto.info.GetInfoRecommendResponse
 import com.jparkbro.model.dto.info.GetInfoSeriesResponse
+import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
+import com.jparkbro.model.mypage.UserContentResponse
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
 import retrofit2.Response
@@ -79,4 +81,27 @@ interface AnimeApi {
         @Path("animeId") animeId: Long,
         @Query("lastId") lastId: Long?,
     ): Response<ApiResponse<GetInfoRecommendResponse>>
+
+    @GET(ApiConstants.WATCH_LIST)
+    suspend fun loadWatchListAnimes(
+        @Query("status") status: String,
+        @Query("lastId") lastId: Long?,
+    ): Response<ApiResponse<GetUserContentResponse>>
+
+    @GET(ApiConstants.WATCHING)
+    suspend fun loadWatchingAnimes(
+        @Query("status") status: String,
+        @Query("lastId") lastId: Long?,
+    ): Response<ApiResponse<GetUserContentResponse>>
+
+    @GET(ApiConstants.FINISHED)
+    suspend fun loadFinishedAnimes(
+        @Query("status") status: String,
+        @Query("lastId") lastId: Long?,
+    ): Response<ApiResponse<GetUserContentResponse>>
+
+    @GET(ApiConstants.LIKE_ANIMES)
+    suspend fun loadLikedAnimes(
+        @Query("lastId") lastId: Long?,
+    ): Response<ApiResponse<GetUserContentResponse>>
 }

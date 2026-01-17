@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ActorDetailResponse(
     @SerialName("personId")
-    val personId: Int,
+    val personId: Long,
     @SerialName("name")
     val name: String? = null,
     @SerialName("profileImageUrl")
@@ -25,11 +25,11 @@ data class ActorDetailResponse(
 @Serializable
 data class ActorFilmography(
     @SerialName("animeId")
-    val animeId: Int,
+    val animeId: Long,
     @SerialName("animeTitle")
     val animeTitle: String? = null,
     @SerialName("characterId")
-    val characterId: Int,
+    val characterId: Long,
     @SerialName("characterName")
     val characterName: String? = null,
     @SerialName("characterImageUrl")

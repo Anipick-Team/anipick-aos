@@ -74,7 +74,7 @@ class HomeDetailViewModel @Inject constructor(
     }
 
     private fun collectReviews() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
             reviewRepository.detailRecentReviews.collect { result ->
                 _state.update {
                     it.copy(

@@ -29,6 +29,8 @@ import com.jparkbro.data.setting.SettingRepository
 import com.jparkbro.data.setting.SettingRepositoryImpl
 import com.jparkbro.data.studio.StudioRepository
 import com.jparkbro.data.studio.StudioRepositoryImpl
+import com.jparkbro.data.user.UserRepository
+import com.jparkbro.data.user.UserRepositoryImpl
 import com.jparkbro.network.repository.TokenRepository
 import dagger.Binds
 import dagger.Module
@@ -129,4 +131,10 @@ abstract class DataModule {
     internal abstract fun bindsStudioRepository(
         studioRepositoryImpl: StudioRepositoryImpl
     ): StudioRepository
+
+    @Binds
+    @Singleton
+    internal abstract fun bindsUserRepository(
+        userRepositoryImpl: UserRepositoryImpl
+    ): UserRepository
 }
