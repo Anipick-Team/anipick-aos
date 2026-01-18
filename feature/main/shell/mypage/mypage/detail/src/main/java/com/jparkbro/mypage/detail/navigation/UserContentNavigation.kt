@@ -4,7 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.jparkbro.model.common.FormType
+import com.jparkbro.model.enum.FormType
 import com.jparkbro.model.enum.UserContentType
 import com.jparkbro.mypage.detail.UserContentRoot
 import kotlinx.serialization.Serializable

@@ -16,6 +16,7 @@ data class UserContentState(
     /* API 통신 로딩 */
     val isMoreDataLoading: Boolean = false,
     val hasMoreData: Boolean = true,
+    val isApiLoading: Boolean = false,
 
     /* API 통신 데이터 */
     val count: Int? = 0,

@@ -43,7 +43,6 @@ import com.jparkbro.ui.components.APConfirmDialog
 import com.jparkbro.ui.components.APLabeledTextField
 import com.jparkbro.ui.components.APLabeledTextFieldWithSideComponent
 import com.jparkbro.ui.components.APPrimaryActionButton
-import com.jparkbro.ui.components.APSnackBarRe
 import com.jparkbro.ui.model.DialogData
 import com.jparkbro.ui.model.SnackBarData
 import com.jparkbro.ui.preview.DevicePreviews
@@ -68,7 +67,6 @@ internal fun PasswordVerificationRoot(
     viewModel: PasswordVerificationViewModel = hiltViewModel()
 ) {
     var dialogData by rememberSaveable { mutableStateOf<DialogData?>(null) }
-    var snackBarData by rememberSaveable { mutableStateOf<List<SnackBarData>>(emptyList()) }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -84,13 +82,7 @@ internal fun PasswordVerificationRoot(
                     }
                 )
             }
-            is PasswordVerificationEvent.VerificationWithSnackBar -> {
-                snackBarData = snackBarData + event.snackBarData.copy(
-                    onDismiss = {
-                        snackBarData = snackBarData.drop(1)
-                    }
-                )
-            }
+
         }
     }
 
@@ -109,10 +101,6 @@ internal fun PasswordVerificationRoot(
 
     dialogData?.let {
         APConfirmDialog(it)
-    }
-
-    snackBarData.firstOrNull()?.let { snackBarData ->
-        APSnackBarRe(snackBarData)
     }
 }
 

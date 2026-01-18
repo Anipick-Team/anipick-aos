@@ -5,16 +5,17 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import androidx.navigation.navOptions
 import com.jparkbro.model.enum.UserContentType
-import com.jparkbro.model.mypage.ContentType
 import com.jparkbro.mypage.main.MyPageRoot
+import com.jparkbro.ui.util.extension.clearAllBackStack
 import kotlinx.serialization.Serializable
 
 @Serializable
 data object MyPage
 
 fun NavHostController.navigateToMyPage(
-    navOptions: NavOptions? = null
+    navOptions: NavOptions = navOptions { clearAllBackStack() }
 ) = navigate(MyPage, navOptions)
 
 fun NavGraphBuilder.myPageScreen(

@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.jparkbro.home.detail.HomeDetailRoot
-import com.jparkbro.model.common.FormType
+import com.jparkbro.model.enum.FormType
 import com.jparkbro.model.enum.HomeDetailType
 import kotlinx.serialization.Serializable
 

@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.jparkbro.model.dto.preference.PreferenceAnime
+import com.jparkbro.model.common.anime.Anime
 import com.jparkbro.model.dto.preference.RatedAnime
 import com.jparkbro.ui.R
 import com.jparkbro.ui.components.DraggableStarRating
@@ -58,9 +58,9 @@ import com.jparkbro.ui.theme.StarOutlineIcon
 @Composable
 internal fun AnimeRatingCard(
     initRating: Float,
-    anime: PreferenceAnime,
+    anime: Anime,
     onRatingAdd: (RatedAnime) -> Unit = {},
-    onRatingRemove: (Int) -> Unit = {},
+    onRatingRemove: (Long) -> Unit = {},
 ) {
     var rating by rememberSaveable(initRating) { mutableFloatStateOf(initRating) }
     var showRating by rememberSaveable { mutableStateOf(false) }
@@ -85,9 +85,10 @@ internal fun AnimeRatingCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = anime.coverImageUrl,
+                model = anime.coverImageUrl?.takeIf { !it.contains("default.jpg") },
                 contentDescription = stringResource(R.string.anime_cover_img),
                 error = painterResource(R.drawable.thumbnail_img),
+                placeholder = painterResource(R.drawable.thumbnail_img),
                 modifier = Modifier
                     .size(width = 132.dp, height = 88.dp)
                     .clip(AniPickSmallShape),
@@ -104,19 +105,21 @@ internal fun AnimeRatingCard(
                         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small)),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(
-                            text = anime.title,
-                            style = AniPick16Normal.copy(color = AniPickBlack),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f)
-                        )
+                        anime.title?.let {
+                            Text(
+                                text = it,
+                                style = AniPick16Normal.copy(color = AniPickBlack),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
                         if (initRating != 0f) {
                             Box(
                                 modifier = Modifier
                                     .clip(AniPickExtraSmallShape)
                                     .background(color = AniPickPrimary)
-                                    .clickable { onRatingRemove(anime.animeId) }
+                                    .clickable { onRatingRemove(anime.animeId ?: -1) }
                                     .padding(
                                         horizontal = dimensionResource(R.dimen.padding_small),
                                         vertical = dimensionResource(R.dimen.padding_extra_small)
@@ -231,7 +234,7 @@ internal fun AnimeRatingCard(
                         ) {
                             onRatingAdd(
                                 RatedAnime(
-                                    animeId = anime.animeId,
+                                    animeId = anime.animeId ?: -1,
                                     rating = rating
                                 )
                             )
@@ -316,8 +319,10 @@ internal fun AnimeRatingCardSkeleton() {
 private fun AnimeRatingCardPreview() {
     AnimeRatingCard(
         initRating = 3.5f,
-        anime = PreferenceAnime(
+        anime = Anime(
+            animeId = -1,
             title = "애니메이션 제목",
+            coverImageUrl = null,
             genres = listOf("드라마", "공포", "스릴러")
         ),
         onRatingAdd = {},

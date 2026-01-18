@@ -1,6 +1,6 @@
 package com.jparkbro.mypage.detail
 
-import com.jparkbro.model.common.FormType
+import com.jparkbro.model.enum.FormType
 import com.jparkbro.model.enum.ReviewSortType
 
 interface UserContentAction {
@@ -11,6 +11,6 @@ interface UserContentAction {
     data object OnRetryClicked : UserContentAction
     data object OnLoadMore : UserContentAction
     data class OnChangeSortType(val type: ReviewSortType) : UserContentAction
-    data class OnReviewLikeClicked(val reviewId: Long, val animeId: Long, val isLiked: Boolean, val callback: (Boolean) -> Unit) : UserContentAction
-    data class OnReviewDeleteClicked(val reviewId: Long) : UserContentAction
+    data class OnReviewLikeClicked(val reviewId: Long, val animeId: Long, val isLiked: Boolean) : UserContentAction
+    data class OnReviewDeleteClicked(val reviewId: Long, val animeId: Long) : UserContentAction
 }

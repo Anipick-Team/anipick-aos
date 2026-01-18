@@ -49,7 +49,6 @@ import com.jparkbro.ui.components.APBackStackTopAppBar
 import com.jparkbro.ui.components.APLabeledTextField
 import com.jparkbro.ui.components.APLabeledTextFieldWithLabelTrailingComponent
 import com.jparkbro.ui.components.APPrimaryActionButton
-import com.jparkbro.ui.components.APSnackBarRe
 import com.jparkbro.ui.model.SnackBarData
 import com.jparkbro.ui.preview.DevicePreviews
 import com.jparkbro.ui.theme.AniPick12Normal
@@ -77,19 +76,10 @@ internal fun EmailRegisterRoot(
     onNavigateToPreferenceSetup: () -> Unit,
     viewModel: EmailRegisterViewModel = hiltViewModel()
 ) {
-    var snackBarData by rememberSaveable { mutableStateOf<List<SnackBarData>>(emptyList()) }
-
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             EmailRegisterEvent.RegisterSuccess -> {
                 onNavigateToPreferenceSetup()
-            }
-            is EmailRegisterEvent.RegisterFailWithSnackBar -> {
-                snackBarData = snackBarData + event.snackBarData.copy(
-                    onDismiss = {
-                        snackBarData = snackBarData.drop(1)
-                    }
-                )
             }
         }
     }
@@ -115,10 +105,6 @@ internal fun EmailRegisterRoot(
             viewModel.onAction(action)
         }
     )
-
-    snackBarData.firstOrNull()?.let { snackBarData ->
-        APSnackBarRe(snackBarData)
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

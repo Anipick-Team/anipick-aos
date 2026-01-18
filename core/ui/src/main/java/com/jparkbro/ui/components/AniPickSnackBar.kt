@@ -33,7 +33,7 @@ import com.jparkbro.ui.model.SnackBarData
 import kotlinx.coroutines.delay
 
 @Composable
-fun APSnackBarRe(
+fun APSnackBar(
     snackBarData: SnackBarData,
 ) {
     val visibleState = remember(snackBarData) {
@@ -88,7 +88,7 @@ fun APSnackBarRe(
 @Preview(showBackground = true, heightDp = 100)
 @Composable
 private fun APSnackBarPreview() {
-    APSnackBarRe(
+    APSnackBar(
         snackBarData = SnackBarData(
             text = UiText.DynamicString("전송이 완료되었어요."),
             duration = 2000

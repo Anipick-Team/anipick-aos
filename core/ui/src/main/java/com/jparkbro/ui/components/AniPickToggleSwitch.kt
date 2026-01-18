@@ -25,10 +25,10 @@ import com.jparkbro.ui.theme.AniPickWhite
 @Composable
 fun APToggleSwitch(
     checked: Boolean,
+    modifier: Modifier = Modifier,
     checkedColor: Color = AniPickGray500,
     unCheckedColor: Color = Color(0x4D667080),
     onCheckedChange: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     // 상수 정의
     val width = 32

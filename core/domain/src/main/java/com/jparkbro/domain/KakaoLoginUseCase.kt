@@ -1,7 +1,7 @@
 package com.jparkbro.domain
 
 import android.app.Activity
-import com.jparkbro.data.AuthRepository
+import com.jparkbro.data.auth.AuthRepository
 import com.jparkbro.data.UserPreferenceRepository
 import com.jparkbro.model.auth.LoginProvider
 import kotlinx.coroutines.flow.Flow

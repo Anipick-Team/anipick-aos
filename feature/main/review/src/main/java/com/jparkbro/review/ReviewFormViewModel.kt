@@ -5,7 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.review.ReviewRepository
-import com.jparkbro.model.common.FormType
+import com.jparkbro.model.enum.FormType
 import com.jparkbro.model.common.UiState
 import com.jparkbro.model.dto.review.SaveMyReviewRequest
 import com.jparkbro.ui.R
@@ -71,11 +71,6 @@ class ReviewFormViewModel @Inject constructor(
                     }
                 },
                 onFailure = {
-                    globalSnackbarManager.showSnackbar(
-                        SnackBarData(
-                            text = UiText.StringResource(R.string.snackbar_create_review_success)
-                        )
-                    )
                     _state.update { it.copy(uiState = UiState.Error) }
                 }
             )

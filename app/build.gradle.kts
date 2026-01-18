@@ -126,7 +126,6 @@ dependencies {
     implementation(project(":feature:main:ranking"))
     implementation(project(":feature:main:review"))
     implementation(project(":feature:main:search"))
-    implementation(project(":feature:main:setting"))
 
     // Test
     testImplementation(libs.junit)

@@ -1,9 +1,8 @@
 package com.jparkbro.data.review
 
-import android.util.Log
 import com.jparkbro.data.anime.AnimeRepository
 import com.jparkbro.data.user.UserRepository
-import com.jparkbro.model.common.ApiAction
+import com.jparkbro.model.enum.ApiAction
 import com.jparkbro.model.common.Cursor
 import com.jparkbro.model.common.review.Review
 import com.jparkbro.model.common.review.toReview
@@ -17,9 +16,8 @@ import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResult
 import com.jparkbro.model.dto.mypage.usercontent.toResult
 import com.jparkbro.model.dto.review.SaveMyReviewRequest
+import com.jparkbro.model.enum.ReviewSortType
 import com.jparkbro.model.home.HomeDetailRequest
-import com.jparkbro.model.review.EditMyReviewRequest
-import com.jparkbro.model.review.MyReview
 import com.jparkbro.model.review.ReportReviewRequest
 import com.jparkbro.network.home.HomeDataSource
 import com.jparkbro.network.review.ReviewDataSource
@@ -150,6 +148,7 @@ class ReviewRepositoryImpl @Inject constructor(
             onSuccess = {
                 loadAnimeDetailMyReview(animeId)
                 animeRepository.loadDetailInfo(animeId)
+                userRepository.refreshUserInfo()
                 Result.success(Unit)
             },
             onFailure = { Result.failure(it) }
@@ -162,20 +161,8 @@ class ReviewRepositoryImpl @Inject constructor(
     }
     override suspend fun saveMyReview(animeId: Long, request: SaveMyReviewRequest): Result<Unit> {
         return reviewDataSource.updateMyReview(animeId, request)
-            .fold(
-                onSuccess = {
-                    // 내 리뷰 캐시 업데이트 (InfoAnime, AnimeDetail에서 사용)
-                    loadAnimeDetailMyReview(animeId)
-                    // 애니 정보 업데이트 (평점 평균, 리뷰 수 등)
-                    animeRepository.loadDetailInfo(animeId)
-                    // 애니 상세 리뷰 목록 업데이트
-                    loadAnimeReviews(animeId, GetInfoReviewsRequest(animeId = animeId))
-                    Result.success(Unit)
-                },
-                onFailure = {
-                    Result.failure(it)
-                }
-            )
+            .onSuccess { refreshReviewRelatedData(animeId) }
+            .map { Unit }
     }
 
     /** User Content */
@@ -187,9 +174,10 @@ class ReviewRepositoryImpl @Inject constructor(
                     userRepository.userContentCache.update { cache ->
                         cache.copy(
                             contentType = request.contentType,
+                            reviewSort = request.sort,
                             reviews = if (request.lastId == null) result.reviews else cache.reviews + result.reviews,
                             cursor = result.cursor,
-                            count = result.count
+                            count = result.count,
                         )
                     }
                     Result.success(Unit)
@@ -200,39 +188,9 @@ class ReviewRepositoryImpl @Inject constructor(
 
     override suspend fun invalidateUserContent() {
         val currentType = userRepository.userContentCache.value.contentType ?: return
-        userRepository.userContentCache.update { GetUserContentResult(contentType = currentType) }
-        loadUserContentReviews(GetUserContentRequest(contentType = currentType))
-    }
-
-
-
-
-    /** My Reviews - 마이페이지용 */
-    private val _myReviews = MutableStateFlow<List<Review>>(emptyList())
-    override val myReviews = _myReviews.asStateFlow()
-
-    override suspend fun refreshMyReviews(cursor: Cursor?) {
-        /*val request = MyReviewsRequest(cursor = cursor)
-        myPageDataSource.getMyReviews(request)
-            .onSuccess { response ->
-                _myReviews.update { response.reviews.map { it.toReview() } }
-            }*/
-    }
-
-
-    override suspend fun getMyReview(animeId: Long): Result<MyReview> {
-        return reviewDataSource.getMyReview(animeId)
-    }
-
-    override suspend fun editMyReview(animeId: Long, request: EditMyReviewRequest): Result<Unit> {
-        return reviewDataSource.editMyReview(animeId, request).also { result ->
-            if (result.isSuccess) {
-                // 리뷰 수정 성공 시 관련 데이터 자동 refresh
-                refreshRecentReviews()  // 홈 화면 업데이트
-                loadAnimeReviews(animeId, request = GetInfoReviewsRequest(animeId = animeId))  // 애니 상세 화면 업데이트 (초기화)
-                refreshMyReviews(null)  // 마이페이지 업데이트
-            }
-        }
+        val currentSort = userRepository.userContentCache.value.reviewSort ?: ReviewSortType.LATEST
+        userRepository.userContentCache.update { GetUserContentResult(contentType = currentType, reviewSort = currentSort) }
+        loadUserContentReviews(GetUserContentRequest(contentType = currentType, sort = currentSort))
     }
 
     override suspend fun updateReviewLike(action: ApiAction, reviewId: Long, animeId: Long): Result<Unit> {
@@ -262,8 +220,6 @@ class ReviewRepositoryImpl @Inject constructor(
             // animeReviewsCache 업데이트
             animeReviewsCache.update { cache ->
                 val reviewsResult = cache[animeId]
-                Log.d("ReviewRepo", "updateReviewLike - reviewId: $reviewId, animeId: $animeId")
-                Log.d("ReviewRepo", "updateReviewLike - reviews reviewIds: ${reviewsResult?.reviews?.map { it.reviewId }}")
                 if (reviewsResult != null) {
                     cache + (animeId to reviewsResult.copy(
                         reviews = reviewsResult.reviews.map { review ->
@@ -281,22 +237,66 @@ class ReviewRepositoryImpl @Inject constructor(
                     cache
                 }
             }
+
+            // userContentCache 업데이트
+            userRepository.userContentCache.update { cache ->
+                cache.copy(
+                    reviews = cache.reviews.map { review ->
+                        if (review.reviewId == reviewId) {
+                            review.copy(
+                                isLiked = isLiked,
+                                likeCount = (review.likeCount ?: 0) + likeCountDelta
+                            )
+                        } else {
+                            review
+                        }
+                    }
+                )
+            }
+
+            _detailRecentReviews.update { cache ->
+                cache?.copy(
+                    reviews = cache.reviews.map { review ->
+                        if (review.reviewId == reviewId) {
+                            review.copy(
+                                isLiked = isLiked,
+                                likeCount = (review.likeCount ?: 0) + likeCountDelta
+                            )
+                        } else {
+                            review
+                        }
+                    }
+                )
+            }
         }
 
         return result
     }
 
-    override suspend fun deleteReview(reviewId: Long): Result<Unit> {
+    override suspend fun deleteReview(reviewId: Long, animeId: Long): Result<Unit> {
         return reviewDataSource.deleteReview(reviewId)
+            .onSuccess { refreshReviewRelatedData(animeId) }
+            .map { Unit }
     }
 
-    override suspend fun reportReview(reviewId: Long, request: ReportReviewRequest): Result<Unit> {
+    override suspend fun reportReview(reviewId: Long, animeId: Long, request: ReportReviewRequest): Result<Unit> {
         return reviewDataSource.reportReview(reviewId, request)
+            .onSuccess { refreshReviewRelatedData(animeId) }
+            .map { Unit }
     }
 
-    override suspend fun blockUser(userId: Long): Result<Unit> {
+    override suspend fun blockUser(userId: Long, animeId: Long): Result<Unit> {
         return reviewDataSource.blockUser(userId)
+            .onSuccess { refreshReviewRelatedData(animeId) }
+            .map { Unit }
     }
 
-
+    private suspend fun refreshReviewRelatedData(animeId: Long) {
+        refreshRecentReviews()
+        loadDetailRecentReviews()
+        loadAnimeDetailMyReview(animeId)
+        animeRepository.loadDetailInfo(animeId)
+        loadAnimeReviews(animeId, GetInfoReviewsRequest(animeId = animeId))
+        invalidateUserContent()
+    }
 }

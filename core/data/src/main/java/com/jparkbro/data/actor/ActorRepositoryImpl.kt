@@ -33,11 +33,16 @@ class ActorRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateActorLike(personId: Long, isLiked: Boolean): Result<Unit> {
-        return if (isLiked) {
+        val result = if (isLiked) {
             actorDataSource.unLikeActor(personId)
         } else {
             actorDataSource.likeActor(personId)
         }
+        result.onSuccess {
+            userRepository.refreshUserInfo()
+            invalidateUserContent()
+        }
+        return result
     }
 
     /** User Content */

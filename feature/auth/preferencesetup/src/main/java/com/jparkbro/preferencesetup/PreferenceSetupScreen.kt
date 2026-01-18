@@ -225,7 +225,8 @@ private fun PreferenceSetupScreen(
                             } else {
                                 APEmptyContent(
                                     modifier = Modifier
-                                        .fillParentMaxSize(),
+                                        .fillMaxWidth()
+                                        .fillParentMaxHeight(0.7f),
                                     comment = stringResource(R.string.empty_content)
                                 )
                             }
@@ -310,7 +311,7 @@ private fun SearchSection(
                         tint = APColors.TextGray
                     )
                 }
-            },
+            }
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small)),

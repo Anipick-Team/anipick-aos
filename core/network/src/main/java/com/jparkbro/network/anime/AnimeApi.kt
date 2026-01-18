@@ -2,15 +2,12 @@ package com.jparkbro.network.anime
 
 import com.jparkbro.model.common.anime.InfoSeriesAnimeDto
 import com.jparkbro.model.common.anime.SimpleAnimeDto
-import com.jparkbro.model.detail.AnimeRecommendsResponse
-import com.jparkbro.model.detail.AnimeSeriesResponse
-import com.jparkbro.model.detail.WatchStatusRequest
 import com.jparkbro.model.dto.home.main.RecommendedAnimesResponse
 import com.jparkbro.model.dto.info.AnimeInfoResponse
 import com.jparkbro.model.dto.info.GetInfoRecommendResponse
 import com.jparkbro.model.dto.info.GetInfoSeriesResponse
+import com.jparkbro.model.dto.info.WatchStatusRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
-import com.jparkbro.model.mypage.UserContentResponse
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
 import retrofit2.Response

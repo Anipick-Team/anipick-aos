@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.actor.ActorRepository
 import com.jparkbro.data.anime.AnimeRepository
 import com.jparkbro.data.review.ReviewRepository
-import com.jparkbro.model.common.ApiAction
+import com.jparkbro.model.enum.ApiAction
 import com.jparkbro.model.common.UiState
 import com.jparkbro.model.common.review.Review
 import com.jparkbro.model.common.review.toReview
@@ -18,6 +18,7 @@ import com.jparkbro.model.review.ReportReviewRequest
 import com.jparkbro.ui.R
 import com.jparkbro.ui.model.DialogData
 import com.jparkbro.ui.model.SnackBarData
+import com.jparkbro.ui.snackbar.GlobalSnackbarManager
 import com.jparkbro.ui.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +34,7 @@ import javax.inject.Inject
 @HiltViewModel
 class InfoAnimeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val globalSnackbarManager: GlobalSnackbarManager,
     private val animeRepository: AnimeRepository,
     private val actorRepository: ActorRepository,
     private val reviewRepository: ReviewRepository
@@ -254,20 +256,16 @@ class InfoAnimeViewModel @Inject constructor(
                 request = ReviewRatingRequest(rating)
             ).fold(
                 onSuccess = {
-                    _eventChannel.send(
-                        InfoAnimeEvent.ShowSnackBar(
-                            SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_create_review_success)
-                            )
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_create_review_success)
                         )
                     )
                 },
                 onFailure = {
-                    _eventChannel.send(
-                        InfoAnimeEvent.ShowSnackBar(
-                            SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_http_500_error)
-                            )
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_http_500_error)
                         )
                     )
                     onFailure()
@@ -292,23 +290,19 @@ class InfoAnimeViewModel @Inject constructor(
 
     private fun deleteReview(reviewId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            reviewRepository.deleteReview(reviewId).fold(
+            reviewRepository.deleteReview(reviewId, _animeId ?: 0).fold(
                 onSuccess = {
-                    _eventChannel.send(
-                        InfoAnimeEvent.ShowSnackBar(
-                            SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_delete_review_success)
-                            )
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_delete_review_success)
                         )
                     )
                     getAnimeReviews()
                 },
                 onFailure = { exception ->
-                    _eventChannel.send(
-                        InfoAnimeEvent.ShowSnackBar(
-                            SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_http_500_error)
-                            )
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_http_500_error)
                         )
                     )
                 }
@@ -318,23 +312,19 @@ class InfoAnimeViewModel @Inject constructor(
 
     private fun reportReview(reviewId: Long, reason: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            reviewRepository.reportReview(reviewId, ReportReviewRequest(message = reason)).fold(
+            reviewRepository.reportReview(reviewId, _animeId ?: 0, ReportReviewRequest(message = reason)).fold(
                 onSuccess = {
-                    _eventChannel.send(
-                        InfoAnimeEvent.ShowSnackBar(
-                            SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_review_report_success)
-                            )
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_review_report_success)
                         )
                     )
                     getAnimeReviews()
                 },
                 onFailure = { exception ->
-                    _eventChannel.send(
-                        InfoAnimeEvent.ShowSnackBar(
-                            SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_http_500_error)
-                            )
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_http_500_error)
                         )
                     )
                 }
@@ -344,23 +334,19 @@ class InfoAnimeViewModel @Inject constructor(
 
     private fun blockUser(userId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            reviewRepository.blockUser(userId).fold(
+            reviewRepository.blockUser(userId, _animeId ?: 0).fold(
                 onSuccess = {
-                    _eventChannel.send(
-                        InfoAnimeEvent.ShowSnackBar(
-                            SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_user_block_success)
-                            )
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_user_block_success)
                         )
                     )
                     getAnimeReviews()
                 },
                 onFailure = { exception ->
-                    _eventChannel.send(
-                        InfoAnimeEvent.ShowSnackBar(
-                            SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_http_500_error)
-                            )
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_http_500_error)
                         )
                     )
                 }

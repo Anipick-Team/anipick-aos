@@ -6,9 +6,6 @@ import com.jparkbro.model.dto.info.GetInfoReviewsResponse
 import com.jparkbro.model.dto.info.ReviewRatingRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
 import com.jparkbro.model.dto.review.SaveMyReviewRequest
-import com.jparkbro.model.mypage.MyReviewsResponse
-import com.jparkbro.model.review.EditMyReviewRequest
-import com.jparkbro.model.review.MyReview
 import com.jparkbro.model.review.ReportReviewRequest
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
@@ -74,22 +71,6 @@ interface ReviewApi {
         @Query("reviewOnly") reviewOnly: Boolean,
         @Query("size") size: Int?
     ): Response<ApiResponse<GetUserContentResponse>>
-
-
-
-
-
-
-    @GET(ApiConstants.GET_MY_REVIEW)
-    suspend fun getMyReview(
-        @Path("animeId") animeId: Long
-    ): Response<ApiResponse<MyReview>>
-
-    @PATCH(ApiConstants.EDIT_MY_REVEIW)
-    suspend fun editMyReview(
-        @Path("animeId") animeId: Long,
-        @Body request: EditMyReviewRequest
-    ): Response<ApiResponse<Unit>>
 
     @POST(ApiConstants.LIKED_REVIEW)
     suspend fun likedReview(

@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -184,6 +185,7 @@ private fun MyPageScreen(
                     ) {
                         NavigateTitle(
                             title = stringResource(R.string.mypage_liked_anime),
+                            isEnable = state.likeAnimes.isNotEmpty(),
                             onNavigateClick = { onAction(MyPageAction.NavigateToUserContent(UserContentType.LIKED_ANIME)) }
                         )
                         if (state.likeAnimes.isNotEmpty()) {
@@ -214,6 +216,7 @@ private fun MyPageScreen(
                     ) {
                         NavigateTitle(
                             title = stringResource(R.string.mypage_liked_actor),
+                            isEnable = state.likeActors.isNotEmpty(),
                             onNavigateClick = { onAction(MyPageAction.NavigateToUserContent(UserContentType.LIKED_PERSON)) }
                         )
                         if (state.likeActors.isNotEmpty()) {
@@ -263,6 +266,8 @@ private fun ProfileImage(
         AsyncImage(
             model = state.profileImageByteArray,
             contentDescription = stringResource(R.string.profile_img),
+            error = painterResource(R.drawable.profile_default_img),
+            placeholder = painterResource(R.drawable.profile_default_img),
             modifier = Modifier
                 .size(96.dp)
                 .clip(CircleShape),

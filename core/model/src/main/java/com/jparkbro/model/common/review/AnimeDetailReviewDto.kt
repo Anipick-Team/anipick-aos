@@ -6,9 +6,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AnimeDetailReviewDto(
     @SerialName("userId")
-    val userId: Int?,
+    val userId: Long?,
     @SerialName("reviewId")
-    val reviewId: Int?,
+    val reviewId: Long?,
     @SerialName("nickname")
     val nickname: String?,
     @SerialName("profileImageUrl")
@@ -30,15 +30,15 @@ data class AnimeDetailReviewDto(
 )
 
 fun AnimeDetailReviewDto.toReview() : Review = Review(
-    userId = userId ?: 0,
-    reviewId = reviewId ?: 0,
+    userId = userId,
+    reviewId = reviewId,
     nickname = nickname,
     profileImageUrl = profileImageUrl,
-    rating = rating ?: 0f,
+    rating = rating,
     content = content,
     createdAt = createdAt,
     isSpoiler = isSpoiler ?: false,
-    likeCount = likeCount ?: 0,
+    likeCount = likeCount,
     isLiked = isLiked ?: false,
     isMine = isMine ?: false
 )

@@ -152,6 +152,35 @@ fun AnimeSkeleton(
     }
 }
 
+@Composable
+fun PersonSkeleton(
+    width: Dp = 128.dp
+) {
+    Column {
+        Box(
+            modifier = Modifier
+                .width(width)
+                .aspectRatio(3f/4f)
+                .clip(AniPickSmallShape)
+                .background(ShimmerEffect())
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_medium)))
+        Box(
+            modifier = Modifier
+                .width(width)
+                .height(20.dp)
+                .background(ShimmerEffect())
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_extra_small)))
+        Box(
+            modifier = Modifier
+                .width(width)
+                .height(14.dp)
+                .background(ShimmerEffect())
+        )
+    }
+}
+
 @Preview
 @Composable
 private fun ReviewSkeletonPreview() {

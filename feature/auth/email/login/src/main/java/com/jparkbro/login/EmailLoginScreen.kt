@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
@@ -45,9 +44,7 @@ import com.jparkbro.ui.components.APAlertDialog
 import com.jparkbro.ui.components.APBackStackTopAppBar
 import com.jparkbro.ui.components.APLabeledTextField
 import com.jparkbro.ui.components.APPrimaryActionButton
-import com.jparkbro.ui.components.APSnackBarRe
 import com.jparkbro.ui.model.DialogData
-import com.jparkbro.ui.model.SnackBarData
 import com.jparkbro.ui.preview.DevicePreviews
 import com.jparkbro.ui.theme.AniPick14Normal
 import com.jparkbro.ui.theme.AniPick14Regular
@@ -72,7 +69,6 @@ internal fun EmailLoginRoot(
     viewModel: EmailLoginViewModel = hiltViewModel()
 ) {
     var dialogData by rememberSaveable { mutableStateOf<DialogData?>(null) }
-    var snackBarData by rememberSaveable { mutableStateOf<List<SnackBarData>>(emptyList()) }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -88,14 +84,6 @@ internal fun EmailLoginRoot(
             is EmailLoginEvent.LoginFailWithDialog -> {
                 dialogData = event.dialogData.copy(
                     onConfirm = { dialogData = null }
-                )
-            }
-
-            is EmailLoginEvent.LoginFailWithSnackBar -> {
-                snackBarData = snackBarData + event.snackBarData.copy(
-                    onDismiss = {
-                        snackBarData = snackBarData.drop(1)
-                    }
                 )
             }
         }
@@ -116,10 +104,6 @@ internal fun EmailLoginRoot(
 
     dialogData?.let {
         APAlertDialog(it)
-    }
-
-    snackBarData.firstOrNull()?.let { snackBarData ->
-        APSnackBarRe(snackBarData)
     }
 }
 

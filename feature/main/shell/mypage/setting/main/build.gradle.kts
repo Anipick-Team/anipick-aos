@@ -19,12 +19,24 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField(
+            type = "String",
+            name = "APP_VERSION_NAME",
+            value = "\"${rootProject.extra["versionName"]}\"",
+        )
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+
+            buildConfigField(
+                type = "String",
+                name = "APP_VERSION_NAME",
+                value = "\"${rootProject.extra["versionName"] ?: "1.0.0"}\"",
+            )
         }
     }
     compileOptions {
@@ -38,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -63,4 +76,8 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+
+    // oss-licenses
+    implementation(libs.androidx.appcompat)
+    implementation(libs.play.services.oss.licenses)
 }

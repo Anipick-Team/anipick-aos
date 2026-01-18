@@ -5,8 +5,13 @@ import androidx.compose.ui.graphics.Color
 val AniPickPrimary = Color(0xFF5CC398)
 val AniPickSecondary = Color(0xFF5CC9FF)
 val AniPickPoint = Color(0xFFFF87C2)
+val AniPickRed = Color(0xFFEA4335)
 
 val AniPickWhite = Color(0xFFFFFFFF)
+
+/** LightBlack (0xFF747382) */
+val AniPickBlack50 = Color(0xFF747382)
+/** Black (0xFF2F2E41) */
 val AniPickBlack = Color(0xFF2F2E41)
 
 /** LightGray (0xFFF4F5F4) */
@@ -22,7 +27,6 @@ val AniPickGray400 = Color(0xFFB1B6C1)
 val AniPickGray450 = Color(0x4D667080)
 /** DarkGray (0xFF667080) */
 val AniPickGray500 = Color(0xFF667080)
-
 
 val AniPickSurface = Color(0xFFF8F9FD)
 val AniPickScrimColor = Color(0x78000000)

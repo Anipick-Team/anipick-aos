@@ -75,7 +75,7 @@ import com.jparkbro.info.anime.components.AdditionalInfoSection
 import com.jparkbro.info.anime.components.AnimeInfoRow
 import com.jparkbro.info.anime.components.SkeletonScreen
 import com.jparkbro.info.anime.components.WatchStatusSelector
-import com.jparkbro.model.common.FormType
+import com.jparkbro.model.enum.FormType
 import com.jparkbro.model.common.UiState
 import com.jparkbro.model.enum.AnimeInfoTab
 import com.jparkbro.model.enum.DialogType
@@ -92,7 +92,6 @@ import com.jparkbro.ui.components.APEmptyContent
 import com.jparkbro.ui.components.APErrorScreen
 import com.jparkbro.ui.components.APReportReasonDialog
 import com.jparkbro.ui.components.APReviewCard
-import com.jparkbro.ui.components.APSnackBarRe
 import com.jparkbro.ui.components.APToggleSwitch
 import com.jparkbro.ui.components.updateRatingFromPosition
 import com.jparkbro.ui.model.DialogData
@@ -141,7 +140,6 @@ internal fun InfoAnimeRoot(
     viewModel: InfoAnimeViewModel = hiltViewModel()
 ) {
     var dialogData by rememberSaveable { mutableStateOf<DialogData?>(null) }
-    var snackBarData by rememberSaveable { mutableStateOf<List<SnackBarData>>(emptyList()) }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -152,11 +150,6 @@ internal fun InfoAnimeRoot(
                         event.dialogData.onConfirm(it)
                         dialogData = null
                     }
-                )
-            }
-            is InfoAnimeEvent.ShowSnackBar -> {
-                snackBarData = snackBarData + event.snackBarData.copy(
-                    onDismiss = { snackBarData = snackBarData.drop(1) }
                 )
             }
         }
@@ -220,10 +213,6 @@ internal fun InfoAnimeRoot(
             DialogType.SELECT -> APReportReasonDialog(dialogData)
             DialogType.ALERT -> APAlertDialog(dialogData)
         }
-    }
-
-    snackBarData.firstOrNull()?.let { snackBarData ->
-        APSnackBarRe(snackBarData)
     }
 }
 

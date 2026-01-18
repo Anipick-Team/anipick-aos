@@ -3,7 +3,7 @@ package com.jparkbro.verification
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jparkbro.data.AuthRepository
+import com.jparkbro.data.auth.AuthRepository
 import com.jparkbro.model.auth.RequestCode
 import com.jparkbro.model.auth.VerifyCode
 import com.jparkbro.model.enum.DialogType
@@ -11,6 +11,7 @@ import com.jparkbro.model.exception.ApiException
 import com.jparkbro.ui.R
 import com.jparkbro.ui.model.DialogData
 import com.jparkbro.ui.model.SnackBarData
+import com.jparkbro.ui.snackbar.GlobalSnackbarManager
 import com.jparkbro.ui.util.UiText
 import com.jparkbro.util.UserDataValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PasswordVerificationViewModel @Inject constructor(
+    private val globalSnackbarManager: GlobalSnackbarManager,
     private val userDataValidator: UserDataValidator,
     private val authRepository: AuthRepository
 ) : ViewModel() {
@@ -70,7 +72,7 @@ class PasswordVerificationViewModel @Inject constructor(
                 )
             ).fold(
                 onSuccess = {
-                    showSnackBar(
+                    globalSnackbarManager.showSnackbar(
                         SnackBarData(
                             text = UiText.StringResource(R.string.snackbar_send_code_success),
                         )
@@ -98,7 +100,7 @@ class PasswordVerificationViewModel @Inject constructor(
                             }
                         }
                         else -> {
-                            showSnackBar(
+                            globalSnackbarManager.showSnackbar(
                                 SnackBarData(
                                     text = UiText.StringResource(R.string.snackbar_http_500_error),
                                 )
@@ -188,7 +190,7 @@ class PasswordVerificationViewModel @Inject constructor(
                             }
                         }
                         else -> {
-                            showSnackBar(
+                            globalSnackbarManager.showSnackbar(
                                 SnackBarData(
                                     text = UiText.StringResource(R.string.snackbar_http_500_error),
                                 )
@@ -255,16 +257,6 @@ class PasswordVerificationViewModel @Inject constructor(
                         dismiss = UiText.StringResource(R.string.dialog_dismiss),
                         confirm = UiText.StringResource(R.string.dialog_already_sns_confirm),
                     )
-                )
-            )
-        }
-    }
-
-    private fun showSnackBar(snackBarData: SnackBarData) {
-        viewModelScope.launch(Dispatchers.Main) {
-            _eventChannel.send(
-                PasswordVerificationEvent.VerificationWithSnackBar(
-                    snackBarData = snackBarData,
                 )
             )
         }

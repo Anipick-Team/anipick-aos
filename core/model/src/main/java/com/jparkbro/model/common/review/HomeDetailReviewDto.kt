@@ -45,6 +45,6 @@ fun HomeDetailReviewDto.toReview(): Review = Review(
     profileImageUrl = profileImageUrl,
     createdAt = createdAt,
     likeCount = likeCount,
-    likedByCurrentUser = likedByCurrentUser ?: false,
+    isLiked = likedByCurrentUser ?: false,
     isMine = isMine ?: false
 )

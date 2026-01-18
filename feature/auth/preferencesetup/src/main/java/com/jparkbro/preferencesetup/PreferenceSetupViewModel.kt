@@ -3,7 +3,7 @@ package com.jparkbro.preferencesetup
 import androidx.compose.foundation.text.input.clearText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jparkbro.data.AuthRepository
+import com.jparkbro.data.auth.AuthRepository
 import com.jparkbro.model.common.ResponseMap
 import com.jparkbro.model.common.UiState
 import com.jparkbro.model.dto.preference.RatedAnime

@@ -69,7 +69,7 @@ object ApiConstants {
     const val MY_RATED_REVIEWS = "mypage/animes/rated"
 
     /* Setting */
-    const val GET_USER_INFO = "setting/view"
+    const val GET_USER = "setting/view"
     const val EDIT_NICKNAME = "setting/nickname"
     const val EDIT_EMAIL = "setting/email"
     const val EDIT_PASSWORD = "setting/password"

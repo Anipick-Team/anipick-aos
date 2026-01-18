@@ -9,35 +9,35 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AnimeInfoResponse(
     @SerialName("animeId")
-    val animeId: Int,
+    val animeId: Long? = null,
     @SerialName("title")
-    val title: String?,
+    val title: String? = null,
     @SerialName("coverImageUrl")
-    val coverImageUrl: String?,
+    val coverImageUrl: String? = null,
     @SerialName("bannerImageUrl")
-    val bannerImageUrl: String?,
+    val bannerImageUrl: String? = null,
     @SerialName("description")
-    val description: String?,
+    val description: String? = null,
     @SerialName("averageRating")
-    val averageRating: String?,
+    val averageRating: String? = null,
     @SerialName("isLiked")
-    val isLiked: Boolean,
+    val isLiked: Boolean? = null,
     @SerialName("watchStatus")
-    val watchStatus: WatchStatus?,
+    val watchStatus: WatchStatus? = null,
     @SerialName("type")
-    val type: String?,
+    val type: String? = null,
     @SerialName("reviewCount")
-    val reviewCount: Int,
+    val reviewCount: Int? = null,
     @SerialName("genres")
-    val genres: List<ResponseMap>,
+    val genres: List<ResponseMap> = emptyList(),
     @SerialName("episode")
-    val episode: Int?,
+    val episode: Int? = null,
     @SerialName("airDate")
-    val airDate: String?,
+    val airDate: String? = null,
     @SerialName("status")
-    val status: String?,
+    val status: String? = null,
     @SerialName("age")
-    val age: String?,
+    val age: String? = null,
     @SerialName("studios")
-    val studios: List<StudioMap>
+    val studios: List<StudioMap> = emptyList()
 )

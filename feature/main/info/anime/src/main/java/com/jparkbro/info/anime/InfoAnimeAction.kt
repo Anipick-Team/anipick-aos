@@ -1,6 +1,6 @@
 package com.jparkbro.info.anime
 
-import com.jparkbro.model.common.FormType
+import com.jparkbro.model.enum.FormType
 import com.jparkbro.model.enum.AnimeInfoTab
 import com.jparkbro.model.enum.ReviewSortType
 import com.jparkbro.model.enum.WatchStatus

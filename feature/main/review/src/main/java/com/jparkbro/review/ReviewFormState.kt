@@ -1,7 +1,7 @@
 package com.jparkbro.review
 
 import androidx.compose.foundation.text.input.TextFieldState
-import com.jparkbro.model.common.FormType
+import com.jparkbro.model.enum.FormType
 import com.jparkbro.model.common.UiState
 import com.jparkbro.model.common.review.Review
 

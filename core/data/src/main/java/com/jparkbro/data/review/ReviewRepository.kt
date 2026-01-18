@@ -1,21 +1,14 @@
 package com.jparkbro.data.review
 
-import com.jparkbro.model.common.ApiAction
+import com.jparkbro.model.enum.ApiAction
 import com.jparkbro.model.common.Cursor
-import com.jparkbro.model.common.anime.Anime
 import com.jparkbro.model.common.review.Review
-import com.jparkbro.model.detail.DetailMyReview
 import com.jparkbro.model.dto.home.detail.ListDataResult
 import com.jparkbro.model.dto.info.GetInfoReviewsRequest
-import com.jparkbro.model.dto.info.GetInfoReviewsResponse
 import com.jparkbro.model.dto.info.GetInfoReviewsResult
 import com.jparkbro.model.dto.info.ReviewRatingRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
-import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResult
 import com.jparkbro.model.dto.review.SaveMyReviewRequest
-import com.jparkbro.model.enum.ReviewSortType
-import com.jparkbro.model.review.EditMyReviewRequest
-import com.jparkbro.model.review.MyReview
 import com.jparkbro.model.review.ReportReviewRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,15 +40,10 @@ interface ReviewRepository {
     suspend fun loadUserContentReviews(request: GetUserContentRequest): Result<Unit>
     suspend fun invalidateUserContent()
 
-
-    /** My Reviews - 마이페이지용 (내가 작성한 모든 리뷰 목록) */
-    val myReviews: StateFlow<List<Review>>
-    suspend fun refreshMyReviews(cursor: Cursor?)
-
-    suspend fun getMyReview(animeId: Long): Result<MyReview>
-    suspend fun editMyReview(animeId: Long, request: EditMyReviewRequest): Result<Unit>
+    /** Review Like Update */
     suspend fun updateReviewLike(action: ApiAction, reviewId: Long, animeId: Long): Result<Unit>
-    suspend fun deleteReview(reviewId: Long): Result<Unit>
-    suspend fun reportReview(reviewId: Long, request: ReportReviewRequest): Result<Unit>
-    suspend fun blockUser(userId: Long): Result<Unit>
+
+    suspend fun deleteReview(reviewId: Long, animeId: Long): Result<Unit>
+    suspend fun reportReview(reviewId: Long, animeId: Long, request: ReportReviewRequest): Result<Unit>
+    suspend fun blockUser(userId: Long, animeId: Long): Result<Unit>
 }

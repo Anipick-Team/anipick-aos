@@ -8,12 +8,7 @@ import com.jparkbro.model.dto.info.ReviewRatingRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
 import com.jparkbro.model.dto.review.SaveMyReviewRequest
-import com.jparkbro.model.enum.ReviewSortType
-import com.jparkbro.model.review.EditMyReviewRequest
-import com.jparkbro.model.review.MyReview
 import com.jparkbro.model.review.ReportReviewRequest
-import com.jparkbro.network.actor.RetrofitActorDataSource
-import com.jparkbro.network.detail.RetrofitDetailDataSource
 import com.jparkbro.network.util.toResult
 import com.jparkbro.network.util.toUnitResult
 import javax.inject.Inject
@@ -65,22 +60,10 @@ class RetrofitReviewDataSource @Inject constructor(
             lastId = request.lastId,
             lastLikeCount = request.lastLikeCount,
             lastRating = request.lastRating,
-            sort = request.sort,
+            sort = request.sort.param,
             reviewOnly = request.reviewOnly,
             size = request.size
         ).toResult(TAG, "loadUserContentReviews")
-    }
-
-
-
-
-
-    override suspend fun getMyReview(animeId: Long): Result<MyReview> {
-        return reviewApi.getMyReview(animeId).toResult(TAG, "getMyReview")
-    }
-
-    override suspend fun editMyReview(animeId: Long, request: EditMyReviewRequest): Result<Unit> {
-        return reviewApi.editMyReview(animeId, request).toUnitResult(TAG, "editMyReview")
     }
 
     override suspend fun likedReview(reviewId: Long): Result<Unit> {

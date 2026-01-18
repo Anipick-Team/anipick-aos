@@ -1,6 +1,6 @@
 package com.jparkbro.model.dto.auth
 
-import com.jparkbro.model.common.AuthToken
+import com.jparkbro.model.auth.AuthToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

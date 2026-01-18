@@ -13,9 +13,6 @@ import com.jparkbro.network.auth.RetrofitAuthDataSource
 import com.jparkbro.network.common.CommonApi
 import com.jparkbro.network.common.CommonDataSource
 import com.jparkbro.network.common.RetrofitCommonDataSource
-import com.jparkbro.network.detail.DetailApi
-import com.jparkbro.network.detail.DetailDataSource
-import com.jparkbro.network.detail.RetrofitDetailDataSource
 import com.jparkbro.network.explore.ExploreApi
 import com.jparkbro.network.explore.ExploreDataSource
 import com.jparkbro.network.explore.RetrofitExploreDataSource
@@ -23,9 +20,6 @@ import com.jparkbro.network.home.HomeApi
 import com.jparkbro.network.home.HomeDataSource
 import com.jparkbro.network.home.RetrofitHomeDataSource
 import com.jparkbro.network.interceptor.AuthInterceptor
-import com.jparkbro.network.mypage.MyPageApi
-import com.jparkbro.network.mypage.MyPageDataSource
-import com.jparkbro.network.mypage.RetrofitMyPageDataSource
 import com.jparkbro.network.ranking.RankingApi
 import com.jparkbro.network.ranking.RankingDataSource
 import com.jparkbro.network.ranking.RetrofitRankingDataSource
@@ -36,9 +30,6 @@ import com.jparkbro.network.review.ReviewDataSource
 import com.jparkbro.network.search.RetrofitSearchDataSource
 import com.jparkbro.network.search.SearchApi
 import com.jparkbro.network.search.SearchDataSource
-import com.jparkbro.network.setting.RetrofitSettingDataSource
-import com.jparkbro.network.setting.SettingApi
-import com.jparkbro.network.setting.SettingDataSource
 import com.jparkbro.network.studio.RetrofitStudioDataSource
 import com.jparkbro.network.studio.StudioApi
 import com.jparkbro.network.studio.StudioDataSource
@@ -139,20 +130,6 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideMyPageApi(retrofit: Retrofit): MyPageApi {
-        return retrofit.create(MyPageApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideMyPageDataSource(
-        myPageApi: MyPageApi
-    ): MyPageDataSource {
-        return RetrofitMyPageDataSource(myPageApi)
-    }
-
-    @Provides
-    @Singleton
     fun provideCommonApi(retrofit: Retrofit): CommonApi {
         return retrofit.create(CommonApi::class.java)
     }
@@ -173,18 +150,6 @@ internal object NetworkModule {
     @Singleton
     fun provideRankingDataSource(rankingApi: RankingApi): RankingDataSource {
         return RetrofitRankingDataSource(rankingApi)
-    }
-
-    @Provides
-    @Singleton
-    fun provideDetailApi(retrofit: Retrofit): DetailApi {
-        return retrofit.create(DetailApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideDetailDataSource(detailApi: DetailApi): DetailDataSource {
-        return RetrofitDetailDataSource(detailApi)
     }
 
     @Provides
@@ -221,18 +186,6 @@ internal object NetworkModule {
     @Singleton
     fun provideReviewDataSource(reviewApi: ReviewApi): ReviewDataSource {
         return RetrofitReviewDataSource(reviewApi)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSettingApi(retrofit: Retrofit): SettingApi {
-        return retrofit.create(SettingApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSettingDataSource(settingApi: SettingApi): SettingDataSource {
-        return RetrofitSettingDataSource(settingApi)
     }
 
     @Provides

@@ -5,7 +5,7 @@ import androidx.annotation.StringRes
 import com.jparkbro.anipick.R
 import com.jparkbro.explore.navigation.Explore
 import com.jparkbro.home.main.navigation.Home
-import com.jparkbro.mypage.navigation.MyPage
+import com.jparkbro.mypage.main.navigation.MyPage
 import com.jparkbro.ranking.navigation.Ranking
 import kotlin.reflect.KClass
 

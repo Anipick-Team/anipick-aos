@@ -11,6 +11,7 @@ import com.jparkbro.ui.R
 import com.jparkbro.ui.util.UiText
 import com.jparkbro.ui.model.DialogData
 import com.jparkbro.ui.model.SnackBarData
+import com.jparkbro.ui.snackbar.GlobalSnackbarManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -24,6 +25,7 @@ import kotlin.collections.plus
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
+    private val globalSnackbarManager: GlobalSnackbarManager,
     private val kakaoLoginUseCase: KakaoLoginUseCase,
     private val googleLoginUseCase: GoogleLoginUseCase,
 ) : ViewModel() {
@@ -58,8 +60,9 @@ class LoginViewModel @Inject constructor(
                                 }
                             }
                         } else {
-                            showSnackBar(
-                                SnackBarData(text = UiText.StringResource(R.string.snackbar_login_failed))
+                            globalSnackbarManager.showSnackbar(
+                                SnackBarData(
+                                    text = UiText.StringResource(R.string.snackbar_login_failed))
                             )
                         }
                     }
@@ -87,10 +90,9 @@ class LoginViewModel @Inject constructor(
                                 }
                             }
                         } else {
-                            showSnackBar(
+                            globalSnackbarManager.showSnackbar(
                                 SnackBarData(
-                                    text = UiText.StringResource(R.string.snackbar_login_failed),
-                                )
+                                    text = UiText.StringResource(R.string.snackbar_login_failed))
                             )
                         }
                     }
@@ -125,16 +127,6 @@ class LoginViewModel @Inject constructor(
                         dismiss = UiText.StringResource(R.string.dialog_dismiss),
                         confirm = UiText.StringResource(R.string.dialog_email_login),
                     )
-                )
-            )
-        }
-    }
-
-    private fun showSnackBar(snackBarData: SnackBarData) {
-        viewModelScope.launch(Dispatchers.Main) {
-            _eventChannel.send(
-                LoginEvent.LoginFailWithSnackBar(
-                    snackBarData = snackBarData,
                 )
             )
         }

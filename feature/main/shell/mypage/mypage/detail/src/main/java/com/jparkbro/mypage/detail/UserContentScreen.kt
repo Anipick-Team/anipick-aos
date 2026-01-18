@@ -25,31 +25,25 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jparkbro.model.common.FormType
+import com.jparkbro.model.enum.FormType
 import com.jparkbro.model.common.UiState
 import com.jparkbro.model.enum.DialogType
-import com.jparkbro.model.enum.HomeDetailType
 import com.jparkbro.model.enum.UserContentType
 import com.jparkbro.mypage.detail.components.SkeletonScreen
 import com.jparkbro.mypage.detail.components.SortDropdownBtn
@@ -65,7 +59,6 @@ import com.jparkbro.ui.components.APReviewCard
 import com.jparkbro.ui.components.APTitleTopAppBar
 import com.jparkbro.ui.components.APToggleSwitch
 import com.jparkbro.ui.model.DialogData
-import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.theme.AniPick12Normal
 import com.jparkbro.ui.theme.AniPick14Bold
 import com.jparkbro.ui.theme.AniPick14Normal
@@ -73,7 +66,6 @@ import com.jparkbro.ui.theme.AniPick16Bold
 import com.jparkbro.ui.theme.AniPickGray100
 import com.jparkbro.ui.theme.AniPickGray400
 import com.jparkbro.ui.theme.AniPickGray450
-import com.jparkbro.ui.theme.AniPickGray500
 import com.jparkbro.ui.theme.AniPickPoint
 import com.jparkbro.ui.theme.AniPickPrimary
 import com.jparkbro.ui.theme.AniPickSecondary
@@ -97,7 +89,15 @@ internal fun UserContentRoot(
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-
+            is UserContentEvent.ShowDialog -> {
+                dialogData = event.dialogData.copy(
+                    onDismiss = { dialogData = null },
+                    onConfirm = {
+                        event.dialogData.onConfirm(it)
+                        dialogData = null
+                    }
+                )
+            }
         }
     }
 
@@ -107,7 +107,7 @@ internal fun UserContentRoot(
         UiState.Loading -> {
             SkeletonScreen(
                 state = state,
-                onAction = viewModel::onAction
+                onNavigateBack = onNavigateBack
             )
         }
 
@@ -127,6 +127,7 @@ internal fun UserContentRoot(
                         is UserContentAction.NavigateToActor -> onNavigateToActor(action.actorId)
                         is UserContentAction.NavigateToEditReview -> onNavigateToReviewForm(action.animeId, action.formType)
                     }
+                    viewModel.onAction(action)
                 }
             )
         }
@@ -213,14 +214,15 @@ private fun ReviewsContent(
             }
     }
 
-    Column {
+    Column(
+        modifier = modifier
+    ) {
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
             thickness = dimensionResource(R.dimen.border_width_default),
-            color = AniPickGray100
+            color = AniPickSurface
         )
         LazyColumn(
-            modifier = modifier,
             contentPadding = PaddingValues(
                 start = dimensionResource(R.dimen.padding_large),
                 end = dimensionResource(R.dimen.padding_large),
@@ -276,35 +278,42 @@ private fun ReviewsContent(
                             onAction(UserContentAction.NavigateToEditReview(animeId, FormType.EDIT))
                         },
                         onClickDelete = { reviewId ->
-                            onAction(UserContentAction.OnReviewDeleteClicked(reviewId))
+                            onAction(UserContentAction.OnReviewDeleteClicked(reviewId, review.animeId ?: 0))
                         },
                         onClickLiked = { reviewId, animeId, isLiked , result ->
-                            onAction(UserContentAction.OnReviewLikeClicked(reviewId, animeId, isLiked, result))
+                            onAction(UserContentAction.OnReviewLikeClicked(reviewId, animeId, isLiked))
                         },
                         onNavigateInfoAnime= { animeId ->
                             onAction(UserContentAction.NavigateToInfoAnime(animeId))
                         }
                     )
                 }
+                item {
+                    if (state.isMoreDataLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = dimensionResource(R.dimen.padding_default)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = AniPickPrimary
+                            )
+                        }
+                    }
+                }
             } else {
-               item {
-                   APEmptyContent(
-                       modifier = Modifier
-                           .fillMaxWidth(),
-                       comment = stringResource(R.string.user_content_empty_review)
-                   )
-               }
-            }
-            item {
-                if (state.isMoreDataLoading) {
+                item {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = dimensionResource(R.dimen.padding_default)),
+                            .fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator(
-                            color = AniPickPrimary
+                        APEmptyContent(
+                            modifier = Modifier
+                                .fillParentMaxHeight(0.7f)
+                                .fillMaxWidth(),
+                            comment = stringResource(R.string.user_content_empty_review)
                         )
                     }
                 }
@@ -363,7 +372,7 @@ private fun AnimeAndActorContent(
                 thickness = dimensionResource(R.dimen.border_width_default),
                 color = AniPickGray100
             )
-            if (state.animes.isEmpty() && state.actors.isEmpty()) {
+            if (state.animes.isEmpty() && state.contentType != UserContentType.LIKED_PERSON) {
                 APEmptyContent(
                     modifier = Modifier
                         .fillMaxSize(),

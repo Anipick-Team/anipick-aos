@@ -10,7 +10,7 @@ data class GetUserContentRequest(
     val lastId: Long? = null,
     val lastLikeCount: String? = null,
     val lastRating: String? = null,
-    val sort: String = ReviewSortType.LATEST.param,
+    val sort: ReviewSortType = ReviewSortType.LATEST,
     val reviewOnly: Boolean = false,
     val size: Int? = null,
 )

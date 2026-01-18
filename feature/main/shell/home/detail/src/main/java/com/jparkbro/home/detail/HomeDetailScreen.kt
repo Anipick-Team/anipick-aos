@@ -38,7 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jparkbro.home.detail.components.DropdownButton
 import com.jparkbro.home.detail.components.RecommendationBanner
 import com.jparkbro.home.detail.components.SkeletonScreen
-import com.jparkbro.model.common.FormType
+import com.jparkbro.model.enum.FormType
 import com.jparkbro.model.common.UiState
 import com.jparkbro.model.enum.DialogType
 import com.jparkbro.model.enum.HomeDetailType
@@ -49,7 +49,6 @@ import com.jparkbro.ui.components.APConfirmDialog
 import com.jparkbro.ui.components.APErrorScreen
 import com.jparkbro.ui.components.APReportReasonDialog
 import com.jparkbro.ui.components.APReviewCard
-import com.jparkbro.ui.components.APSnackBarRe
 import com.jparkbro.ui.components.APTitleTopAppBar
 import com.jparkbro.ui.model.DialogData
 import com.jparkbro.ui.model.SnackBarData
@@ -73,7 +72,6 @@ internal fun HomeDetailRoot(
     viewModel: HomeDetailViewModel = hiltViewModel()
 ) {
     var dialogData by rememberSaveable { mutableStateOf<DialogData?>(null) }
-    var snackBarData by rememberSaveable { mutableStateOf<List<SnackBarData>>(emptyList()) }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -84,11 +82,6 @@ internal fun HomeDetailRoot(
                         event.dialogData.onConfirm(it)
                         dialogData = null
                     }
-                )
-            }
-            is HomeDetailEvent.ShowSnackBar -> {
-                snackBarData = snackBarData + event.snackBarData.copy(
-                    onDismiss = { snackBarData = snackBarData.drop(1) }
                 )
             }
         }
@@ -128,10 +121,6 @@ internal fun HomeDetailRoot(
             DialogType.SELECT -> APReportReasonDialog(dialogData)
             DialogType.ALERT -> APAlertDialog(dialogData)
         }
-    }
-
-    snackBarData.firstOrNull()?.let { snackBarData ->
-        APSnackBarRe(snackBarData)
     }
 }
 
@@ -220,13 +209,13 @@ private fun ReviewsContent(
                         onAction(HomeDetailAction.NavigateToEditReview(animeId, FormType.EDIT))
                     },
                     onClickDelete = { reviewId ->
-                        onAction(HomeDetailAction.OnReviewDeleteClicked(reviewId))
+                        onAction(HomeDetailAction.OnReviewDeleteClicked(reviewId, review.animeId ?: 0))
                     },
                     onCLickReport = { reviewId ->
-                        onAction(HomeDetailAction.OnReviewReportClicked(reviewId))
+                        onAction(HomeDetailAction.OnReviewReportClicked(reviewId, review.animeId ?: 0))
                     },
                     onClickBlock = { userId ->
-                        onAction(HomeDetailAction.OnUserBlockClicked(userId))
+                        onAction(HomeDetailAction.OnUserBlockClicked(userId, review.animeId ?: 0))
                     },
                     onClickLiked = { reviewId, animeId, isLiked , result ->
                         onAction(HomeDetailAction.OnReviewLikeClicked(reviewId, animeId, isLiked, result))

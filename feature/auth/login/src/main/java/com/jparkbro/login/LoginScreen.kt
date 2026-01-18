@@ -36,7 +36,6 @@ import com.jparkbro.model.enum.DialogType
 import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APAlertDialog
 import com.jparkbro.ui.components.APConfirmDialog
-import com.jparkbro.ui.components.APSnackBarRe
 import com.jparkbro.ui.model.DialogData
 import com.jparkbro.ui.model.SnackBarData
 import com.jparkbro.ui.preview.DevicePreviews
@@ -64,7 +63,6 @@ internal fun LoginRoot(
     val activity = context.requireActivity()
 
     var dialogData by rememberSaveable { mutableStateOf<DialogData?>(null) }
-    var snackBarData by rememberSaveable { mutableStateOf<List<SnackBarData>>(emptyList()) }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
@@ -96,14 +94,6 @@ internal fun LoginRoot(
 
                     else -> Unit
                 }
-            }
-
-            is LoginEvent.LoginFailWithSnackBar -> {
-                snackBarData = snackBarData + event.snackBarData.copy(
-                    onDismiss = {
-                        snackBarData = snackBarData.drop(1)
-                    }
-                )
             }
         }
     }
@@ -137,10 +127,6 @@ internal fun LoginRoot(
 
             else -> Unit
         }
-    }
-
-    snackBarData.firstOrNull()?.let { snackBarData ->
-        APSnackBarRe(snackBarData)
     }
 }
 

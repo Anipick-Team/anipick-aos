@@ -16,18 +16,20 @@ import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.AniPick18ExtraBold
 import com.jparkbro.ui.theme.AniPickBlack
 import com.jparkbro.ui.theme.AniPickGray100
+import com.jparkbro.ui.theme.AniPickGray50
 import com.jparkbro.ui.theme.ChevronRightIcon
 
 @Composable
 internal fun NavigateTitle(
     title: String,
+    isEnable: Boolean = true,
     onNavigateClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = dimensionResource(R.dimen.padding_large))
-            .clickable { onNavigateClick() },
+            .clickable(enabled = isEnable) { onNavigateClick() },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -38,7 +40,7 @@ internal fun NavigateTitle(
         Icon(
             imageVector = ChevronRightIcon,
             contentDescription = stringResource(R.string.chevron_right_icon),
-            tint = AniPickGray100,
+            tint = if (isEnable) AniPickGray100 else AniPickGray50,
         )
     }
 }

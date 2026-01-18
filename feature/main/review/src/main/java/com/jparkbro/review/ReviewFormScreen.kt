@@ -16,10 +16,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -36,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.pointerInput
@@ -49,18 +47,16 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jparkbro.model.common.FormType
+import com.jparkbro.model.enum.FormType
 import com.jparkbro.model.common.UiState
-import com.jparkbro.review.components.BulletPointText
 import com.jparkbro.review.components.SkeletonScreen
 import com.jparkbro.ui.R
+import com.jparkbro.ui.components.APBulletPointText
 import com.jparkbro.ui.components.APErrorScreen
 import com.jparkbro.ui.components.APPrimaryActionButton
-import com.jparkbro.ui.components.APSnackBarRe
 import com.jparkbro.ui.components.APTitleTopAppBar
 import com.jparkbro.ui.components.APToggleSwitch
 import com.jparkbro.ui.components.updateRatingFromPosition
-import com.jparkbro.ui.model.SnackBarData
 import com.jparkbro.ui.theme.AniPick12Normal
 import com.jparkbro.ui.theme.AniPick14Normal
 import com.jparkbro.ui.theme.AniPick16Bold
@@ -152,56 +148,54 @@ private fun ReviewFormScreen(
         },
         containerColor = AniPickWhite
     ) { innerPadding ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .advancedImePadding()
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {
-                    focusManager.clearFocus()
-                },
         ) {
-            stickyHeader {
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    thickness = dimensionResource(R.dimen.border_width_default),
-                    color = AniPickGray100
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth(),
+                thickness = dimensionResource(R.dimen.border_width_default),
+                color = AniPickGray100
+            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = dimensionResource(R.dimen.padding_large), vertical = dimensionResource(R.dimen.padding_extra_large))
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        focusManager.clearFocus()
+                    },
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_36))
+            ) {
+                RatingContainer(
+                    state = state,
+                    onAction = onAction
+                )
+                ReviewContentSection(
+                    state = state,
+                    onAction = onAction,
                 )
             }
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillParentMaxSize()
-                        .padding(top = dimensionResource(R.dimen.padding_extra_large))
-                        .padding(horizontal = dimensionResource(R.dimen.padding_large)),
-                    verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_36))
-                ) {
-                    RatingContainer(
-                        state = state,
-                        onAction = onAction
-                    )
-                    ReviewContentSection(
-                        state = state,
-                        onAction = onAction,
-                    )
-                    APPrimaryActionButton(
-                        text = stringResource(
-                            when (state.formType) {
-                                FormType.CREATE -> R.string.review_form_btn_create
-                                FormType.EDIT -> R.string.review_form_btn_update
-                            }
-                        ),
-                        onClick = { onAction(ReviewFormAction.OnSaveReviewClicked) },
-                        enabled = state.isSaveEnabled,
-                        isLoading = state.isLoading
-                    )
-                }
-            }
+            APPrimaryActionButton(
+                text = stringResource(
+                    when (state.formType) {
+                        FormType.CREATE -> R.string.review_form_btn_create
+                        FormType.EDIT -> R.string.review_form_btn_update
+                    }
+                ),
+                onClick = { onAction(ReviewFormAction.OnSaveReviewClicked) },
+                enabled = state.isSaveEnabled,
+                isLoading = state.isLoading,
+                modifier = Modifier
+                    .padding(bottom = dimensionResource(R.dimen.padding_extra_large))
+                    .padding(horizontal = dimensionResource(R.dimen.padding_large))
+            )
         }
-
     }
 }
 
@@ -409,23 +403,23 @@ private fun ReviewContentSection(
                     text = stringResource(R.string.review_form_caution_subtitle),
                     style = guideTextStyle
                 )
-                BulletPointText(
+                APBulletPointText(
                     text = stringResource(R.string.review_form_caution_content_1),
                     textStyle = guideTextStyle
                 )
-                BulletPointText(
+                APBulletPointText(
                     text = stringResource(R.string.review_form_caution_content_2),
                     textStyle = guideTextStyle
                 )
-                BulletPointText(
+                APBulletPointText(
                     text = stringResource(R.string.review_form_caution_content_3),
                     textStyle = guideTextStyle
                 )
-                BulletPointText(
+                APBulletPointText(
                     text = stringResource(R.string.review_form_caution_content_4),
                     textStyle = guideTextStyle
                 )
-                BulletPointText(
+                APBulletPointText(
                     text = stringResource(R.string.review_form_caution_content_5),
                     textStyle = guideTextStyle
                 )

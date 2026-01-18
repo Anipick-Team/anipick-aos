@@ -4,7 +4,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jparkbro.data.AuthRepository
+import com.jparkbro.data.auth.AuthRepository
 import com.jparkbro.model.auth.ResetPassword
 import com.jparkbro.model.exception.ApiException
 import com.jparkbro.ui.R

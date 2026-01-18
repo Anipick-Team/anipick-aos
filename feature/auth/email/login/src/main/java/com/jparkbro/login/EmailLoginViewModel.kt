@@ -9,6 +9,7 @@ import com.jparkbro.model.exception.ApiException
 import com.jparkbro.ui.R
 import com.jparkbro.ui.model.DialogData
 import com.jparkbro.ui.model.SnackBarData
+import com.jparkbro.ui.snackbar.GlobalSnackbarManager
 import com.jparkbro.ui.util.UiText
 import com.jparkbro.util.UserDataValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EmailLoginViewModel @Inject constructor(
+    private val globalSnackbarManager: GlobalSnackbarManager,
     private val userDataValidator: UserDataValidator,
     private val emailLoginUseCase: EmailLoginUseCase
 ) : ViewModel() {
@@ -131,7 +133,7 @@ class EmailLoginViewModel @Inject constructor(
                                 }
                             }
                         } else {
-                            showSnackBar(
+                            globalSnackbarManager.showSnackbar(
                                 SnackBarData(
                                     text = UiText.StringResource(R.string.snackbar_login_failed),
                                 )
@@ -160,16 +162,6 @@ class EmailLoginViewModel @Inject constructor(
                         subTitle = UiText.StringResource(R.string.dialog_account_withdrawn_message),
                         confirm = UiText.StringResource(R.string.dialog_dismiss),
                     )
-                )
-            )
-        }
-    }
-
-    private fun showSnackBar(snackBarData: SnackBarData) {
-        viewModelScope.launch(Dispatchers.Main) {
-            _eventChannel.send(
-                EmailLoginEvent.LoginFailWithSnackBar(
-                    snackBarData = snackBarData,
                 )
             )
         }

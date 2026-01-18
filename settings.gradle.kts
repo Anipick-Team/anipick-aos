@@ -43,7 +43,6 @@ include(":feature:auth:preferencesetup")
 include(":feature:main:explore")
 include(":feature:main:search")
 include(":feature:main:ranking")
-include(":feature:main:setting")
 include(":feature:main:review")
 
 include(":feature:main:shell:home:main")

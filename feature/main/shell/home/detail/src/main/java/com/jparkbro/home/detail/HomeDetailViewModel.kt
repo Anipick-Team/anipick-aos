@@ -7,7 +7,7 @@ import com.jparkbro.data.UserPreferenceRepository
 import com.jparkbro.data.anime.AnimeRepository
 import com.jparkbro.data.home.HomeRepository
 import com.jparkbro.data.review.ReviewRepository
-import com.jparkbro.model.common.ApiAction
+import com.jparkbro.model.enum.ApiAction
 import com.jparkbro.model.common.UiState
 import com.jparkbro.model.enum.DialogType
 import com.jparkbro.model.enum.HomeDetailType
@@ -17,6 +17,7 @@ import com.jparkbro.model.review.ReportReviewRequest
 import com.jparkbro.ui.R
 import com.jparkbro.ui.model.DialogData
 import com.jparkbro.ui.model.SnackBarData
+import com.jparkbro.ui.snackbar.GlobalSnackbarManager
 import com.jparkbro.ui.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +32,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val globalSnackbarManager: GlobalSnackbarManager,
     private val animeRepository: AnimeRepository,
     private val reviewRepository: ReviewRepository,
     private val userPreferenceRepository: UserPreferenceRepository,
@@ -103,9 +105,9 @@ class HomeDetailViewModel @Inject constructor(
                 liked = action.isLiked,
                 onResult = { action.callback(it) }
             )
-            is HomeDetailAction.OnUserBlockClicked -> userBlockDialog(action.userId)
-            is HomeDetailAction.OnReviewReportClicked -> reportReviewDialog(action.reviewId)
-            is HomeDetailAction.OnReviewDeleteClicked -> deleteReviewDialog(action.reviewId)
+            is HomeDetailAction.OnUserBlockClicked -> userBlockDialog(action.userId, action.animeId)
+            is HomeDetailAction.OnReviewReportClicked -> reportReviewDialog(action.reviewId, action.animeId)
+            is HomeDetailAction.OnReviewDeleteClicked -> deleteReviewDialog(action.reviewId, action.animeId)
 
         }
     }
@@ -146,9 +148,7 @@ class HomeDetailViewModel @Inject constructor(
         when (type) {
             HomeDetailType.RECENT_REVIEWS -> {
                 reviewRepository.loadDetailRecentReviews()
-                    .onFailure { exception ->
-                        _state.update { it.copy(uiState = UiState.Error) }
-                    }
+                    .onFailure { _state.update { it.copy(uiState = UiState.Error) } }
             }
             else -> {
                 homeRepository.getDetailData(
@@ -255,25 +255,20 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun deleteReview(reviewId: Long) {
+    private fun deleteReview(reviewId: Long, animeId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            reviewRepository.deleteReview(reviewId).fold(
+            reviewRepository.deleteReview(reviewId, animeId).fold(
                 onSuccess = {
-                    _eventChannel.send(
-                        HomeDetailEvent.ShowSnackBar(
-                            SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_delete_review_success)
-                            )
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_delete_review_success)
                         )
                     )
-                    initLoad()
                 },
                 onFailure = { exception ->
-                    _eventChannel.send(
-                        HomeDetailEvent.ShowSnackBar(
-                            SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_http_500_error)
-                            )
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_http_500_error)
                         )
                     )
                 }
@@ -281,25 +276,20 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun reportReview(reviewId: Long, reason: String) {
+    private fun reportReview(reviewId: Long, animeId: Long, reason: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            reviewRepository.reportReview(reviewId, ReportReviewRequest(message = reason)).fold(
+            reviewRepository.reportReview(reviewId, animeId, ReportReviewRequest(message = reason)).fold(
                 onSuccess = {
-                    _eventChannel.send(
-                        HomeDetailEvent.ShowSnackBar(
-                            SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_review_report_success)
-                            )
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_review_report_success)
                         )
                     )
-                    initLoad()
                 },
                 onFailure = { exception ->
-                    _eventChannel.send(
-                        HomeDetailEvent.ShowSnackBar(
-                            SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_http_500_error)
-                            )
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_http_500_error)
                         )
                     )
                 }
@@ -307,25 +297,20 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun blockUser(userId: Long) {
+    private fun blockUser(userId: Long, animeId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            reviewRepository.blockUser(userId).fold(
+            reviewRepository.blockUser(userId, animeId).fold(
                 onSuccess = {
-                    _eventChannel.send(
-                        HomeDetailEvent.ShowSnackBar(
-                            SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_user_block_success)
-                            )
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_user_block_success)
                         )
                     )
-                    initLoad()
                 },
                 onFailure = { exception ->
-                    _eventChannel.send(
-                        HomeDetailEvent.ShowSnackBar(
-                            SnackBarData(
-                                text = UiText.StringResource(R.string.snackbar_http_500_error)
-                            )
+                    globalSnackbarManager.showSnackbar(
+                        SnackBarData(
+                            text = UiText.StringResource(R.string.snackbar_http_500_error)
                         )
                     )
                 }
@@ -333,7 +318,7 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun reportReviewDialog(reviewId: Long) {
+    private fun reportReviewDialog(reviewId: Long, animeId: Long) {
         viewModelScope.launch(Dispatchers.Main) {
             _eventChannel.send(
                 HomeDetailEvent.ShowDialog(
@@ -344,7 +329,7 @@ class HomeDetailViewModel @Inject constructor(
                         dismiss = UiText.StringResource(R.string.dialog_report_review_dismiss),
                         confirm = UiText.StringResource(R.string.dialog_report_review_next),
                         onConfirm = {
-                            reportReviewReasonDialog(reviewId)
+                            reportReviewReasonDialog(reviewId, animeId)
                         }
                     )
                 )
@@ -352,7 +337,7 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun reportReviewReasonDialog(reviewId: Long) {
+    private fun reportReviewReasonDialog(reviewId: Long, animeId: Long) {
         viewModelScope.launch(Dispatchers.Main) {
             _eventChannel.send(
                 HomeDetailEvent.ShowDialog(
@@ -363,7 +348,7 @@ class HomeDetailViewModel @Inject constructor(
                         dismiss = UiText.StringResource(R.string.dialog_report_review_dismiss),
                         confirm = UiText.StringResource(R.string.dialog_report_review_confirm),
                         onConfirm = { reason ->
-                            reportReview(reviewId, reason.toString())
+                            reportReview(reviewId, animeId, reason.toString())
                         }
                     )
                 )
@@ -371,7 +356,7 @@ class HomeDetailViewModel @Inject constructor(
         }
     }
 
-    private fun deleteReviewDialog(reviewId: Long) {
+    private fun deleteReviewDialog(reviewId: Long, animeId: Long) {
         viewModelScope.launch(Dispatchers.Main) {
             _eventChannel.send(
                 HomeDetailEvent.ShowDialog(
@@ -381,14 +366,14 @@ class HomeDetailViewModel @Inject constructor(
                         subTitle = UiText.StringResource(R.string.dialog_delete_review_subtitle),
                         dismiss = UiText.StringResource(R.string.dialog_delete_review_dismiss),
                         confirm = UiText.StringResource(R.string.dialog_delete_review_confirm),
-                        onConfirm = { deleteReview(reviewId) }
+                        onConfirm = { deleteReview(reviewId, animeId) }
                     )
                 )
             )
         }
     }
 
-    private fun userBlockDialog(userId: Long) {
+    private fun userBlockDialog(userId: Long, animeId: Long) {
         viewModelScope.launch(Dispatchers.Main) {
             _eventChannel.send(
                 HomeDetailEvent.ShowDialog(
@@ -398,7 +383,7 @@ class HomeDetailViewModel @Inject constructor(
                         subTitle = UiText.StringResource(R.string.dialog_user_block_subtitle),
                         dismiss = UiText.StringResource(R.string.dialog_user_block_dismiss),
                         confirm = UiText.StringResource(R.string.dialog_user_block_confirm),
-                        onConfirm = { blockUser(userId) }
+                        onConfirm = { blockUser(userId, animeId) }
                     )
                 )
             )

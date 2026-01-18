@@ -24,9 +24,6 @@ class MyPageViewModel @Inject constructor(
     private val _state = MutableStateFlow(MyPageState())
     val state = _state.asStateFlow()
 
-    private val _eventChannel = Channel<MyPageEvent>()
-    val events = _eventChannel.receiveAsFlow()
-
     init {
         collectUserInfo()
         initDataLoad()
@@ -63,7 +60,12 @@ class MyPageViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             userRepository.loadUserInfo()
                 .fold(
-                    onSuccess = { _state.update { it.copy(uiState = UiState.Success) } },
+                    onSuccess = {
+                        viewModelScope.launch(Dispatchers.IO) {
+                            userRepository.loadProfileImage()
+                                .onSuccess { _state.update { it.copy(uiState = UiState.Success) } }
+                        }
+                    },
                     onFailure = { _state.update { it.copy(uiState = UiState.Error) } }
                 )
         }

@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.jparkbro.info.anime.InfoAnimeRoot
-import com.jparkbro.model.common.FormType
+import com.jparkbro.model.enum.FormType
 import kotlinx.serialization.Serializable
 
 @Serializable data class InfoAnime(val animeId: Long)

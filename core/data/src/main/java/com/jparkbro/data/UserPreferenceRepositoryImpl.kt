@@ -2,7 +2,7 @@ package com.jparkbro.data
 
 import com.jparkbro.datastore.JwtTokenDataStore
 import com.jparkbro.datastore.UserDataStore
-import com.jparkbro.model.common.AuthToken
+import com.jparkbro.model.auth.AuthToken
 import com.jparkbro.network.common.CommonDataSource
 import javax.inject.Inject
 

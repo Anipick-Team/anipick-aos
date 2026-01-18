@@ -1,6 +1,6 @@
 package com.jparkbro.domain
 
-import com.jparkbro.data.AuthRepository
+import com.jparkbro.data.auth.AuthRepository
 import com.jparkbro.data.UserPreferenceRepository
 import com.jparkbro.model.dto.auth.EmailRegisterRequest
 import kotlinx.coroutines.flow.Flow

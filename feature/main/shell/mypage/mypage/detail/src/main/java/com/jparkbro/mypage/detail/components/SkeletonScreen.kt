@@ -35,7 +35,7 @@ import com.jparkbro.ui.util.rememberGridInfo
 @Composable
 internal fun SkeletonScreen(
     state: UserContentState,
-    onAction: (UserContentAction) -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val horizontalPadding = dimensionResource(R.dimen.padding_large)
     val spacing = 8.dp
@@ -52,7 +52,7 @@ internal fun SkeletonScreen(
                     UserContentType.RATING_REVIEW -> stringResource(R.string.user_content_header_rated_works)
                     else -> ""
                 },
-                onNavigateBack = { onAction(UserContentAction.NavigateBack) },
+                onNavigateBack = onNavigateBack,
             )
         },
         containerColor = AniPickSurface
@@ -65,7 +65,7 @@ internal fun SkeletonScreen(
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
                 thickness = dimensionResource(R.dimen.border_width_default),
-                color = AniPickGray100
+                color = AniPickSurface
             )
             when (state.contentType) {
                 UserContentType.RATING_REVIEW -> {

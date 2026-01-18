@@ -5,5 +5,4 @@ import com.jparkbro.ui.model.SnackBarData
 
 interface InfoAnimeEvent {
     data class ShowDialog(val dialogData: DialogData) : InfoAnimeEvent
-    data class ShowSnackBar(val snackBarData: SnackBarData) : InfoAnimeEvent
 }
