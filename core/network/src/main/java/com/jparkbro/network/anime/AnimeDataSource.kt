@@ -1,7 +1,6 @@
 package com.jparkbro.network.anime
 
 import com.jparkbro.model.common.Cursor
-import com.jparkbro.model.common.anime.Anime
 import com.jparkbro.model.common.anime.InfoSeriesAnimeDto
 import com.jparkbro.model.common.anime.SimpleAnimeDto
 import com.jparkbro.model.dto.home.main.RecommendedAnimesResponse
@@ -10,8 +9,9 @@ import com.jparkbro.model.dto.info.GetInfoRecommendResponse
 import com.jparkbro.model.dto.info.GetInfoSeriesResponse
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
+import com.jparkbro.model.dto.ranking.GetAnimeRankingRequest
+import com.jparkbro.model.dto.ranking.GetAnimeRankingResponse
 import com.jparkbro.model.enum.WatchStatus
-import kotlinx.coroutines.flow.Flow
 
 interface AnimeDataSource {
     /** Home */
@@ -37,4 +37,9 @@ interface AnimeDataSource {
     suspend fun loadWatchingAnimes(request: GetUserContentRequest): Result<GetUserContentResponse>
     suspend fun loadFinishedAnimes(request: GetUserContentRequest): Result<GetUserContentResponse>
     suspend fun loadLikedAnimes(request: GetUserContentRequest): Result<GetUserContentResponse>
+
+    /** Ranking */
+    suspend fun getRealTimeRanking(request: GetAnimeRankingRequest): Result<GetAnimeRankingResponse>
+    suspend fun getYearSeasonRanking(request: GetAnimeRankingRequest): Result<GetAnimeRankingResponse>
+    suspend fun getAllTimeRanking(request: GetAnimeRankingRequest): Result<GetAnimeRankingResponse>
 }

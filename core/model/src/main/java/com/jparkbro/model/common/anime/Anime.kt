@@ -1,5 +1,7 @@
 package com.jparkbro.model.common.anime
 
+import com.jparkbro.model.enum.RankingTrend
+
 data class Anime(
     val animeId: Long? = null,
     val title: String? = null,
@@ -13,8 +15,8 @@ data class Anime(
     val impressionLog: String? = null,
     val isAdult: Boolean? = false,
     val change: String? = null,
-    val trend: String? = null,
-    val popularity: Long? = null,
+    val trend: RankingTrend? = null,
+    val popularity: Int? = null,
     val trending: Int? = null,
     val airDate: String? = null,
     val userAnimeStatusId: Int? = null,

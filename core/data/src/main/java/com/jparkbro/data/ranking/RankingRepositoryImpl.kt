@@ -3,7 +3,7 @@ package com.jparkbro.data.ranking
 import android.util.Log
 import com.jparkbro.model.ranking.RankingRequest
 import com.jparkbro.model.ranking.RankingResponse
-import com.jparkbro.model.ranking.RankingType
+import com.jparkbro.model.enum.RankingType
 import com.jparkbro.network.ranking.RankingDataSource
 import javax.inject.Inject
 

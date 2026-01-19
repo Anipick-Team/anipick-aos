@@ -94,7 +94,11 @@ class UserContentViewModel @Inject constructor(
     private fun dataLoad(isLoadMore: Boolean = false) {
         if (_state.value.isMoreDataLoading || !_state.value.hasMoreData) return
 
-        if (isLoadMore) _state.update { it.copy(isMoreDataLoading = true) }
+        if (isLoadMore) {
+            _state.update { it.copy(isMoreDataLoading = true) }
+        } else {
+            _state.update { it.copy(isApiLoading = true) }
+        }
 
         viewModelScope.launch(Dispatchers.IO) {
             if (contentType == null) {
@@ -123,7 +127,8 @@ class UserContentViewModel @Inject constructor(
                 onSuccess = {
                     _state.update { it.copy(
                         uiState = UiState.Success,
-                        isMoreDataLoading = false
+                        isMoreDataLoading = false,
+                        isApiLoading = false
                     ) }
                 },
                 onFailure = {
@@ -131,7 +136,10 @@ class UserContentViewModel @Inject constructor(
                         // TODO Toast
                         _state.update { it.copy(isMoreDataLoading = false) }
                     } else {
-                        _state.update { it.copy(uiState = UiState.Error) }
+                        _state.update { it.copy(
+                            uiState = UiState.Error,
+                            isApiLoading = false
+                        ) }
                     }
                 }
             )

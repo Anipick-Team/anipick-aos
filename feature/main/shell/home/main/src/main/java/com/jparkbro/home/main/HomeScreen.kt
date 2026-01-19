@@ -69,7 +69,10 @@ internal fun HomeRoot(
 
     when (state.uiState) {
         UiState.Loading -> {
-            SkeletonScreen(bottomNav)
+            SkeletonScreen(
+                bottomNav = bottomNav,
+                onNavigateToSearch = onNavigateToSearch
+            )
         }
         UiState.Error -> {
             APErrorScreen(

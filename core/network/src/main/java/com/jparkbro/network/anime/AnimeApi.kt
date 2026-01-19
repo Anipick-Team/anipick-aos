@@ -8,6 +8,7 @@ import com.jparkbro.model.dto.info.GetInfoRecommendResponse
 import com.jparkbro.model.dto.info.GetInfoSeriesResponse
 import com.jparkbro.model.dto.info.WatchStatusRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
+import com.jparkbro.model.dto.ranking.GetAnimeRankingResponse
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
 import retrofit2.Response
@@ -101,4 +102,30 @@ interface AnimeApi {
     suspend fun loadLikedAnimes(
         @Query("lastId") lastId: Long?,
     ): Response<ApiResponse<GetUserContentResponse>>
+
+    @GET(ApiConstants.RANK_REAL_TIME)
+    suspend fun getRealTimeRanking(
+        @Query("genre") genre: String?,
+        @Query("lastId") lastId: Long?,
+        @Query("lastValue") lastValue: Long?,
+        @Query("size") size: Int?,
+    ): Response<ApiResponse<GetAnimeRankingResponse>>
+
+    @GET(ApiConstants.RANK_YEAR_SEASON)
+    suspend fun getYearSeasonRanking(
+        @Query("year") year: String?,
+        @Query("season") season: Int?,
+        @Query("genre") genre: String?,
+        @Query("lastId") lastId: Long?,
+        @Query("lastRank") lastRank: Int?,
+        @Query("size") size: Int?,
+    ): Response<ApiResponse<GetAnimeRankingResponse>>
+
+    @GET(ApiConstants.RANK_ALL_TIME)
+    suspend fun getAllTimeRanking(
+        @Query("genre") genre: String?,
+        @Query("lastId") lastId: Long?,
+        @Query("lastRank") lastRank: Int?,
+        @Query("size") size: Int?,
+    ): Response<ApiResponse<GetAnimeRankingResponse>>
 }

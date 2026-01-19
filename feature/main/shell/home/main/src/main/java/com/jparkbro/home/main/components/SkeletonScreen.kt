@@ -39,9 +39,10 @@ import com.jparkbro.ui.theme.ShimmerEffect
 @Composable
 internal fun SkeletonScreen(
     bottomNav: @Composable () -> Unit,
+    onNavigateToSearch: () -> Unit,
 ) {
     Scaffold(
-        topBar = { APMainTopAppBar(onNavigateToSearch = {}) },
+        topBar = { APMainTopAppBar(onNavigateToSearch = onNavigateToSearch) },
         bottomBar = bottomNav,
         containerColor = AniPickSurface
     ) { innerPadding ->

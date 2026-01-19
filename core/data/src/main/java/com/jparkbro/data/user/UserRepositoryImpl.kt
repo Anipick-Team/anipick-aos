@@ -86,6 +86,7 @@ class UserRepositoryImpl @Inject constructor(
         ).fold(
             onSuccess = {
                 refreshUserInfo()
+                loadProfileImage()
                 Result.success(Unit)
             },
             onFailure = { Result.failure(it) }

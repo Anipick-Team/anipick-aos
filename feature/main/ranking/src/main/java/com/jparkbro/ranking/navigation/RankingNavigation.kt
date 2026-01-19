@@ -17,7 +17,7 @@ fun NavGraphBuilder.rankingScreen(
     metaData: MetaData,
     bottomNav: @Composable () -> Unit,
     onNavigateToSearch: () -> Unit,
-    onNavigateToAnimeDetail: (Int) -> Unit,
+    onNavigateToAnimeDetail: (Long) -> Unit,
 ) {
     composable<Ranking> {
         Ranking(

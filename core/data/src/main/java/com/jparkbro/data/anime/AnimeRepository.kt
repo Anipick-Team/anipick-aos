@@ -8,6 +8,8 @@ import com.jparkbro.model.dto.info.GetInfoRecommendResult
 import com.jparkbro.model.dto.info.GetInfoSeriesResult
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResult
+import com.jparkbro.model.dto.ranking.GetAnimeRankingRequest
+import com.jparkbro.model.dto.ranking.GetAnimeRankingResult
 import com.jparkbro.model.enum.WatchStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,4 +40,6 @@ interface AnimeRepository {
     suspend fun loadUserContentAnimes(request: GetUserContentRequest): Result<Unit>
     suspend fun invalidateUserContent()
 
+    /** Ranking */
+    suspend fun getAnimeRanking(request: GetAnimeRankingRequest): Result<GetAnimeRankingResult>
 }

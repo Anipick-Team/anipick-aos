@@ -1,6 +1,7 @@
 package com.jparkbro.model.ranking
 
 import com.jparkbro.model.common.ResponseMap
+import com.jparkbro.model.enum.RankingType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -14,7 +15,7 @@ data class RankingRequest(
     @SerialName("genre")
     val genre: ResponseMap? = null,
     @SerialName("lastId")
-    val lastId: Int? = null,
+    val lastId: Long? = null,
     @SerialName("lastValue")
     val lastValue: Int? = null,
     @SerialName("lastRank")

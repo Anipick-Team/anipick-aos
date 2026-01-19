@@ -19,12 +19,8 @@ fun rememberGridInfo(
         .toInt()
         .coerceIn(minColumns, maxColumns)
 
-    val itemWidth = when {
-        columns == minColumns || columns == maxColumns -> {
-            (usableWidth - spacing * (columns - 1)) / columns
-        }
-        else -> defaultItemWidth
-    }
+    // 항상 실제 화면 넓이에 맞춰 재계산하여 빈 공간 최소화
+    val itemWidth = (usableWidth - spacing * (columns - 1)) / columns
 
     return GridInfo(
         columns = columns,

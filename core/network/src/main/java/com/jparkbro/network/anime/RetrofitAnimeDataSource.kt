@@ -10,7 +10,10 @@ import com.jparkbro.model.dto.info.GetInfoRecommendResponse
 import com.jparkbro.model.dto.info.GetInfoSeriesResponse
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
+import com.jparkbro.model.dto.ranking.GetAnimeRankingRequest
+import com.jparkbro.model.dto.ranking.GetAnimeRankingResponse
 import com.jparkbro.model.enum.WatchStatus
+import com.jparkbro.network.ranking.RetrofitRankingDataSource
 import com.jparkbro.network.util.toResult
 import com.jparkbro.network.util.toUnitResult
 import javax.inject.Inject
@@ -103,5 +106,40 @@ class RetrofitAnimeDataSource @Inject constructor(
         return animeApi.loadLikedAnimes(
             lastId = request.lastId
         ).toResult(TAG, "loadLikedAnimes")
+    }
+
+    override suspend fun getRealTimeRanking(request: GetAnimeRankingRequest): Result<GetAnimeRankingResponse> {
+        return animeApi.getRealTimeRanking(
+            genre = if (request.genre?.id != -1) request.genre?.name else null,
+            lastId = request.lastId,
+            lastValue = request.lastValue,
+            size = request.size,
+        ).toResult(TAG, "getRealTimeRanking")
+    }
+
+    override suspend fun getYearSeasonRanking(request: GetAnimeRankingRequest): Result<GetAnimeRankingResponse> {
+        return animeApi.getYearSeasonRanking(
+            year = if (request.year == "전체년도") null else request.year,
+            season = when (request.season) {
+                "1분기" -> 1
+                "2분기" -> 2
+                "3분기" -> 3
+                "4분기" -> 4
+                else -> null
+            },
+            genre = if (request.genre?.id != -1) request.genre?.name else null,
+            lastId = request.lastId,
+            lastRank = request.lastRank,
+            size = request.size,
+        ).toResult(TAG, "getYearSeasonRanking")
+    }
+
+    override suspend fun getAllTimeRanking(request: GetAnimeRankingRequest): Result<GetAnimeRankingResponse> {
+        return animeApi.getAllTimeRanking(
+            genre = if (request.genre?.id != -1) request.genre?.name else null,
+            lastId = request.lastId,
+            lastRank = request.lastRank,
+            size = request.size,
+        ).toResult(TAG, "getAllTimeRanking")
     }
 }

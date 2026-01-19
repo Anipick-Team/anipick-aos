@@ -14,6 +14,10 @@ import com.jparkbro.model.dto.info.toResult
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResult
 import com.jparkbro.model.dto.mypage.usercontent.toResult
+import com.jparkbro.model.dto.ranking.GetAnimeRankingRequest
+import com.jparkbro.model.dto.ranking.GetAnimeRankingResult
+import com.jparkbro.model.dto.ranking.toResult
+import com.jparkbro.model.enum.RankingType
 import com.jparkbro.model.enum.UserContentType
 import com.jparkbro.model.enum.WatchStatus
 import com.jparkbro.network.anime.AnimeDataSource
@@ -33,14 +37,11 @@ class AnimeRepositoryImpl @Inject constructor(
 
     override suspend fun saveRecentAnime(animeId: Long): Result<Unit> {
         return recentAnimeDataStore.saveRecentAnime(animeId)
-            .fold(
-                onSuccess = {
-                    getRecentRecommendItems(animeId)
-                    Result.success(Unit)
-                },
-                onFailure = { Result.failure(it) }
-            )
+            .onSuccess {
+                getRecentRecommendItems(animeId)
+            }.map { Unit }
     }
+
     override suspend fun loadRecentAnime(): Result<Long> {
         return recentAnimeDataStore.loadRecentAnime()
     }
@@ -49,13 +50,9 @@ class AnimeRepositoryImpl @Inject constructor(
     override val recentRecommendAnime = _recentRecommendAnime.asStateFlow()
     override suspend fun getRecentRecommendItems(animeId: Long): Result<Unit> {
         return animeDataSource.getRecentRecommendItems(animeId).map { it.toResult() }
-            .fold(
-                onSuccess = { result ->
-                    _recentRecommendAnime.update { result }
-                    Result.success(Unit)
-                },
-                onFailure = { Result.failure(it) }
-            )
+            .onSuccess {
+                _recentRecommendAnime.update { it }
+            }.map { Unit }
     }
 
     /** Anime Detail Info */
@@ -65,17 +62,14 @@ class AnimeRepositoryImpl @Inject constructor(
             cache[animeId]
         }
     }
+
     override suspend fun loadDetailInfo(animeId: Long): Result<Unit> {
         return animeDataSource.getDetailInfo(animeId)
-            .fold(
-                onSuccess = { response ->
-                    detailInfoCache.update { cache ->
-                        cache + (animeId to response)
-                    }
-                    Result.success(Unit)
-                },
-                onFailure = { Result.failure(it) }
-            )
+            .onSuccess { response ->
+                detailInfoCache.update { cache ->
+                    cache + (animeId to response)
+                }
+            }.map { Unit }
     }
 
     override suspend fun getDetailSeries(animeId: Long): Result<List<Anime>> {
@@ -97,8 +91,8 @@ class AnimeRepositoryImpl @Inject constructor(
             animeDataSource.setUnlikeAnime(animeId)
         }
 
-        return result.fold(
-            onSuccess = {
+        return result
+            .onSuccess {
                 detailInfoCache.update { cache ->
                     val currentInfo = cache[animeId]
                     if (currentInfo != null) {
@@ -109,10 +103,7 @@ class AnimeRepositoryImpl @Inject constructor(
                 }
                 userRepository.refreshUserInfo()
                 invalidateUserContent()
-                Result.success(Unit)
-            },
-            onFailure = { Result.failure(it) }
-        )
+            }.map { Unit }
     }
 
     override suspend fun updateWatchStatus(animeId: Long, watchStatus: WatchStatus): Result<Unit> {
@@ -125,8 +116,8 @@ class AnimeRepositoryImpl @Inject constructor(
             else -> animeDataSource.updateWatchStatus(animeId, watchStatus)
         }
 
-        return result.fold(
-            onSuccess = {
+        return result
+            .onSuccess {
                 detailInfoCache.update { cache ->
                     if (currentInfo != null) {
                         cache + (animeId to currentInfo.copy(
@@ -138,10 +129,7 @@ class AnimeRepositoryImpl @Inject constructor(
                 }
                 userRepository.refreshUserInfo()
                 invalidateUserContent()
-                Result.success(Unit)
-            },
-            onFailure = { Result.failure(it) }
-        )
+            }.map { Unit }
     }
 
     override suspend fun getAnimeSeries(animeId: Long, cursor: Cursor?): Result<GetInfoSeriesResult> {
@@ -163,25 +151,31 @@ class AnimeRepositoryImpl @Inject constructor(
         }
 
         return apiCall.map { it.toResult() }
-            .fold(
-                onSuccess = { result ->
-                    userRepository.userContentCache.update { cache ->
-                        cache.copy(
-                            contentType = request.contentType,
-                            animes = if (request.lastId == null) result.animes else cache.animes + result.animes,
-                            cursor = result.cursor,
-                            count = result.count
-                        )
-                    }
-                    Result.success(Unit)
-                },
-                onFailure = { Result.failure(it) }
-            )
+            .onSuccess { result ->
+                userRepository.userContentCache.update { cache ->
+                    cache.copy(
+                        contentType = request.contentType,
+                        animes = if (request.lastId == null) result.animes else cache.animes + result.animes,
+                        cursor = result.cursor,
+                        count = result.count
+                    )
+                }
+            }.map { Unit }
     }
 
     override suspend fun invalidateUserContent() {
         val currentType = userRepository.userContentCache.value.contentType ?: return
         userRepository.userContentCache.update { GetUserContentResult(contentType = currentType) }
         loadUserContentAnimes(GetUserContentRequest(contentType = currentType))
+    }
+
+    override suspend fun getAnimeRanking(request: GetAnimeRankingRequest): Result<GetAnimeRankingResult> {
+        val apiCall = when (request.type) {
+            RankingType.REAL_TIME -> animeDataSource.getRealTimeRanking(request)
+            RankingType.YEAR_SEASON -> animeDataSource.getYearSeasonRanking(request)
+            RankingType.ALL_TIME -> animeDataSource.getAllTimeRanking(request)
+        }
+
+        return apiCall.map { it.toResult() }
     }
 }

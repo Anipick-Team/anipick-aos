@@ -1,12 +1,13 @@
 package com.jparkbro.model.ranking
 
+import com.jparkbro.model.enum.RankingTrend
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class RankingItem(
     @SerialName("animeId")
-    val animeId: Int,
+    val animeId: Long,
     @SerialName("title")
     val title: String?,
     @SerialName("coverImageUrl")
@@ -16,7 +17,7 @@ data class RankingItem(
     @SerialName("genres")
     val genres: List<String>,
     @SerialName("popularity")
-    val popularity: Int,
+    val popularity: Long,
 
     @SerialName("change")
     val change: String? = null, // 'N' : "NEW"
@@ -26,14 +27,3 @@ data class RankingItem(
     val trending: Int? = null,
 )
 
-@Serializable
-enum class RankingTrend {
-    @SerialName("up")
-    UP,
-
-    @SerialName("down")
-    DOWN,
-
-    @SerialName("same")
-    SAME,
-}

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TrendingAnimeDto(
     @SerialName("animeId")
-    val animeId: Int? = null,
+    val animeId: Long? = null,
     @SerialName("title")
     val title: String? = null,
     @SerialName("titleKor")
@@ -20,7 +20,7 @@ data class TrendingAnimeDto(
 )
 
 fun TrendingAnimeDto.toAnime() : Anime = Anime(
-    animeId = animeId ?: -1,
+    animeId = animeId,
     title = title,
     titleKor = titleKor,
     titleEng = titleEng,

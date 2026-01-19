@@ -107,7 +107,8 @@ dependencies {
 
     implementation(project(":feature:main:shell:home:main"))
     implementation(project(":feature:main:shell:home:detail"))
-
+    implementation(project(":feature:main:shell:ranking"))
+    implementation(project(":feature:main:shell:explore"))
     implementation(project(":feature:main:shell:mypage:mypage:main"))
     implementation(project(":feature:main:shell:mypage:mypage:detail"))
     implementation(project(":feature:main:shell:mypage:setting:main"))
@@ -119,12 +120,10 @@ dependencies {
     implementation(project(":feature:main:info:recommend"))
 
     implementation(project(":feature:main:actor"))
-
     implementation(project(":feature:main:studio"))
+    implementation(project(":feature:main:review"))
 
     implementation(project(":feature:main:explore"))
-    implementation(project(":feature:main:ranking"))
-    implementation(project(":feature:main:review"))
     implementation(project(":feature:main:search"))
 
     // Test

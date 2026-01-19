@@ -42,7 +42,6 @@ include(":feature:auth:preferencesetup")
 
 include(":feature:main:explore")
 include(":feature:main:search")
-include(":feature:main:ranking")
 include(":feature:main:review")
 
 include(":feature:main:shell:home:main")
@@ -57,3 +56,5 @@ include(":feature:main:shell:mypage:mypage:main")
 include(":feature:main:shell:mypage:mypage:detail")
 include(":feature:main:shell:mypage:setting:main")
 include(":feature:main:shell:mypage:setting:detail")
+include(":feature:main:shell:ranking")
+include(":feature:main:shell:explore")

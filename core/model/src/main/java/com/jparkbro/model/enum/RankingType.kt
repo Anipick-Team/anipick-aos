@@ -1,4 +1,4 @@
-package com.jparkbro.model.ranking
+package com.jparkbro.model.enum
 
 enum class RankingType {
     REAL_TIME,

@@ -303,18 +303,33 @@ private fun ReviewsContent(
                     }
                 }
             } else {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        APEmptyContent(
+                if (state.isApiLoading) {
+                    item {
+                        Box(
                             modifier = Modifier
-                                .fillParentMaxHeight(0.7f)
-                                .fillMaxWidth(),
-                            comment = stringResource(R.string.user_content_empty_review)
-                        )
+                                .fillMaxWidth()
+                                .fillParentMaxHeight(0.7f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = AniPickPrimary
+                            )
+                        }
+                    }
+                } else {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            APEmptyContent(
+                                modifier = Modifier
+                                    .fillParentMaxHeight(0.7f)
+                                    .fillMaxWidth(),
+                                comment = stringResource(R.string.user_content_empty_review)
+                            )
+                        }
                     }
                 }
             }
