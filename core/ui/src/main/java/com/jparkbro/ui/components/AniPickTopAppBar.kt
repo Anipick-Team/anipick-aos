@@ -93,13 +93,13 @@ fun APBackStackTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun APSkipActionTopAppBar(
-    onClick: () -> Unit,
+    onSkipClicked: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     APBaseTopAppBar(
         actions = {
             TextButton(
-                onClick = onClick
+                onClick = onSkipClicked
             ) {
                 Text(
                     text = stringResource(R.string.skip),
@@ -271,7 +271,7 @@ private fun APBackStackTopAppBarPreview() {
 @DevicePreviews
 private fun APSkipActionTopAppBarPreview() {
     APSkipActionTopAppBar(
-        onClick = {},
+        onSkipClicked = {},
     )
 }
 

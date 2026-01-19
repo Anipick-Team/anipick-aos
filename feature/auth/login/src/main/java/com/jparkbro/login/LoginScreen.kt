@@ -36,7 +36,6 @@ import com.jparkbro.model.enum.DialogType
 import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APAlertDialog
 import com.jparkbro.ui.components.APConfirmDialog
-import com.jparkbro.ui.components.APSnackBarRe
 import com.jparkbro.ui.model.DialogData
 import com.jparkbro.ui.model.SnackBarData
 import com.jparkbro.ui.preview.DevicePreviews
@@ -64,15 +63,14 @@ internal fun LoginRoot(
     val activity = context.requireActivity()
 
     var dialogData by rememberSaveable { mutableStateOf<DialogData?>(null) }
-    var snackBarData by rememberSaveable { mutableStateOf<List<SnackBarData>>(emptyList()) }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is LoginEvent.LoginSuccess -> {
                 if (event.reviewCompletedYn) {
-                    onNavigateToPreferenceSetup()
-                } else {
                     onNavigateToHome()
+                } else {
+                    onNavigateToPreferenceSetup()
                 }
             }
 
@@ -93,15 +91,9 @@ internal fun LoginRoot(
                             }
                         )
                     }
-                }
-            }
 
-            is LoginEvent.LoginFailWithSnackBar -> {
-                snackBarData = snackBarData + event.snackBarData.copy(
-                    onDismiss = {
-                        snackBarData = snackBarData.drop(1)
-                    }
-                )
+                    else -> Unit
+                }
             }
         }
     }
@@ -110,8 +102,8 @@ internal fun LoginRoot(
         activity = activity,
         onAction = { action ->
             when (action) {
-                LoginAction.OnEmailLoginClick -> onNavigateToEmailLogin()
-                LoginAction.OnEmailRegisterClick -> onNavigateToEmailRegister()
+                LoginAction.NavigateToEmailLogin -> onNavigateToEmailLogin()
+                LoginAction.NavigateToRegister -> onNavigateToEmailRegister()
                 is LoginAction.OnProblemClick -> {
                     val intent = Intent(Intent.ACTION_VIEW, "https://forms.gle/SJ7mbQfyfoe2HDLd7".toUri())
                     context.startActivity(intent)
@@ -132,11 +124,9 @@ internal fun LoginRoot(
             DialogType.CONFIRM -> {
                 APConfirmDialog(it)
             }
-        }
-    }
 
-    snackBarData.firstOrNull()?.let { snackBarData ->
-        APSnackBarRe(snackBarData)
+            else -> Unit
+        }
     }
 }
 
@@ -228,7 +218,7 @@ private fun Content(
                     style = AniPick14Normal.copy(color = AniPickGray400),
                     modifier = Modifier
                         .clip(CircleShape)
-                        .clickable { onAction(LoginAction.OnEmailRegisterClick) }
+                        .clickable { onAction(LoginAction.NavigateToRegister) }
                         .padding(dimensionResource(R.dimen.padding_extra_small))
                 )
             }
@@ -248,7 +238,7 @@ private fun Content(
                     style = AniPick14Normal.copy(color = AniPickGray400),
                     modifier = Modifier
                         .clip(CircleShape)
-                        .clickable { onAction(LoginAction.OnEmailLoginClick) }
+                        .clickable { onAction(LoginAction.NavigateToEmailLogin) }
                         .padding(dimensionResource(R.dimen.padding_extra_small))
                 )
             }

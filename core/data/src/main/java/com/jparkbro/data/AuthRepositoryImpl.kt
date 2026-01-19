@@ -5,33 +5,29 @@ import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
-import androidx.credentials.GetCredentialRequest.Builder
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialException
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.jparkbro.model.auth.AuthResponse
-import com.jparkbro.model.auth.AuthToken
 import com.jparkbro.model.auth.EmailLoginRequest
-import com.jparkbro.model.auth.PreferenceRequest
-import com.jparkbro.model.auth.PreferenceResponse
-import com.jparkbro.model.auth.RatedAnime
+import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.auth.RequestCode
 import com.jparkbro.model.auth.ResetPassword
 import com.jparkbro.model.auth.SignupRequest
-import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.auth.VerifyCode
+import com.jparkbro.model.common.AuthToken
+import com.jparkbro.model.dto.preference.RatedAnime
+import com.jparkbro.model.dto.preference.SearchRequest
+import com.jparkbro.model.dto.preference.SearchResponse
 import com.jparkbro.network.auth.AuthDataSource
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
-import com.jparkbro.data.BuildConfig
 
 class AuthRepositoryImpl @Inject constructor(
     private val authDataSource: AuthDataSource,
@@ -188,7 +184,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     }
 
-    override suspend fun exploreOrSearch(request: PreferenceRequest): Result<PreferenceResponse> {
+    override suspend fun exploreOrSearch(request: SearchRequest): Result<SearchResponse> {
         return authDataSource.exploreOrSearch(request)
     }
 

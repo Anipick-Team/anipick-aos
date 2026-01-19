@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -13,11 +14,11 @@ class UserDataStoreImpl @Inject constructor(
 ) : UserDataStore {
 
     companion object {
-        private val USER_ID_KEY = intPreferencesKey("user_id")
+        private val USER_ID_KEY = longPreferencesKey("user_id")
         private val USER_NICKNAME_KEY = stringPreferencesKey("user_nickname")
     }
 
-    override suspend fun saveUserInfo(userId: Int, nickname: String): Result<Unit> {
+    override suspend fun saveUserInfo(userId: Long, nickname: String): Result<Unit> {
         return try {
             dataStore.edit { preferences ->
                 preferences[USER_ID_KEY] = userId
@@ -29,7 +30,7 @@ class UserDataStoreImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUserId(): Result<Int> {
+    override suspend fun getUserId(): Result<Long> {
         return try {
             val userId = dataStore.data.first()[USER_ID_KEY]
             if (userId != null) {

@@ -1,51 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Content Description-->
-    <string name="app_logo">앱 로고</string>
-    <string name="kakao_login_button">카카오 로그인 버튼</string>
-    <string name="google_login_button">구글 로그인 버튼</string>
     <string name="back_stack_icon">뒤로가기 아이콘</string>
     <string name="search_icon">검색 아이콘</string>
     <string name="setting_icon">세팅 아이콘</string>
     <string name="visible_icon">숨기기/보이기 아이콘</string>
     <string name="check_icon">체크 아이콘</string>
     <string name="chevron_right_icon">오른쪽 화살표 아이콘</string>
+    <string name="chevron_down_icon">아래쪽 화살표 아이콘</string>
+    <string name="chevron_up_down_icon">화살표 아이콘</string>
+    <string name="close_icon">X 아이콘</string>
+    <string name="fill_star_icon">색 채움 별 아이콘</string>
+    <string name="outline_star_icon">빈 별 아이콘</string>
+    <string name="more_vert_icon">더보기 아이콘</string>
+    <string name="favorite_icon">좋아요 아이콘</string>
+    <string name="share_icon">공유 아이콘</string>
+    <string name="edit_icon">수정 아이콘</string>
 
-    <!-- Login -->
-    <string name="login_title">나에게 딱 맞는 애니 추천을 위해.</string>
-    <string name="login_subtitle">사용할수록 더 좋아지는 애니메이션 환경을 만나보세요</string>
-    <string name="login_email_register">이메일 회원가입</string>
-    <string name="login_email_login">이메일 로그인</string>
-    <string name="login_problem">로그인에 문제가 있으신가요?</string>
-
-    <!-- Email Login -->
-    <string name="email_login_title">이메일 로그인</string>
-    <string name="email_login_subtitle">회원 서비스 이용을 위해 로그인 해주세요.</string>
-    <string name="email_login_email">이메일</string>
-    <string name="email_login_email_placeholder">이메일을 입력해주세요.</string>
-    <string name="email_login_password">비밀번호</string>
-    <string name="email_login_password_placeholder">비밀번호를 입력해주세요.</string>
-    <string name="email_login_email_register">이메일 회원가입</string>
-    <string name="email_login_find_password">비밀번호 찾기</string>
-    <string name="email_login_login">로그인</string>
-
-    <!-- Email Register -->
-    <string name="email_register_title">이메일 회원가입</string>
-    <string name="email_register_subtitle">회원 서비스 이용을 위해 회원 가입을 진행해주세요.</string>
-    <string name="email_register_email">이메일</string>
-    <string name="email_register_email_placeholder">이메일을 입력해주세요.</string>
-    <string name="email_register_password">비밀번호</string>
-    <string name="email_register_password_placeholder">비밀번호를 입력해주세요.</string>
-    <string name="email_register_password_info">8~16자의 영문 대/소문자, 숫자, 특수문자를 조합하여 입력해주세요.</string>
-    <string name="email_register_consent_title">애니픽 이용을 위해 동의가 필요해요.</string>
-    <string name="email_register_consent_all">모두 동의합니다.</string>
-    <string name="email_register_consent_age">[필수] 만 14세 이상입니다.</string>
-    <string name="email_register_consent_terms">[필수] 이용약관에 동의합니다.</string>
-    <string name="email_register_consent_privacy">[필수] 개인정보 처리방침에 동의합니다.</string>
-    <string name="email_register_register">회원가입하기</string>
-    <string name="email_register_failed">회원가입에 실패했습니다.</string>
+    <string name="app_logo">앱 로고</string>
+    <string name="kakao_login_button">카카오 로그인 버튼</string>
+    <string name="google_login_button">구글 로그인 버튼</string>
+    <string name="anime_cover_img">애니메이션 커버 이미지</string>
+    <string name="anime_banner_img">애니메이션 배너 이미지</string>
+    <string name="actor_img">배우 이미지</string>
+    <string name="character_img">캐릭터 이미지</string>
+    <string name="profile_img">프로필 이미지</string>
+    <string name="error_image">에러 이미지</string>
+    <string name="empty_list_item_img">아이템 비어있는 이미지</string>
+    <string name="empty_recommend_img">추천 애니가 없어요.</string>
 
     <!-- Common -->
+    <string name="anime_title">애니메이션 제목</string>
+    <string name="empty_content">"앗! 해당 조건에 맞는 작품이 없네요."</string>
+    <string name="network_error_title">네트워크 오류</string>
+    <string name="network_error_subtitle">네트워크에 연결되지 않았습니다.\n연결상태를 확인해주세요.</string>
+    <string name="retry_btn">다시 시도</string>
     <string name="dismiss">닫기</string>
     <string name="login">로그인</string>
     <string name="my_page">마이페이지</string>
@@ -54,6 +43,15 @@
     <string name="password">비밀번호</string>
     <string name="register">회원가입</string>
     <string name="find_password">비밀번호 찾기</string>
+    <string name="email_register_failed">회원가입에 실패했습니다.</string>
+    <string name="skip">건너뛰기</string>
+    <string name="collapse">접기</string>
+    <string name="expand">더보기</string>
+    <string name="watch_list_anime">볼 애니</string>
+    <string name="watching_anime">보는 중</string>
+    <string name="finished_anime">다 본 애니</string>
+    <string name="total_count">총 %d개</string>
+    <string name="total_count_actor">총 %d명</string>
 
     <!-- Validation -->
     <string name="error_email_blank">이메일을 입력해주세요.</string>
@@ -61,11 +59,19 @@
     <string name="error_email_invalid_format">올바른 이메일 형식이 아닙니다.</string>
     <string name="error_email_is_already_registered">이미 가입된 이메일 주소입니다.</string>
     <string name="error_password_blank">비밀번호를 입력해주세요.</string>
+    <string name="error_verification_code_blank">수신하신 인증번호를 입력해 주세요.</string>
+    <string name="error_verification_code_over">유효 시간이 만료되었습니다. 재발송 후 다시 시도해주세요.</string>
+
+    <!-- Bottom Sheet -->
+    <string name="bottom_sheet_year_quarter">년도/분기</string>
+    <string name="bottom_sheet_genre">장르</string>
+    <string name="bottom_sheet_type">타입</string>
+    <string name="bottom_sheet_match_all">모든 조건 일치</string>
+    <string name="bottom_sheet_reset_btn">초기화</string>
+    <string name="bottom_sheet_complete_btn">완료</string>
 
 
 
-
-    <string name="skip">건너뛰기</string>
     <string name="search_placeholder">무엇을 검색할까요?</string>
 
     <string name="voice_actor">성우</string>
@@ -81,23 +87,254 @@
     <string name="change_password">비밀번호 변경</string>
     <string name="account_withdrawal">회원 탈퇴</string>
 
-    <!-- Auth -->
-    <string name="email_register">이메일 회원가입</string>
-    <string name="email_login">이메일 로그인</string>
-
-    <!-- Email Login Screen -->
-
     <!-- Dialog -->
+    <string name="dialog_dismiss">닫기</string>
     <string name="dialog_account_withdrawn">탈퇴된 계정입니다.</string>
     <string name="dialog_account_withdrawn_message">자세한 사항은 고객센터로 문의해 주세요.\nteamanipick@gmail.com</string>
     <string name="dialog_email_exists">이미 가입된 이메일 주소입니다.</string>
     <string name="dialog_email_exists_message">이메일 로그인을 시도해주세요.</string>
-    <string name="dialog_dismiss">닫기</string>
     <string name="dialog_email_login">이메일 로그인</string>
+    <string name="dialog_already_sns_title">SNS로 간편 가입된 계정입니다.</string>
+    <string name="dialog_already_sns_subtitle">SNS로 로그인해주세요.</string>
+    <string name="dialog_already_sns_confirm">SNS로그인</string>
+    <string name="dialog_user_block_title">사용자를 차단하시겠습니까?</string>
+    <string name="dialog_user_block_subtitle">차단한 사용자의 리뷰, 커뮤니티 게시글 및\n댓글 등 모든 콘텐츠가 노출되지 않게 됩니다.</string>
+    <string name="dialog_user_block_dismiss">취소</string>
+    <string name="dialog_user_block_confirm">확인</string>
+    <string name="dialog_delete_review_title">정말 리뷰를 삭제하시겠어요?</string>
+    <string name="dialog_delete_review_subtitle">삭제한 리뷰는 복구가 불가능해요.</string>
+    <string name="dialog_delete_review_dismiss">취소</string>
+    <string name="dialog_delete_review_confirm">삭제</string>
+    <string name="dialog_report_review_title">리뷰를 신고하시겠습니까?</string>
+    <string name="dialog_report_review_subtitle">신고 시, 리뷰 검토 후 처리됩니다.</string>
+    <string name="dialog_report_review_dismiss">취소</string>
+    <string name="dialog_report_review_next">다음</string>
+    <string name="dialog_report_review_reason_title">신고하는 사유를 선택해주세요.</string>
+    <string name="dialog_report_review_confirm">신고하기</string>
+    <string name="dialog_logout_title">로그아웃</string>
+    <string name="dialog_logout_subtitle">로그아웃 하시겠습니까?</string>
+    <string name="dialog_logout_dismiss">취소</string>
+    <string name="dialog_logout_confirm">로그아웃</string>
+    <string name="dialog_withdraw_title">회원탈퇴</string>
+    <string name="dialog_withdraw_subtitle">정말로 탈퇴하시겠습니까?</string>
+    <string name="dialog_withdraw_dismiss">취소</string>
+    <string name="dialog_withdraw_confirm">탈퇴하기</string>
 
     <!-- SnackBar -->
+    <string name="snackbar_network_no_internet">인터넷 연결을 확인해주세요.</string>
+    <string name="snackbar_http_500_error">서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.</string>
+    <string name="snackbar_unknown_error">알 수 없는 오류가 발생했습니다.</string>
     <string name="snackbar_login_failed">로그인에 실패했습니다.</string>
+    <string name="snackbar_send_code_success">전송이 완료되었어요.</string>
+    <string name="snackbar_create_review_success">리뷰가 성공적으로 작성되었습니다.</string>
+    <string name="snackbar_delete_review_success">리뷰 삭제가 완료되었습니다.</string>
+    <string name="snackbar_user_block_success">사용자 차단이 완료되었습니다.</string>
+    <string name="snackbar_review_report_success">리뷰가 신고되었습니다</string>
 
+    <!-- Main Login -->
+    <string name="login_title">나에게 딱 맞는 애니 추천을 위해.</string>
+    <string name="login_subtitle">사용할수록 더 좋아지는 애니메이션 환경을 만나보세요</string>
+    <string name="login_email_register">이메일 회원가입</string>
+    <string name="login_email_login">이메일 로그인</string>
+    <string name="login_problem">로그인에 문제가 있으신가요?</string>
 
+    <!-- Email Login -->
+    <string name="email_login_title">이메일 로그인</string>
+    <string name="email_login_subtitle">회원 서비스 이용을 위해 로그인 해주세요.</string>
+    <string name="email_login_email">이메일</string>
+    <string name="email_login_email_placeholder">이메일을 입력해주세요.</string>
+    <string name="email_login_password">비밀번호</string>
+    <string name="email_login_password_placeholder">비밀번호를 입력해주세요.</string>
+    <string name="email_login_register">회원가입</string>
+    <string name="email_login_find_password">비밀번호 찾기</string>
+    <string name="email_login_login_btn">로그인</string>
+
+    <!-- Email Register -->
+    <string name="email_register_title">이메일 회원가입</string>
+    <string name="email_register_subtitle">회원 서비스 이용을 위해 회원 가입을 진행해주세요.</string>
+    <string name="email_register_email">이메일</string>
+    <string name="email_register_email_placeholder">이메일을 입력해주세요.</string>
+    <string name="email_register_password">비밀번호</string>
+    <string name="email_register_password_placeholder">비밀번호를 입력해주세요.</string>
+    <string name="email_register_password_info">8~16자의 영문 대/소문자, 숫자, 특수문자를 조합하여 입력해주세요.</string>
+    <string name="email_register_consent_title">애니픽 이용을 위해 동의가 필요해요.</string>
+    <string name="email_register_consent_all">모두 동의합니다.</string>
+    <string name="email_register_consent_age">[필수] 만 14세 이상입니다.</string>
+    <string name="email_register_consent_terms">[필수] 이용약관에 동의합니다.</string>
+    <string name="email_register_consent_privacy">[필수] 개인정보 처리방침에 동의합니다.</string>
+    <string name="email_register_register_btn">회원가입하기</string>
+
+    <!-- Password Verification -->
+    <string name="password_verification_title">비밀번호 찾기</string>
+    <string name="password_verification_subtitle">회원 서비스 사용을 위해 비밀번호를 찾아주세요.</string>
+    <string name="password_verification_email">이메일</string>
+    <string name="password_verification_email_placeholder">이메일을 입력해주세요.</string>
+    <string name="password_verification_code_send">인증번호 받기</string>
+    <string name="password_verification_code_sending">전송됨 0:%s</string>
+    <string name="password_verification_code_resend">재발송하기</string>
+    <string name="password_verification_verification_code">인증번호</string>
+    <string name="password_verification_verification_code_placeholder">인증번호를 입력해주세요.</string>
+    <string name="password_verification_next_btn">다음</string>
+
+    <!-- Password Reset -->
+    <string name="password_reset_title">비밀번호 찾기</string>
+    <string name="password_reset_subtitle">회원 서비스 사용을 위해 비밀번호를 찾아주세요.</string>
+    <string name="password_reset_password">새 비밀번호</string>
+    <string name="password_reset_password_placeholder">새 비밀번호를 입력해주세요.</string>
+    <string name="password_reset_password_info">8~16자의 영문 대/소문자, 숫자, 특수문자를 조합하여 입력해주세요.</string>
+    <string name="password_reset_confirm_password">새 비밀번호 확인</string>
+    <string name="password_reset_confirm_password_placeholder">새 비밀번호를 다시 한 번 입력해주세요.</string>
+    <string name="password_reset_error_password_not_match">비밀번호가 일치하지 않습니다.</string>
+    <string name="password_reset_change_btn">비밀번호 변경 완료</string>
+
+    <!-- Preference Setup -->
+    <string name="preference_setup_title">좋아하는 애니메이션을 평가해주세요.\n취향에 맞는 작품을 추천할게요.</string>
+    <string name="preference_setup_subtitle">좋아하는 애니메이션을 골라 주세요.</string>
+    <string name="preference_setup_rated_count">평가한 작품 %d</string>
+    <string name="preference_setup_search">검색</string>
+    <string name="preference_setup_year">년도</string>
+    <string name="preference_setup_quarter">분기</string>
+    <string name="preference_setup_genre">장르</string>
+    <string name="preference_setup_rating">평가하기</string>
+    <string name="preference_setup_cancel">평가취소</string>
+    <string name="preference_setup_rating_format">(%1$.1f/5.0)</string>
+    <string name="preference_setup_rating_complete">(%1$.1f)</string>
+    <string name="preference_setup_complete_btn">완료</string>
+
+    <!-- Home Main -->
+    <string name="home_main_popular_now">실시간 인기 애니메이션</string>
+    <string name="home_main_recommended_prefix">"오늘의 추천작, "</string>
+    <string name="home_main_recommended_mid">" 님의"</string>
+    <string name="home_main_recommended_suffix">취향에 맞춰 준비했어요!</string>
+    <string name="home_main_recommended_anime_prefix">" 를 재밌게 보셨다면,"</string>
+    <string name="home_main_recommended_anime_suffix">이 작품들도 마음에 드실 거에요!</string>
+    <string name="home_main_latest_review">최근 리뷰</string>
+    <string name="home_main_next_quarter">%d년 %d분기 방영예정</string>
+    <string name="home_main_similar_to_watched_prefix">"최근 찾아보신 "</string>
+    <string name="home_main_similar_to_watched_mid">" 과(와)"</string>
+    <string name="home_main_similar_to_watched_suffix">비슷한 작품이에요!</string>
+    <string name="home_main_upcoming_release">공개 예정</string>
+
+    <!-- Anime Detail -->
+    <string name="anime_detail_tab_info">작품 정보</string>
+    <string name="anime_detail_tab_review">리뷰(%d개)</string>
+    <string name="anime_detail_label_type">타입</string>
+    <string name="anime_detail_label_genre">장르</string>
+    <string name="anime_detail_label_date">방영 시기</string>
+    <string name="anime_detail_label_episode">에피소드</string>
+    <string name="anime_detail_label_age">연령 등급</string>
+    <string name="anime_detail_label_studio">제작사</string>
+    <string name="anime_detail_episode_count">%d회차</string>
+    <string name="anime_detail_section_actor_character">캐릭터/성우진</string>
+    <string name="anime_detail_section_series">관련 작품</string>
+    <string name="anime_detail_section_recommend">함께 볼 만한 작품</string>
+    <string name="anime_detail_my_review">내 리뷰</string>
+    <string name="anime_detail_reviews">리뷰</string>
+    <string name="anime_detail_reviews_count">%d개</string>
+    <string name="anime_detail_review_spoiler">스포일러</string>
+    <string name="anime_detail_review_write_button">상세 리뷰 작성하기</string>
+    <string name="anime_detail_rating_format">(%1$.1f/5.0)</string>
+    <string name="anime_detail_empty_reviews">아직 리뷰가 없어요!\n첫 번째 리뷰의 주인공이 되어볼까요?</string>
+    <string name="anime_detail_shared_link">https://anipick.p-e.kr/app/anime/detail/%d</string>
+
+    <!-- Info Series -->
+    <string name="info_series_header">관련 작품</string>
+    <string name="info_series_banner_mid">" 의"</string>
+    <string name="info_series_banner_suffix">관련 작품이에요!</string>
+    <string name="info_series_total_count">총 %d개</string>
+
+    <!-- Info Recommend -->
+    <string name="info_recommend_header">함께 볼만한 작품</string>
+    <string name="info_recommend_banner_mid">" 과(와)"</string>
+    <string name="info_recommend_banner_suffix">함께 보기 좋은 작품</string>
+
+    <!-- Actor -->
+    <string name="actor_header">성우</string>
+    <string name="actor_works_title">참여 작품 목록</string>
+
+    <!-- Studio -->
+    <string name="studio_header">스튜디오</string>
+
+    <!-- Review Form -->
+    <string name="review_form_header_create">리뷰 작성</string>
+    <string name="review_form_header_update">리뷰 수정</string>
+    <string name="review_form_spoiler">스포일러</string>
+    <string name="review_form_placeholder">리뷰 내용을 입력해주세요.</string>
+    <string name="review_form_text_length">%d/200</string>
+    <string name="review_form_caution_title">주의사항</string>
+    <string name="review_form_caution_subtitle">커뮤니티 가이드라인 위반 시 게시물이 삭제되며 서비스 이용이 일정기간 제한되거나 영구적으로 제한될 수 있습니다.</string>
+    <string name="review_form_caution_bullet_point">•</string>
+    <string name="review_form_caution_content_1">악의적인 욕설, 비방, 혐오 표현 등 타인에게 불쾌감을 줄 수 있는 내용</string>
+    <string name="review_form_caution_content_2">스포일러 체크 없이 스포일러를 포함한 리뷰 (※ 에피소드 내용 요약, 결말 노출 등)</string>
+    <string name="review_form_caution_content_3">광고, 홍보, 도배 등 리뷰 목적과 무관한 내용</string>
+    <string name="review_form_caution_content_4">음란물, 성적 수치심을 유발하는 내용</string>
+    <string name="review_form_caution_content_5">기타 커뮤니티 가이드라인 운영 정책에 위반되는 내용</string>
+    <string name="review_form_btn_guideline">커뮤니티 가이드라인 전체보기</string>
+    <string name="review_form_btn_create">리뷰 작성하기</string>
+    <string name="review_form_btn_update">리뷰 수정하기</string>
+
+    <!-- MyPage -->
+    <string name="mypage_welcome_title">" 님, 애니픽과 함께\n행복한 애니메이션 생활 즐기세요!"</string>
+    <string name="mypage_watch_list_anime">볼 애니</string>
+    <string name="mypage_watching_anime">보는 중</string>
+    <string name="mypage_finished_anime">다 본 애니</string>
+    <string name="mypage_watch_status_count">%d개</string>
+    <string name="mypage_rated_works">평가한 작품</string>
+    <string name="mypage_liked_anime">좋아요한 작품</string>
+    <string name="mypage_liked_actor">좋아요한 인물</string>
+    <string name="mypage_empty_liked_anime">아직 좋아요한 작품이 없어요.\n좋아요를 누르러 가볼까요?</string>
+    <string name="mypage_empty_liked_actor">아직 좋아요한 인물이 없어요.\n좋아요를 누르러 가볼까요?</string>
+
+    <!-- User Content -->
+    <string name="user_content_header_watch_list_anime">볼 애니</string>
+    <string name="user_content_header_watching_anime">보는 중</string>
+    <string name="user_content_header_finished_anime">다 본 애니</string>
+    <string name="user_content_header_rated_works">평가한 작품</string>
+    <string name="user_content_header_liked_anime">좋아요한 작품</string>
+    <string name="user_content_header_liked_actor">좋아요한 인물</string>
+    <string name="user_content_only_review">리뷰만 보기</string>
+    <string name="user_content_empty_review">앗! 아직 평가한 작품이 없네요.</string>
+    <string name="user_content_rating_null">아직 평가가 없어요.</string>
+    <string name="user_content_my_rating">내 평가</string>
+    <string name="user_content_empty_watch_list">아직 볼 애니가 없어요.</string>
+    <string name="user_content_empty_watching">아직 보는 중인 애니가 없어요.</string>
+    <string name="user_content_empty_finished">아직 다 본 애니가 없어요.</string>
+
+    <!-- Setting -->
+    <string name="setting_header">설정</string>
+    <string name="setting_category_account">계정</string>
+    <string name="setting_item_change_nickname">닉네임 변경</string>
+    <string name="setting_item_change_email">이메일 변경</string>
+    <string name="setting_item_change_password">비밀번호 변경</string>
+    <string name="setting_item_linked_sns">연동 SNS</string>
+    <string name="setting_category_app">앱 설정</string>
+    <string name="setting_item_app_version">앱 버전</string>
+    <string name="setting_item_contact_us">문의하기</string>
+    <string name="setting_item_terms_of_service">서비스 이용약관</string>
+    <string name="setting_item_privacy_policy">개인정보 처리방침</string>
+    <string name="setting_item_open_source_license">오픈소스 라이선스</string>
+    <string name="setting_item_notice">공지사항</string>
+    <string name="setting_category_etc">기타</string>
+    <string name="setting_item_logout">로그아웃</string>
+    <string name="setting_item_withdraw">회원 탈퇴</string>
+    <string name="setting_password_placeholder">sns 간편가입된 계정입니다.</string>
+
+    <!-- User Edit -->
+    <string name="user_edit_nickname_current">기존 닉네임</string>
+    <string name="user_edit_nickname_new">새 닉네임</string>
+    <string name="user_edit_email_current">기존 이메일</string>
+    <string name="user_edit_email_new">새 이메일</string>
+    <string name="user_edit_password_label">비밀번호</string>
+    <string name="user_edit_email_notice_title">반드시 본인 명의의 이메일을 입력해주세요.</string>
+    <string name="user_edit_email_notice_desc">본 이메일은 계정 분실 시 아이디 및 비밀번호 찾기, 개인정보 관련 주요 고지사항 안내 등에 사용됩니다.</string>
+    <string name="user_edit_password_current">현재 비밀번호</string>
+    <string name="user_edit_password_new">새 비밀번호</string>
+    <string name="user_edit_password_confirm">새 비밀번호 확인</string>
+    <string name="user_edit_withdraw_email_label">계정 이메일</string>
+    <string name="user_edit_withdraw_notice_title">탈퇴 시 주의사항</string>
+    <string name="user_edit_withdraw_notice_desc">탈퇴 시, 회원정보는 당사의 개인정보처리방침에 따라 삭제 또는 격리하여 보존 조치되며, 삭제된 데이터는 복구가 불가능합니다.\n서비스 내에서 남긴 리뷰는 탈퇴 후에 자동 삭제되지 않습니다.</string>
+    <string name="user_edit_withdraw_agreement_check">"\'회원탈퇴\'를 누르는 것은 상기 안내사항을 모두 확인하였으며 이에 동의함을 의미합니다."</string>
+    <string name="user_edit_action_save">저장</string>
+    <string name="user_edit_withdraw_action_submit">탈퇴하기</string>
 
 </resources>

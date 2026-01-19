@@ -101,18 +101,30 @@ dependencies {
     implementation(project(":feature:auth:login"))
     implementation(project(":feature:auth:email:login"))
     implementation(project(":feature:auth:email:register"))
-
-    implementation(project(":feature:auth:findpassword"))
+    implementation(project(":feature:auth:findpassword:verification"))
+    implementation(project(":feature:auth:findpassword:reset"))
     implementation(project(":feature:auth:preferencesetup"))
 
-    implementation(project(":feature:main:detail"))
-    implementation(project(":feature:main:explore"))
-    implementation(project(":feature:main:home"))
-    implementation(project(":feature:main:mypage"))
-    implementation(project(":feature:main:ranking"))
+    implementation(project(":feature:main:shell:home:main"))
+    implementation(project(":feature:main:shell:home:detail"))
+    implementation(project(":feature:main:shell:ranking"))
+    implementation(project(":feature:main:shell:explore"))
+    implementation(project(":feature:main:shell:mypage:mypage:main"))
+    implementation(project(":feature:main:shell:mypage:mypage:detail"))
+    implementation(project(":feature:main:shell:mypage:setting:main"))
+    implementation(project(":feature:main:shell:mypage:setting:detail"))
+
+    implementation(project(":feature:main:info:anime"))
+    implementation(project(":feature:main:info:character"))
+    implementation(project(":feature:main:info:series"))
+    implementation(project(":feature:main:info:recommend"))
+
+    implementation(project(":feature:main:actor"))
+    implementation(project(":feature:main:studio"))
     implementation(project(":feature:main:review"))
+
+    implementation(project(":feature:main:explore"))
     implementation(project(":feature:main:search"))
-    implementation(project(":feature:main:setting"))
 
     // Test
     testImplementation(libs.junit)
@@ -133,4 +145,8 @@ dependencies {
     // oss-licenses
     implementation(libs.androidx.appcompat)
     implementation(libs.play.services.oss.licenses)
+
+    // In App Update
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
 }

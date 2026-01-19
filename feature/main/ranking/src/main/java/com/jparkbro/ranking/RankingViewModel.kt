@@ -8,9 +8,7 @@ import com.jparkbro.model.ranking.RankingItem
 import com.jparkbro.model.ranking.RankingRequest
 import com.jparkbro.model.ranking.RankingResponse
 import com.jparkbro.model.ranking.RankingType
-import com.jparkbro.ui.FilterParams
-import com.jparkbro.ui.FilterType
-import com.jparkbro.ui.SheetData
+import com.jparkbro.ui.components.SheetData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,6 +1,7 @@
 package com.jparkbro.login
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -38,16 +39,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.jparkbro.model.enum.DialogType
 import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APAlertDialog
 import com.jparkbro.ui.components.APBackStackTopAppBar
-import com.jparkbro.ui.components.APConfirmDialog
 import com.jparkbro.ui.components.APLabeledTextField
 import com.jparkbro.ui.components.APPrimaryActionButton
-import com.jparkbro.ui.components.APSnackBarRe
 import com.jparkbro.ui.model.DialogData
-import com.jparkbro.ui.model.SnackBarData
 import com.jparkbro.ui.preview.DevicePreviews
 import com.jparkbro.ui.theme.AniPick14Normal
 import com.jparkbro.ui.theme.AniPick14Regular
@@ -55,6 +52,7 @@ import com.jparkbro.ui.theme.AniPick24Bold
 import com.jparkbro.ui.theme.AniPickBlack
 import com.jparkbro.ui.theme.AniPickGray100
 import com.jparkbro.ui.theme.AniPickGray400
+import com.jparkbro.ui.theme.AniPickGray500
 import com.jparkbro.ui.theme.AniPickPoint
 import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.theme.EyeClosedIcon
@@ -71,17 +69,16 @@ internal fun EmailLoginRoot(
     viewModel: EmailLoginViewModel = hiltViewModel()
 ) {
     var dialogData by rememberSaveable { mutableStateOf<DialogData?>(null) }
-    var snackBarData by rememberSaveable { mutableStateOf<List<SnackBarData>>(emptyList()) }
 
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is EmailLoginEvent.LoginSuccess -> {
                 if (event.reviewCompletedYn) {
-                    onNavigateToPreferenceSetup()
-                } else {
                     onNavigateToHome()
+                } else {
+                    onNavigateToPreferenceSetup()
                 }
             }
             is EmailLoginEvent.LoginFailWithDialog -> {
@@ -89,24 +86,16 @@ internal fun EmailLoginRoot(
                     onConfirm = { dialogData = null }
                 )
             }
-
-            is EmailLoginEvent.LoginFailWithSnackBar -> {
-                snackBarData = snackBarData + event.snackBarData.copy(
-                    onDismiss = {
-                        snackBarData = snackBarData.drop(1)
-                    }
-                )
-            }
         }
     }
 
     EmailLoginScreen(
-        state = uiState,
+        state = state,
         onAction = { action ->
             when (action) {
-                EmailLoginAction.OnBackClick -> onNavigateBack()
-                EmailLoginAction.OnEmailRegisterClick -> onNavigateToEmailRegister()
-                EmailLoginAction.OnFindPasswordClick -> onNavigateToFindPassword()
+                EmailLoginAction.NavigateBack -> onNavigateBack()
+                EmailLoginAction.NavigateToRegister -> onNavigateToEmailRegister()
+                EmailLoginAction.NavigateToFindPassword -> onNavigateToFindPassword()
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -115,10 +104,6 @@ internal fun EmailLoginRoot(
 
     dialogData?.let {
         APAlertDialog(it)
-    }
-
-    snackBarData.firstOrNull()?.let { snackBarData ->
-        APSnackBarRe(snackBarData)
     }
 }
 
@@ -131,9 +116,14 @@ private fun EmailLoginScreen(
     val focusManager = LocalFocusManager.current
 
     Scaffold(
-        topBar = { APBackStackTopAppBar(onNavigateBack = { onAction(EmailLoginAction.OnBackClick) }) },
+        topBar = { APBackStackTopAppBar(onNavigateBack = { onAction(EmailLoginAction.NavigateBack) }) },
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = { focusManager.clearFocus() }
+                )
+            },
         containerColor = AniPickWhite
     ) { innerPadding ->
         Column(
@@ -219,14 +209,16 @@ private fun EmailPasswordInputSection(
             ),
             onKeyboardAction = {
                 focusManager.clearFocus()
-                onAction(EmailLoginAction.OnLoginClick)
+                if (state.email.text.isNotEmpty()) {
+                    onAction(EmailLoginAction.OnLoginClicked)
+                }
             },
             placeholder = stringResource(R.string.email_login_password_placeholder),
             trailingIcon = {
                 Icon(
                     imageVector = if (state.isPasswordVisible) EyeOpenedIcon else EyeClosedIcon,
                     contentDescription = stringResource(R.string.visible_icon),
-                    tint = Color(0xFF667080),
+                    tint = AniPickGray500,
                     modifier = Modifier
                         .clip(CircleShape)
                         .clickable { onAction(EmailLoginAction.OnTogglePasswordVisibility) }
@@ -248,11 +240,11 @@ private fun EmailPasswordInputSection(
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Text(
-                    text = stringResource(R.string.email_login_email_register),
+                    text = stringResource(R.string.email_login_register),
                     style = AniPick14Normal.copy(color = AniPickGray400),
                     modifier = Modifier
                         .clip(CircleShape)
-                        .clickable { onAction(EmailLoginAction.OnEmailRegisterClick) }
+                        .clickable { onAction(EmailLoginAction.NavigateToRegister) }
                         .padding(dimensionResource(R.dimen.padding_extra_small))
                 )
             }
@@ -272,7 +264,7 @@ private fun EmailPasswordInputSection(
                     style = AniPick14Normal.copy(color = AniPickGray400),
                     modifier = Modifier
                         .clip(CircleShape)
-                        .clickable { onAction(EmailLoginAction.OnFindPasswordClick) }
+                        .clickable { onAction(EmailLoginAction.NavigateToFindPassword) }
                         .padding(dimensionResource(R.dimen.padding_extra_small))
                 )
             }
@@ -301,10 +293,12 @@ private fun Footer(
     ) {
         HorizontalDivider(color = AniPickGray100)
         APPrimaryActionButton(
-            text = stringResource(R.string.email_login_login),
-            onClick = { onAction(EmailLoginAction.OnLoginClick) },
-            enabled = state.canLogin,
-            isLoading = state.isLoggingIn
+            text = stringResource(R.string.email_login_login_btn),
+            onClick = { onAction(EmailLoginAction.OnLoginClicked) },
+            enabled = state.isLoginEnabled,
+            isLoading = state.isLoggingIn,
+            modifier = Modifier
+                .padding(horizontal = dimensionResource(R.dimen.padding_large))
         )
     }
 }

@@ -25,17 +25,34 @@
             <option value="$PROJECT_DIR$/feature/auth/email/login" />
             <option value="$PROJECT_DIR$/feature/auth/email/register" />
             <option value="$PROJECT_DIR$/feature/auth/findpassword" />
+            <option value="$PROJECT_DIR$/feature/auth/findpassword/reset" />
+            <option value="$PROJECT_DIR$/feature/auth/findpassword/verification" />
             <option value="$PROJECT_DIR$/feature/auth/login" />
             <option value="$PROJECT_DIR$/feature/auth/preferencesetup" />
             <option value="$PROJECT_DIR$/feature/main" />
-            <option value="$PROJECT_DIR$/feature/main/detail" />
+            <option value="$PROJECT_DIR$/feature/main/actor" />
             <option value="$PROJECT_DIR$/feature/main/explore" />
-            <option value="$PROJECT_DIR$/feature/main/home" />
-            <option value="$PROJECT_DIR$/feature/main/mypage" />
-            <option value="$PROJECT_DIR$/feature/main/ranking" />
+            <option value="$PROJECT_DIR$/feature/main/info" />
+            <option value="$PROJECT_DIR$/feature/main/info/anime" />
+            <option value="$PROJECT_DIR$/feature/main/info/character" />
+            <option value="$PROJECT_DIR$/feature/main/info/recommend" />
+            <option value="$PROJECT_DIR$/feature/main/info/series" />
             <option value="$PROJECT_DIR$/feature/main/review" />
             <option value="$PROJECT_DIR$/feature/main/search" />
-            <option value="$PROJECT_DIR$/feature/main/setting" />
+            <option value="$PROJECT_DIR$/feature/main/shell" />
+            <option value="$PROJECT_DIR$/feature/main/shell/explore" />
+            <option value="$PROJECT_DIR$/feature/main/shell/home" />
+            <option value="$PROJECT_DIR$/feature/main/shell/home/detail" />
+            <option value="$PROJECT_DIR$/feature/main/shell/home/main" />
+            <option value="$PROJECT_DIR$/feature/main/shell/mypage" />
+            <option value="$PROJECT_DIR$/feature/main/shell/mypage/mypage" />
+            <option value="$PROJECT_DIR$/feature/main/shell/mypage/mypage/detail" />
+            <option value="$PROJECT_DIR$/feature/main/shell/mypage/mypage/main" />
+            <option value="$PROJECT_DIR$/feature/main/shell/mypage/setting" />
+            <option value="$PROJECT_DIR$/feature/main/shell/mypage/setting/detail" />
+            <option value="$PROJECT_DIR$/feature/main/shell/mypage/setting/main" />
+            <option value="$PROJECT_DIR$/feature/main/shell/ranking" />
+            <option value="$PROJECT_DIR$/feature/main/studio" />
           </set>
         </option>
       </GradleProjectSettings>

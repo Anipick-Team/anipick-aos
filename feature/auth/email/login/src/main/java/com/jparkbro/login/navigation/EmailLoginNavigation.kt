@@ -1,7 +1,7 @@
 package com.jparkbro.login.navigation
 
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.jparkbro.login.EmailLoginRoot
@@ -10,7 +10,9 @@ import kotlinx.serialization.Serializable
 /** Route to EmailLogin screen */
 @Serializable data object EmailLogin
 
-fun NavController.navigateToEmailLogin(navOptions: NavOptions? = null) = navigate(route = EmailLogin, navOptions)
+fun NavHostController.navigateToEmailLogin(
+    navOptions: NavOptions? = null
+) = navigate(route = EmailLogin, navOptions)
 
 fun NavGraphBuilder.emailLoginScreen(
     onNavigateBack: () -> Unit,

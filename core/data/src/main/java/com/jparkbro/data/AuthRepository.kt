@@ -1,17 +1,17 @@
 package com.jparkbro.data
 
 import android.app.Activity
-import com.jparkbro.model.auth.AuthToken
-import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.auth.AuthResponse
 import com.jparkbro.model.auth.EmailLoginRequest
-import com.jparkbro.model.auth.PreferenceRequest
-import com.jparkbro.model.auth.PreferenceResponse
-import com.jparkbro.model.auth.RatedAnime
+import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.auth.RequestCode
 import com.jparkbro.model.auth.ResetPassword
 import com.jparkbro.model.auth.SignupRequest
 import com.jparkbro.model.auth.VerifyCode
+import com.jparkbro.model.common.AuthToken
+import com.jparkbro.model.dto.preference.RatedAnime
+import com.jparkbro.model.dto.preference.SearchRequest
+import com.jparkbro.model.dto.preference.SearchResponse
 
 interface AuthRepository {
 
@@ -30,6 +30,6 @@ interface AuthRepository {
     suspend fun resetPassword(request: ResetPassword): Result<Unit>
 
     /* 애니평가 */
-    suspend fun exploreOrSearch(request: PreferenceRequest): Result<PreferenceResponse>
+    suspend fun exploreOrSearch(request: SearchRequest): Result<SearchResponse>
     suspend fun submitReviews(request: List<RatedAnime>): Result<Unit>
 }

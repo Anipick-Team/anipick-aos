@@ -3,7 +3,7 @@ package com.jparkbro.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
@@ -11,10 +11,10 @@ class RecentAnimeDataStoreImpl @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) : RecentAnimeDataStore {
     companion object {
-        private val RECENT_ANIME = intPreferencesKey("anime_id")
+        private val RECENT_ANIME = longPreferencesKey("anime_id")
     }
 
-    override suspend fun saveRecentAnime(animeId: Int): Result<Unit> {
+    override suspend fun saveRecentAnime(animeId: Long): Result<Unit> {
         return try {
             dataStore.edit { preferences ->
                 preferences[RECENT_ANIME] = animeId
@@ -25,13 +25,13 @@ class RecentAnimeDataStoreImpl @Inject constructor(
         }
     }
 
-    override suspend fun loadRecentAnime(): Result<Int> {
+    override suspend fun loadRecentAnime(): Result<Long> {
         return try {
-            val nickname = dataStore.data.first()[RECENT_ANIME]
-            if (nickname != null) {
-                Result.success(nickname)
+            val animeId = dataStore.data.first()[RECENT_ANIME]
+            if (animeId != null) {
+                Result.success(animeId)
             } else {
-                Result.success(-1) // 미추천 처리
+                Result.success(-1L) // 미추천 처리
             }
         } catch (e: Exception) {
             Result.failure(e)

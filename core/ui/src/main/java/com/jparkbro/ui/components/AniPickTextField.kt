@@ -16,10 +16,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicSecureTextField
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.TextObfuscationMode
+import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -59,6 +61,7 @@ fun APBaseTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     isPassword: Boolean = false,
     showPassword: Boolean = false,
+    maxLength: Int? = null,
 ) {
     if (isPassword) {
         BasicSecureTextField(
@@ -68,15 +71,18 @@ fun APBaseTextField(
                 .clip(AniPickSmallShape),
             enabled = enabled,
             readOnly = readOnly,
+            inputTransformation = maxLength?.let {
+                InputTransformation.maxLength(it)
+            },
             textStyle = textStyle,
             keyboardOptions = keyboardOptions,
-            onKeyboardAction = KeyboardActionHandler {
+            onKeyboardAction = {
                 onKeyboardAction()
             },
             cursorBrush = SolidColor(AniPickPrimary),
             decorator = { innerBox ->
                 Row(
-                    modifier = Modifier
+                    modifier = modifier
                         .fillMaxWidth()
                         .background(AniPickGray50)
                         .padding(
@@ -124,9 +130,12 @@ fun APBaseTextField(
                 .clip(AniPickSmallShape),
             enabled = enabled,
             readOnly = readOnly,
+            inputTransformation = maxLength?.let {
+                InputTransformation.maxLength(it)
+            },
             textStyle = textStyle,
             keyboardOptions = keyboardOptions,
-            onKeyboardAction = KeyboardActionHandler {
+            onKeyboardAction = {
                 onKeyboardAction()
             },
             cursorBrush = SolidColor(AniPickPrimary),

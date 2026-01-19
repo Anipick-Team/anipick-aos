@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -47,7 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.jparkbro.model.common.MetaData
 import com.jparkbro.model.common.ResponseMap
@@ -56,13 +55,14 @@ import com.jparkbro.model.ranking.RankingRequest
 import com.jparkbro.model.ranking.RankingResponse
 import com.jparkbro.model.ranking.RankingTrend
 import com.jparkbro.model.ranking.RankingType
-import com.jparkbro.ui.APExpireBottomSheet
-import com.jparkbro.ui.APLogoSearchTopAppBar
-import com.jparkbro.ui.FilterParams
-import com.jparkbro.ui.FilterType
+import com.jparkbro.ui.components.APExpireBottomSheet
+import com.jparkbro.ui.components.APMainTopAppBar
+import com.jparkbro.ui.components.FilterParams
+import com.jparkbro.ui.components.FilterType
 import com.jparkbro.ui.R
-import com.jparkbro.ui.SheetData
+import com.jparkbro.ui.components.SheetData
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.theme.AniPickPrimary
 import com.jparkbro.ui.util.extension.toImageModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -72,7 +72,7 @@ internal fun Ranking(
     metaData: MetaData,
     bottomNav: @Composable () -> Unit,
     onNavigateToSearch: () -> Unit,
-    onNavigateToAnimeDetail: (Int) -> Unit,
+    onNavigateToAnimeDetail: (Long) -> Unit,
     viewModel: RankingViewModel = hiltViewModel()
 ) {
     val params by viewModel.params.collectAsState()
@@ -112,13 +112,11 @@ private fun Ranking(
     onChangeFilter: (RankingRequest) -> Unit = {},
     onChangeSheetData: (SheetData?) -> Unit,
     onLoadMoreData: () -> Unit,
-    onNavigateToAnimeDetail: (Int) -> Unit,
+    onNavigateToAnimeDetail: (Long) -> Unit,
 ) {
     Scaffold(
         topBar = {
-            APLogoSearchTopAppBar(
-                onNavigateToSearch = { onNavigateToSearch() }
-            )
+            APMainTopAppBar(onNavigateToSearch = onNavigateToSearch)
         },
         bottomBar = { bottomNav() },
         containerColor = APColors.Surface,
@@ -335,7 +333,7 @@ private fun Ranking(
 @Composable
 private fun RankingItem(
     anime: RankingItem,
-    onClick: (Int) -> Unit,
+    onClick: (Long) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -351,7 +349,7 @@ private fun RankingItem(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = "${anime.rank}",
+                text = "${anime.rank}".padStart(2, '0'),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.W600,
                 color = APColors.Black
@@ -394,6 +392,15 @@ private fun RankingItem(
                         )
                     }
                 }
+                RankingTrend.NEW -> {
+                    Text(
+                        text = "New",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        color = AniPickPrimary
+                    )
+                }
+
                 else -> {}
             }
         }

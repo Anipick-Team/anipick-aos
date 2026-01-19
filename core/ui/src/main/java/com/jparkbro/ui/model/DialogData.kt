@@ -12,5 +12,5 @@ data class DialogData(
     val dismiss: UiText? = null,
     val confirm: UiText? = null,
     val onDismiss: () -> Unit = {},
-    val onConfirm: () -> Unit = {}
+    val onConfirm: (String?) -> Unit = {_ ->}
 )

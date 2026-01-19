@@ -11,7 +11,7 @@ plugins {
 }
 
 android {
-    namespace = "com.jparkbro.register"
+    namespace = "com.jparkbro.email.register"
     compileSdk = rootProject.extra["targetSdk"] as Int
 
     defaultConfig {

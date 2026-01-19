@@ -1,15 +1,18 @@
 package com.jparkbro.network.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.jparkbro.network.actor.ActorApi
+import com.jparkbro.network.actor.ActorDataSource
+import com.jparkbro.network.actor.RetrofitActorDataSource
+import com.jparkbro.network.anime.AnimeApi
+import com.jparkbro.network.anime.AnimeDataSource
+import com.jparkbro.network.anime.RetrofitAnimeDataSource
 import com.jparkbro.network.auth.AuthApi
 import com.jparkbro.network.auth.AuthDataSource
 import com.jparkbro.network.auth.RetrofitAuthDataSource
 import com.jparkbro.network.common.CommonApi
 import com.jparkbro.network.common.CommonDataSource
 import com.jparkbro.network.common.RetrofitCommonDataSource
-import com.jparkbro.network.detail.DetailApi
-import com.jparkbro.network.detail.DetailDataSource
-import com.jparkbro.network.detail.RetrofitDetailDataSource
 import com.jparkbro.network.explore.ExploreApi
 import com.jparkbro.network.explore.ExploreDataSource
 import com.jparkbro.network.explore.RetrofitExploreDataSource
@@ -17,9 +20,6 @@ import com.jparkbro.network.home.HomeApi
 import com.jparkbro.network.home.HomeDataSource
 import com.jparkbro.network.home.RetrofitHomeDataSource
 import com.jparkbro.network.interceptor.AuthInterceptor
-import com.jparkbro.network.mypage.MyPageApi
-import com.jparkbro.network.mypage.MyPageDataSource
-import com.jparkbro.network.mypage.RetrofitMyPageDataSource
 import com.jparkbro.network.ranking.RankingApi
 import com.jparkbro.network.ranking.RankingDataSource
 import com.jparkbro.network.ranking.RetrofitRankingDataSource
@@ -30,9 +30,12 @@ import com.jparkbro.network.review.ReviewDataSource
 import com.jparkbro.network.search.RetrofitSearchDataSource
 import com.jparkbro.network.search.SearchApi
 import com.jparkbro.network.search.SearchDataSource
-import com.jparkbro.network.setting.RetrofitSettingDataSource
-import com.jparkbro.network.setting.SettingApi
-import com.jparkbro.network.setting.SettingDataSource
+import com.jparkbro.network.studio.RetrofitStudioDataSource
+import com.jparkbro.network.studio.StudioApi
+import com.jparkbro.network.studio.StudioDataSource
+import com.jparkbro.network.user.RetrofitUserDataSource
+import com.jparkbro.network.user.UserApi
+import com.jparkbro.network.user.UserDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -78,9 +81,9 @@ internal object NetworkModule {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor) // token 자동 추가
             .addInterceptor(httpLoggingInterceptor)
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .build()
     }
 
@@ -127,20 +130,6 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideMyPageApi(retrofit: Retrofit): MyPageApi {
-        return retrofit.create(MyPageApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideMyPageDataSource(
-        myPageApi: MyPageApi
-    ): MyPageDataSource {
-        return RetrofitMyPageDataSource(myPageApi)
-    }
-
-    @Provides
-    @Singleton
     fun provideCommonApi(retrofit: Retrofit): CommonApi {
         return retrofit.create(CommonApi::class.java)
     }
@@ -161,18 +150,6 @@ internal object NetworkModule {
     @Singleton
     fun provideRankingDataSource(rankingApi: RankingApi): RankingDataSource {
         return RetrofitRankingDataSource(rankingApi)
-    }
-
-    @Provides
-    @Singleton
-    fun provideDetailApi(retrofit: Retrofit): DetailApi {
-        return retrofit.create(DetailApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideDetailDataSource(detailApi: DetailApi): DetailDataSource {
-        return RetrofitDetailDataSource(detailApi)
     }
 
     @Provides
@@ -213,13 +190,49 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideSettingApi(retrofit: Retrofit): SettingApi {
-        return retrofit.create(SettingApi::class.java)
+    fun provideAnimeApi(retrofit: Retrofit): AnimeApi {
+        return retrofit.create(AnimeApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideSettingDataSource(settingApi: SettingApi): SettingDataSource {
-        return RetrofitSettingDataSource(settingApi)
+    fun provideAnimeDataSource(animeApi: AnimeApi): AnimeDataSource {
+        return RetrofitAnimeDataSource(animeApi)
+    }
+
+    @Provides
+    @Singleton
+    fun provideActorApi(retrofit: Retrofit): ActorApi {
+        return retrofit.create(ActorApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideActorDataSource(actorApi: ActorApi): ActorDataSource {
+        return RetrofitActorDataSource(actorApi)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStudioApi(retrofit: Retrofit): StudioApi {
+        return retrofit.create(StudioApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStudioDataSource(studioApi: StudioApi): StudioDataSource {
+        return RetrofitStudioDataSource(studioApi)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserApi(retrofit: Retrofit): UserApi {
+        return retrofit.create(UserApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserDataSource(userApi: UserApi): UserDataSource {
+        return RetrofitUserDataSource(userApi)
     }
 }

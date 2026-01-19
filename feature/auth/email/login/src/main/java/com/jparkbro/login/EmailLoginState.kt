@@ -13,5 +13,5 @@ data class EmailLoginState(
     val isPasswordVisible: Boolean = false,
     val isLoggingIn: Boolean = false,
     val loginErrorMessage: String? = null,
-    val canLogin: Boolean = false,
+    val isLoginEnabled: Boolean = false,
 )
