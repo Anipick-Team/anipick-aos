@@ -21,7 +21,7 @@ buildscript {
     val targetSdk = 36
     val minSdk = 28
     val versionCode = 40
-    val versionName = "1.0.2"
+    val versionName = "1.1.0"
 
     extra.apply {
         set("targetSdk", targetSdk)
