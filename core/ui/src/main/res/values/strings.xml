@@ -16,6 +16,7 @@
     <string name="favorite_icon">좋아요 아이콘</string>
     <string name="share_icon">공유 아이콘</string>
     <string name="edit_icon">수정 아이콘</string>
+    <string name="rank_change_icon">랭킹 변경 아이콘</string>
 
     <string name="app_logo">앱 로고</string>
     <string name="kakao_login_button">카카오 로그인 버튼</string>
@@ -336,5 +337,12 @@
     <string name="user_edit_withdraw_agreement_check">"\'회원탈퇴\'를 누르는 것은 상기 안내사항을 모두 확인하였으며 이에 동의함을 의미합니다."</string>
     <string name="user_edit_action_save">저장</string>
     <string name="user_edit_withdraw_action_submit">탈퇴하기</string>
+
+    <!-- Ranking -->
+    <string name="ranking_chip_real_time">실시간</string>
+    <string name="ranking_chip_year_quarter">년도/분기</string>
+    <string name="ranking_chip_all_time">역대</string>
+    <string name="ranking_chip_genre">장르</string>
+    <string name="ranking_rank_new">New</string>
 
 </resources>

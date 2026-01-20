@@ -51,6 +51,7 @@
     <dimen name="spacing_64">@dimen/space_64</dimen>
 
     <!-- Size (고정 UI 요소 크기) -->
+    <dimen name="icon_size_extra_small">8dp</dimen>
     <dimen name="icon_size_small">16dp</dimen>
     <dimen name="icon_size_medium">20dp</dimen>
     <dimen name="icon_size_large">24dp</dimen>

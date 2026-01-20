@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false
 
-    id("com.google.dagger.hilt.android") version "2.57.2" apply false
+    id("com.google.dagger.hilt.android") version "2.58" apply false
     id("com.google.devtools.ksp") version "2.2.21-2.0.4" apply false
 
     // Firebase
@@ -20,8 +20,8 @@ plugins {
 buildscript {
     val targetSdk = 36
     val minSdk = 28
-    val versionCode = 39
-    val versionName = "1.0.19"
+    val versionCode = 40
+    val versionName = "1.0.2"
 
     extra.apply {
         set("targetSdk", targetSdk)
