@@ -344,5 +344,7 @@
     <string name="ranking_chip_all_time">역대</string>
     <string name="ranking_chip_genre">장르</string>
     <string name="ranking_rank_new">New</string>
+    <string name="ranking_default_year">전체년도</string>
+    <string name="ranking_default_quarter">전체분기</string>
 
 </resources>

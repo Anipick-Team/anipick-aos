@@ -212,8 +212,8 @@ private fun RankingScreen(
                     )
                     val yearSeason = when {
                         state.type != RankingType.YEAR_SEASON -> stringResource(R.string.ranking_chip_year_quarter)
-                        state.year == null -> "전체년도"
-                        state.year == "전체년도" || state.quarter.name == "전체분기" -> state.year
+                        state.year == null -> stringResource(R.string.ranking_default_year)
+                        state.year == stringResource(R.string.ranking_default_year) || state.quarter.name == stringResource(R.string.ranking_default_quarter) -> state.year
                         else -> "${state.year}/${state.quarter.name}"
                     }
                     FilterChip(
