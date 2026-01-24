@@ -64,7 +64,7 @@ class PreferenceSetupViewModel @Inject constructor(
             is PreferenceSetupAction.OnFilterCompleteClicked -> {
                 _state.update {
                     it.copy(
-                        yearFilter = action.params.year,
+                        yearFilter = action.params.year ?: "전체년도",
                         quarterFilter = action.params.quarter,
                         genreFilter = action.params.genres.firstOrNull() ?: ResponseMap(),
                     )

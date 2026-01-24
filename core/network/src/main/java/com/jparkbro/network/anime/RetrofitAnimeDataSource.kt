@@ -3,6 +3,8 @@ package com.jparkbro.network.anime
 import com.jparkbro.model.common.Cursor
 import com.jparkbro.model.common.anime.InfoSeriesAnimeDto
 import com.jparkbro.model.common.anime.SimpleAnimeDto
+import com.jparkbro.model.dto.explore.GetAnimeExploreRequest
+import com.jparkbro.model.dto.explore.GetAnimeExploreResponse
 import com.jparkbro.model.dto.info.WatchStatusRequest
 import com.jparkbro.model.dto.home.main.RecommendedAnimesResponse
 import com.jparkbro.model.dto.info.AnimeInfoResponse
@@ -141,5 +143,25 @@ class RetrofitAnimeDataSource @Inject constructor(
             lastRank = request.lastRank,
             size = request.size,
         ).toResult(TAG, "getAllTimeRanking")
+    }
+
+    override suspend fun getAnimeExplore(request: GetAnimeExploreRequest): Result<GetAnimeExploreResponse> {
+        return animeApi.getAnimeExplore(
+            year = if (request.year == "전체년도") null else request.year,
+            season = when (request.season) {
+                "1분기" -> 1
+                "2분기" -> 2
+                "3분기" -> 3
+                "4분기" -> 4
+                else -> null
+            },
+            genres = if (request.genres.isNotEmpty()) request.genres.map { it.id.toLong() } else emptyList(),
+            type = request.type,
+            sort = request.sort.param,
+            lastId = request.lastId,
+            size = request.size,
+            genreOp = request.genreOp.name,
+            lastValue = request.lastValue
+        ).toResult(TAG, "getAnimeExplore")
     }
 }

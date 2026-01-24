@@ -627,13 +627,15 @@ private fun InfoTab(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         state.animeInfo?.genres?.forEach { genre ->
-                            Text(
-                                text = genre.name,
-                                style = AniPick12Normal.copy(color = AniPickPrimary),
-                                modifier = Modifier
-                                    .background(AniPickPrimary.copy(alpha = 0.1f), AniPickSmallShape)
-                                    .padding(horizontal = dimensionResource(R.dimen.padding_small), vertical = dimensionResource(R.dimen.padding_extra_small)),
-                            )
+                            genre.name?.let {
+                                Text(
+                                    text = it,
+                                    style = AniPick12Normal.copy(color = AniPickPrimary),
+                                    modifier = Modifier
+                                        .background(AniPickPrimary.copy(alpha = 0.1f), AniPickSmallShape)
+                                        .padding(horizontal = dimensionResource(R.dimen.padding_small), vertical = dimensionResource(R.dimen.padding_extra_small)),
+                                )
+                            }
                         }
                     }
                 }

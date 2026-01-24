@@ -2,6 +2,8 @@ package com.jparkbro.data.anime
 
 import com.jparkbro.model.common.Cursor
 import com.jparkbro.model.common.anime.Anime
+import com.jparkbro.model.dto.explore.GetAnimeExploreRequest
+import com.jparkbro.model.dto.explore.GetAnimeExploreResult
 import com.jparkbro.model.dto.home.main.RecommendedAnimesResult
 import com.jparkbro.model.dto.info.AnimeInfoResponse
 import com.jparkbro.model.dto.info.GetInfoRecommendResult
@@ -42,4 +44,7 @@ interface AnimeRepository {
 
     /** Ranking */
     suspend fun getAnimeRanking(request: GetAnimeRankingRequest): Result<GetAnimeRankingResult>
+
+    /** Explore */
+    suspend fun getAnimeExplore(request: GetAnimeExploreRequest): Result<GetAnimeExploreResult>
 }

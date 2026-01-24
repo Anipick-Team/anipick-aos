@@ -15,7 +15,7 @@ interface ExploreApi {
         @Query("genres") genres: List<Int>?,
         @Query("type") type: String?,
         @Query("sort") sort: String,
-        @Query("lastId") lastId: Int?,
+        @Query("lastId") lastId: Long?,
         @Query("size") size: Int,
         @Query("genreOp") genreOp: String,
         @Query("lastValue") lastValue: String?,

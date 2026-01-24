@@ -2,7 +2,6 @@ package com.jparkbro.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val AniPickPrimary50 = Color(0x1A5CC398)
 val AniPickPrimary = Color(0xFF5CC398)
 
 val AniPickSecondary = Color(0xFF5CC9FF)

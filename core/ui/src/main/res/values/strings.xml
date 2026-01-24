@@ -347,4 +347,10 @@
     <string name="ranking_default_year">전체년도</string>
     <string name="ranking_default_quarter">전체분기</string>
 
+    <!-- Explore -->
+    <string name="explore_chip_year_quarter">년도/분기</string>
+    <string name="explore_chip_genre">장르</string>
+    <string name="explore_chip_type">타입</string>
+
+
 </resources>

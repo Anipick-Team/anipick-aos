@@ -385,7 +385,7 @@ private fun AnimeAndActorContent(
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
                 thickness = dimensionResource(R.dimen.border_width_default),
-                color = AniPickGray100
+                color = AniPickSurface
             )
             if (state.animes.isEmpty() && state.contentType != UserContentType.LIKED_PERSON) {
                 APEmptyContent(

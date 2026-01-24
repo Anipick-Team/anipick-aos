@@ -123,7 +123,6 @@ dependencies {
     implementation(project(":feature:main:studio"))
     implementation(project(":feature:main:review"))
 
-    implementation(project(":feature:main:explore"))
     implementation(project(":feature:main:search"))
 
     // Test

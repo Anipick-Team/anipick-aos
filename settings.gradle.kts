@@ -40,7 +40,6 @@ include(":feature:auth:findpassword:verification")
 include(":feature:auth:findpassword:reset")
 include(":feature:auth:preferencesetup")
 
-include(":feature:main:explore")
 include(":feature:main:search")
 include(":feature:main:review")
 

@@ -16,7 +16,7 @@ data class ExploreRequest(
     @SerialName("sort")
     val sort: String,
     @SerialName("lastId")
-    val lastId: Int?,
+    val lastId: Long?,
     @SerialName("size")
     val size: Int = 18,
     @SerialName("genreOp")

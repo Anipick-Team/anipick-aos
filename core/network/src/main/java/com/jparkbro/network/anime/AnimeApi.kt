@@ -2,6 +2,7 @@ package com.jparkbro.network.anime
 
 import com.jparkbro.model.common.anime.InfoSeriesAnimeDto
 import com.jparkbro.model.common.anime.SimpleAnimeDto
+import com.jparkbro.model.dto.explore.GetAnimeExploreResponse
 import com.jparkbro.model.dto.home.main.RecommendedAnimesResponse
 import com.jparkbro.model.dto.info.AnimeInfoResponse
 import com.jparkbro.model.dto.info.GetInfoRecommendResponse
@@ -128,4 +129,17 @@ interface AnimeApi {
         @Query("lastRank") lastRank: Int?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<GetAnimeRankingResponse>>
+
+    @GET(ApiConstants.EXPLORE_ANIMES)
+    suspend fun getAnimeExplore(
+        @Query("year") year: String?,
+        @Query("season") season: Int?,
+        @Query("genres") genres: List<Long>,
+        @Query("type") type: String?,
+        @Query("sort") sort: String,
+        @Query("lastId") lastId: Long?,
+        @Query("size") size: Int,
+        @Query("genreOp") genreOp: String,
+        @Query("lastValue") lastValue: String?,
+    ): Response<ApiResponse<GetAnimeExploreResponse>>
 }

@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -34,22 +32,14 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jparkbro.model.common.MetaData
-import com.jparkbro.model.common.ResponseMap
 import com.jparkbro.model.common.UiState
-import com.jparkbro.model.dto.ranking.GetAnimeRankingRequest
 import com.jparkbro.model.enum.BottomSheetType
 import com.jparkbro.model.enum.RankingType
-import com.jparkbro.model.ranking.RankingRequest
 import com.jparkbro.ranking.components.FilterChip
 import com.jparkbro.ranking.components.RankingItem
 import com.jparkbro.ranking.components.SkeletonAnimeItem
@@ -58,11 +48,7 @@ import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APErrorScreen
 import com.jparkbro.ui.components.APFilterBottomSheet
 import com.jparkbro.ui.components.APMainTopAppBar
-import com.jparkbro.ui.components.FilterParams
-import com.jparkbro.ui.components.FilterType
-import com.jparkbro.ui.components.SheetData
 import com.jparkbro.ui.model.BottomSheetData
-import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.theme.AniPick16Regular
 import com.jparkbro.ui.theme.AniPickBlack
 import com.jparkbro.ui.theme.AniPickGray100
@@ -303,7 +289,7 @@ private fun GenreFilterChip(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = state.genre.name.ifBlank { stringResource(R.string.ranking_chip_genre) },
+            text = state.genre.name?.takeIf { it.isNotBlank() } ?: stringResource(R.string.ranking_chip_genre),
             style = AniPick16Regular.copy(
                 color = if (state.genre.id != -1) AniPickSecondary else AniPickBlack
             )

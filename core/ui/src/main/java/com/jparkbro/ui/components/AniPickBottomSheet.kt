@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.jparkbro.model.common.MetaData
 import com.jparkbro.model.common.ResponseMap
 import com.jparkbro.model.enum.BottomSheetType
+import com.jparkbro.model.enum.SelectionMode
 import com.jparkbro.ui.R
 import com.jparkbro.ui.components.picker.APPicker
 import com.jparkbro.ui.components.picker.PickerState
@@ -71,6 +72,7 @@ import kotlinx.coroutines.launch
 fun APFilterBottomSheet(
     metaData: MetaData,
     initData: BottomSheetParams,
+    modifier: Modifier = Modifier,
     includeYearQuarter: Boolean = false,
     includeGenres: Boolean = false,
     includeTypeFilter: Boolean = false,
@@ -78,9 +80,8 @@ fun APFilterBottomSheet(
     initSheetType: BottomSheetType = BottomSheetType.YEAR_QUARTER,
     onDismiss: () -> Unit,
     onApply: (BottomSheetParams) -> Unit,
-    modifier: Modifier = Modifier,
-    yearPickerState: PickerState<String> = rememberPickerState(initData.year),
-    quarterPickerState: PickerState<String> = rememberPickerState(initData.quarter.name),
+    yearPickerState: PickerState<String> = rememberPickerState(initData.year ?: "전체년도"),
+    quarterPickerState: PickerState<String> = rememberPickerState(initData.quarter.name ?: "전체분기"),
 ) {
     var sheetType by rememberSaveable { mutableStateOf(initSheetType) }
     var resetTrigger by remember { mutableIntStateOf(0) }
@@ -177,7 +178,7 @@ fun APFilterBottomSheet(
                 color = AniPickSurface
             )
             val yearItems = metaData.seasonYear.reversed() + listOf("전체년도")
-            val quarterItems = listOf("전체분기") + metaData.season.map { it.name }
+            val quarterItems = listOf("전체분기") + metaData.season.mapNotNull { it.name }
             when (sheetType) {
                 BottomSheetType.YEAR_QUARTER -> Row(
                     modifier = Modifier
@@ -234,7 +235,7 @@ fun APFilterBottomSheet(
                             },
                             selectedItems = when (sheetType) {
                                 BottomSheetType.GENRE -> tempData.genres
-                                BottomSheetType.TYPE -> listOfNotNull(tempData.type.takeIf { it.isNotEmpty() })
+                                BottomSheetType.TYPE -> listOfNotNull(tempData.type?.takeIf { it.isNotEmpty() })
                                 else -> emptyList()
                             },
                             selectionMode = when (sheetType) {
@@ -248,7 +249,7 @@ fun APFilterBottomSheet(
                                     }
 
                                     BottomSheetType.TYPE -> {
-                                        tempData = tempData.copy(type = it.firstOrNull().toString())
+                                        tempData = tempData.copy(type = it.firstOrNull()?.toString())
                                     }
 
                                     else -> {}
@@ -293,7 +294,7 @@ fun APFilterBottomSheet(
                         onApply(
                             tempData.copy(
                                 year = yearPickerState.selectedItem,
-                                quarter = if (yearPickerState.selectedItem == "전체년도") ResponseMap(name = "전체분기")
+                                quarter = if (yearPickerState.selectedItem == "전체년도") ResponseMap(id = -1, name = "전체분기")
                                 else ResponseMap(
                                     id = quarterPickerState.selectedItem.quarterStringToInt() ?: -1,
                                     name = quarterPickerState.selectedItem
@@ -383,40 +384,42 @@ private fun FilterChipGroup(
             SelectionMode.MULTI -> item in selectedItems
         }
 
-        Text(
-            text = displayText,
-            style = AniPick14Normal.copy(color = if (isSelected) AniPickSecondary else AniPickBlack),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .clip(AniPickSmallShape)
-                .border(
-                    dimensionResource(R.dimen.border_width_default),
-                    if (isSelected) AniPickSecondary else AniPickGray100,
-                    AniPickSmallShape
-                )
-                .clickable {
-                    when (selectionMode) {
-                        SelectionMode.SINGLE -> {
-                            if (isSelected) {
-                                onItemSelected(emptyList())
-                            } else {
-                                onItemSelected(listOf(item))
+        displayText?.let {
+            Text(
+                text = it,
+                style = AniPick14Normal.copy(color = if (isSelected) AniPickSecondary else AniPickBlack),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .clip(AniPickSmallShape)
+                    .border(
+                        dimensionResource(R.dimen.border_width_default),
+                        if (isSelected) AniPickSecondary else AniPickGray100,
+                        AniPickSmallShape
+                    )
+                    .clickable {
+                        when (selectionMode) {
+                            SelectionMode.SINGLE -> {
+                                if (isSelected) {
+                                    onItemSelected(emptyList())
+                                } else {
+                                    onItemSelected(listOf(item))
+                                }
                             }
-                        }
 
-                        SelectionMode.MULTI -> {
-                            val newSelectedItems = selectedItems.toMutableList()
-                            if (item in newSelectedItems) {
-                                newSelectedItems.remove(item)
-                            } else {
-                                newSelectedItems.add(item)
+                            SelectionMode.MULTI -> {
+                                val newSelectedItems = selectedItems.toMutableList()
+                                if (item in newSelectedItems) {
+                                    newSelectedItems.remove(item)
+                                } else {
+                                    newSelectedItems.add(item)
+                                }
+                                onItemSelected(newSelectedItems)
                             }
-                            onItemSelected(newSelectedItems)
                         }
                     }
-                }
-                .padding(horizontal = dimensionResource(R.dimen.padding_default), vertical = dimensionResource(R.dimen.padding_small))
-        )
+                    .padding(horizontal = dimensionResource(R.dimen.padding_default), vertical = dimensionResource(R.dimen.padding_small))
+            )
+        }
     }
 }
 

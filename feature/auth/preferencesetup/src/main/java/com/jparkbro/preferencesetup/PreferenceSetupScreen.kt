@@ -323,13 +323,13 @@ private fun SearchSection(
                 onClick = { onAction(PreferenceSetupAction.OnFilterChipClicked(BottomSheetType.YEAR_QUARTER)) }
             )
             APFilterTriggerChip(
-                title = if (state.quarterFilter.name == "전체분기") stringResource(R.string.preference_setup_quarter) else state.quarterFilter.name,
-                isSelected = state.quarterFilter.name != "전체분기",
+                title = state.quarterFilter.name?.takeIf { it != "전체분기" } ?: stringResource(R.string.preference_setup_quarter),
+                isSelected = state.quarterFilter.name?.let { it != "전체분기" } == true,
                 onClick = { onAction(PreferenceSetupAction.OnFilterChipClicked(BottomSheetType.YEAR_QUARTER)) }
             )
             APFilterTriggerChip(
-                title = if (state.genreFilter.name == "") stringResource(R.string.preference_setup_genre) else state.genreFilter.name,
-                isSelected = state.genreFilter.name != "",
+                title = state.genreFilter.name?.takeIf { it.isNotEmpty() } ?: stringResource(R.string.preference_setup_genre),
+                isSelected = !state.genreFilter.name.isNullOrEmpty(),
                 onClick = { onAction(PreferenceSetupAction.OnFilterChipClicked(BottomSheetType.GENRE)) }
             )
         }

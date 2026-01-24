@@ -13,7 +13,7 @@ data class PreferenceSetupState(
     // LoadMore 검색어 저장용
     val searchQuery: String? = null,
     val yearFilter: String = "전체년도",
-    val quarterFilter: ResponseMap = ResponseMap(name = "전체분기"),
+    val quarterFilter: ResponseMap = ResponseMap(),
     val genreFilter: ResponseMap = ResponseMap(),
     val ratedAnimes: List<RatedAnime> = emptyList(),
     val isRating: Boolean = false,

@@ -3,6 +3,8 @@ package com.jparkbro.network.anime
 import com.jparkbro.model.common.Cursor
 import com.jparkbro.model.common.anime.InfoSeriesAnimeDto
 import com.jparkbro.model.common.anime.SimpleAnimeDto
+import com.jparkbro.model.dto.explore.GetAnimeExploreRequest
+import com.jparkbro.model.dto.explore.GetAnimeExploreResponse
 import com.jparkbro.model.dto.home.main.RecommendedAnimesResponse
 import com.jparkbro.model.dto.info.AnimeInfoResponse
 import com.jparkbro.model.dto.info.GetInfoRecommendResponse
@@ -42,4 +44,7 @@ interface AnimeDataSource {
     suspend fun getRealTimeRanking(request: GetAnimeRankingRequest): Result<GetAnimeRankingResponse>
     suspend fun getYearSeasonRanking(request: GetAnimeRankingRequest): Result<GetAnimeRankingResponse>
     suspend fun getAllTimeRanking(request: GetAnimeRankingRequest): Result<GetAnimeRankingResponse>
+
+    /** Explore */
+    suspend fun getAnimeExplore(request: GetAnimeExploreRequest): Result<GetAnimeExploreResponse>
 }
