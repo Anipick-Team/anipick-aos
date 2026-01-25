@@ -29,7 +29,7 @@ data class SearchResultResponse(
 @Serializable
 data class SearchResultAnime(
     @SerialName("animeId")
-    val animeId: Int,
+    val animeId: Long,
     @SerialName("title")
     val title: String?,
     @SerialName("coverImageUrl")
@@ -43,7 +43,7 @@ data class SearchResultAnime(
 @Serializable
 data class SearchResultPerson(
     @SerialName("personId")
-    val personId: Int,
+    val personId: Long,
     @SerialName("name")
     val name: String?,
     @SerialName("profileImage")
@@ -53,7 +53,7 @@ data class SearchResultPerson(
 @Serializable
 data class SearchResultStudio(
     @SerialName("studioId")
-    val studioId: Int,
+    val studioId: Long,
     @SerialName("name")
     val name: String?,
 )

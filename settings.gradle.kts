@@ -40,7 +40,6 @@ include(":feature:auth:findpassword:verification")
 include(":feature:auth:findpassword:reset")
 include(":feature:auth:preferencesetup")
 
-include(":feature:main:search")
 include(":feature:main:review")
 
 include(":feature:main:shell:home:main")
@@ -57,3 +56,5 @@ include(":feature:main:shell:mypage:setting:main")
 include(":feature:main:shell:mypage:setting:detail")
 include(":feature:main:shell:ranking")
 include(":feature:main:shell:explore")
+include(":feature:main:search:main")
+include(":feature:main:search:detail")

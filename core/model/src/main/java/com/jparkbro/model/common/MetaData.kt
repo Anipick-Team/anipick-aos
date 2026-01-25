@@ -22,11 +22,3 @@ data class ResponseMap(
     @SerialName("name")
     val name: String? = null,
 )
-
-@Serializable
-data class StudioMap(
-    @SerialName("studioId")
-    val studioId: Long,
-    @SerialName("name")
-    val name: String? = "",
-)

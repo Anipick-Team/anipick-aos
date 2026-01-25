@@ -38,6 +38,8 @@
             <option value="$PROJECT_DIR$/feature/main/info/series" />
             <option value="$PROJECT_DIR$/feature/main/review" />
             <option value="$PROJECT_DIR$/feature/main/search" />
+            <option value="$PROJECT_DIR$/feature/main/search/detail" />
+            <option value="$PROJECT_DIR$/feature/main/search/main" />
             <option value="$PROJECT_DIR$/feature/main/shell" />
             <option value="$PROJECT_DIR$/feature/main/shell/explore" />
             <option value="$PROJECT_DIR$/feature/main/shell/home" />

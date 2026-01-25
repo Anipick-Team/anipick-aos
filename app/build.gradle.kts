@@ -123,7 +123,8 @@ dependencies {
     implementation(project(":feature:main:studio"))
     implementation(project(":feature:main:review"))
 
-    implementation(project(":feature:main:search"))
+    implementation(project(":feature:main:search:main"))
+    implementation(project(":feature:main:search:detail"))
 
     // Test
     testImplementation(libs.junit)
@@ -146,6 +147,6 @@ dependencies {
     implementation(libs.play.services.oss.licenses)
 
     // In App Update
-    implementation("com.google.android.play:app-update:2.1.0")
-    implementation("com.google.android.play:app-update-ktx:2.1.0")
+    implementation(libs.app.update)
+    implementation(libs.app.update.ktx)
 }

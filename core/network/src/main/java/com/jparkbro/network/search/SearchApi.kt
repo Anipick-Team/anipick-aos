@@ -17,7 +17,7 @@ interface SearchApi {
     @GET(ApiConstants.GET_SEARCH_ANIMES)
     suspend fun getSearchAnimes(
         @Query("query") query: String,
-        @Query("lastId") lastId: Int?,
+        @Query("lastId") lastId: Long?,
         @Query("size") size: Int?,
         @Query("page") page: Int?,
     ): Response<ApiResponse<SearchResultResponse>>
@@ -25,14 +25,14 @@ interface SearchApi {
     @GET(ApiConstants.GET_SEARCH_PERSONS)
     suspend fun getSearchPersons(
         @Query("query") query: String,
-        @Query("lastId") lastId: Int?,
+        @Query("lastId") lastId: Long?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<SearchResultResponse>>
 
     @GET(ApiConstants.GET_SEARCH_STUDIOS)
     suspend fun getSearchStudios(
         @Query("query") query: String,
-        @Query("lastId") lastId: Int?,
+        @Query("lastId") lastId: Long?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<SearchResultResponse>>
 

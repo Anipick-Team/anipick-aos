@@ -22,6 +22,7 @@ import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APTitleTopAppBar
 import com.jparkbro.ui.components.AnimeSkeleton
 import com.jparkbro.ui.theme.AniPickGray100
+import com.jparkbro.ui.theme.AniPickSurface
 import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.util.rememberGridInfo
 
@@ -50,7 +51,7 @@ internal fun SkeletonScreen(
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
                 thickness = dimensionResource(R.dimen.border_width_default),
-                color = AniPickGray100
+                color = AniPickSurface
             )
             BoxWithConstraints(
                 modifier = Modifier

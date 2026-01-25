@@ -8,7 +8,7 @@ data class SearchRequest(
     @SerialName("query")
     val query: String,
     @SerialName("lastId")
-    val lastId: Int? = null,
+    val lastId: Long? = null,
     @SerialName("size")
     val size: Int? = null,
     @SerialName("page")

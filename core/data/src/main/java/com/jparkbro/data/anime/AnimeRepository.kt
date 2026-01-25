@@ -12,7 +12,14 @@ import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResult
 import com.jparkbro.model.dto.ranking.GetAnimeRankingRequest
 import com.jparkbro.model.dto.ranking.GetAnimeRankingResult
+import com.jparkbro.model.dto.search.GetSearchResultRequest
+import com.jparkbro.model.dto.search.GetSearchResultResponse
+import com.jparkbro.model.dto.search.GetSearchResultResult
 import com.jparkbro.model.enum.WatchStatus
+import com.jparkbro.model.search.SearchRequest
+import com.jparkbro.model.search.SearchResponse
+import com.jparkbro.model.search.SearchResultResponse
+import com.jparkbro.model.search.SearchType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -47,4 +54,9 @@ interface AnimeRepository {
 
     /** Explore */
     suspend fun getAnimeExplore(request: GetAnimeExploreRequest): Result<GetAnimeExploreResult>
+
+    /** Search */
+    suspend fun getPopularAnimes(): Result<List<Anime>>
+    suspend fun getSearchResult(request: GetSearchResultRequest): Result<GetSearchResultResult>
+    suspend fun submitAnimeLog(logUrl: String): Result<Unit>
 }

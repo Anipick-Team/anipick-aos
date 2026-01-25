@@ -14,8 +14,12 @@ import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
 import com.jparkbro.model.dto.ranking.GetAnimeRankingRequest
 import com.jparkbro.model.dto.ranking.GetAnimeRankingResponse
+import com.jparkbro.model.dto.search.GetPopularAnimeResponse
+import com.jparkbro.model.dto.search.GetSearchResultRequest
+import com.jparkbro.model.dto.search.GetSearchResultResponse
 import com.jparkbro.model.enum.WatchStatus
 import com.jparkbro.network.ranking.RetrofitRankingDataSource
+import com.jparkbro.network.search.RetrofitSearchDataSource
 import com.jparkbro.network.util.toResult
 import com.jparkbro.network.util.toUnitResult
 import javax.inject.Inject
@@ -163,5 +167,24 @@ class RetrofitAnimeDataSource @Inject constructor(
             genreOp = request.genreOp.name,
             lastValue = request.lastValue
         ).toResult(TAG, "getAnimeExplore")
+    }
+
+    override suspend fun getPopularAnimes(): Result<GetPopularAnimeResponse> {
+        return animeApi.getPopularAnimes().toResult(TAG, "getPopularAnimes")
+    }
+
+    override suspend fun getSearchResult(request: GetSearchResultRequest): Result<GetSearchResultResponse> {
+        return animeApi.getSearchResult(
+            query = request.query,
+            lastId = request.lastId,
+            size = request.size,
+            page = request.page
+        ).toResult(TAG, "getSearchResult")
+    }
+
+    override suspend fun submitAnimeLog(logUrl: String): Result<Unit> {
+        return animeApi.submitLogByUrl(
+            url = logUrl
+        ).toUnitResult(TAG, "submitAnimeLog")
     }
 }

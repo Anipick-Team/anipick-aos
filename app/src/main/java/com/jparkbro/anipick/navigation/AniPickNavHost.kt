@@ -4,34 +4,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.jparkbro.detail.navigation.actorDetailScreen
-import com.jparkbro.detail.navigation.animeActorsScreen
-import com.jparkbro.detail.navigation.animeRecommendsScreen
-import com.jparkbro.detail.navigation.animeSeriesScreen
-import com.jparkbro.detail.navigation.detailAnimeScreen
-import com.jparkbro.detail.navigation.navigateToActorDetail
-import com.jparkbro.detail.navigation.navigateToAnimeActors
-import com.jparkbro.detail.navigation.navigateToAnimeDetail
-import com.jparkbro.detail.navigation.navigateToAnimeRecommends
-import com.jparkbro.detail.navigation.navigateToAnimeSeries
-import com.jparkbro.detail.navigation.navigateToStudioDetail
-import com.jparkbro.detail.navigation.studioDetailScreen
+import com.jparkbro.actor.navigation.actorScreen
+import com.jparkbro.actor.navigation.navigateToActor
 import com.jparkbro.explore.navigation.exploreScreen
 import com.jparkbro.explore.navigation.navigateToExplore
 import com.jparkbro.home.detail.navigation.homeDetailScreen
 import com.jparkbro.home.detail.navigation.navigateToHomeDetail
 import com.jparkbro.home.main.navigation.homeScreen
 import com.jparkbro.home.main.navigation.navigateToHome
+import com.jparkbro.info.anime.navigation.infoAnimeScreen
+import com.jparkbro.info.anime.navigation.navigateToInfoAnime
+import com.jparkbro.info.character.navigation.infoCharacterScreen
+import com.jparkbro.info.character.navigation.navigateToInfoCharacter
+import com.jparkbro.info.recommend.navigation.infoRecommendScreen
+import com.jparkbro.info.recommend.navigation.navigateToInfoRecommend
+import com.jparkbro.info.series.navigation.infoSeriesScreen
+import com.jparkbro.info.series.navigation.navigateToInfoSeries
 import com.jparkbro.login.navigation.emailLoginScreen
 import com.jparkbro.login.navigation.loginScreen
 import com.jparkbro.login.navigation.navigateToEmailLogin
 import com.jparkbro.login.navigation.navigateToLogin
 import com.jparkbro.model.common.MetaData
-import com.jparkbro.mypage.navigation.myPageScreen
-import com.jparkbro.mypage.navigation.myRatingsScreen
-import com.jparkbro.mypage.navigation.navigateToMyRatings
-import com.jparkbro.mypage.navigation.navigateToUserContent
-import com.jparkbro.mypage.navigation.userContentScreen
+import com.jparkbro.mypage.detail.navigation.navigateToUserContent
+import com.jparkbro.mypage.detail.navigation.userContentScreen
+import com.jparkbro.mypage.main.navigation.myPageScreen
 import com.jparkbro.preferencesetup.navigation.navigateToPreferenceSetup
 import com.jparkbro.preferencesetup.navigation.preferenceSetupScreen
 import com.jparkbro.ranking.navigation.navigateToRanking
@@ -42,14 +38,16 @@ import com.jparkbro.reset.navigation.navigateToPasswordReset
 import com.jparkbro.reset.navigation.passwordResetScreen
 import com.jparkbro.review.navigation.navigateToReviewForm
 import com.jparkbro.review.navigation.reviewFormScreen
-import com.jparkbro.search.navigation.navigateToSearch
-import com.jparkbro.search.navigation.navigateToSearchResult
-import com.jparkbro.search.navigation.searchResultScreen
-import com.jparkbro.search.navigation.searchScreen
-import com.jparkbro.setting.navigation.navigateToProfileEdit
-import com.jparkbro.setting.navigation.navigateToSetting
-import com.jparkbro.setting.navigation.profileEditScreen
-import com.jparkbro.setting.navigation.settingScreen
+import com.jparkbro.search.detail.navigation.navigateToSearchResult
+import com.jparkbro.search.detail.navigation.searchResultScreen
+import com.jparkbro.search.main.navigation.navigateToSearch
+import com.jparkbro.search.main.navigation.searchScreen
+import com.jparkbro.setting.detail.navigation.navigateToUserEdit
+import com.jparkbro.setting.detail.navigation.userEditScreen
+import com.jparkbro.setting.main.navigation.navigateToSetting
+import com.jparkbro.setting.main.navigation.settingScreen
+import com.jparkbro.studio.navigation.navigateToStudio
+import com.jparkbro.studio.navigation.studioScreen
 import com.jparkbro.verification.navigation.navigateToPasswordVerification
 import com.jparkbro.verification.navigation.passwordVerificationScreen
 
@@ -100,130 +98,105 @@ fun APNavHost(
         homeScreen(
             bottomNav = bottomNav,
             onNavigateToSearch = navController::navigateToSearch,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
             onNavigateToRanking = { navController.navigateToRanking() },
             onNavigateToExplore = { year, quarter ->
                 navController.navigateToExplore(year = year, quarter = quarter)
             },
             onNavigateToHomeDetail = navController::navigateToHomeDetail,
+            onNavigateToInfoAnime = navController::navigateToInfoAnime,
         )
         homeDetailScreen(
             onNavigateBack = navController::navigateUp,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
+            onNavigateToInfoAnime = navController::navigateToInfoAnime,
             onNavigateToReviewForm = navController::navigateToReviewForm,
         )
+
+        infoAnimeScreen(
+            onNavigateBack = navController::navigateUp,
+            onNavigateToReviewForm = navController::navigateToReviewForm,
+            onNavigateToInfoAnime = navController::navigateToInfoAnime,
+            onNavigateToInfoSeries = navController::navigateToInfoSeries,
+            onNavigateToInfoRecommend = navController::navigateToInfoRecommend,
+            onNavigateToInfoCharacter = navController::navigateToInfoCharacter,
+            onNavigateToActor = navController::navigateToActor,
+            onNavigateToStudio = navController::navigateToStudio,
+        )
+        infoSeriesScreen(
+            onNavigateBack = navController::navigateUp,
+            onNavigateToInfoAnime = navController::navigateToInfoAnime,
+        )
+        infoRecommendScreen(
+            onNavigateBack = navController::navigateUp,
+            onNavigateToInfoAnime = navController::navigateToInfoAnime,
+        )
+        infoCharacterScreen(
+            onNavigateBack = navController::navigateUp,
+            onNavigateToActor = navController::navigateToActor
+        )
+
+        studioScreen(
+            onNavigateBack = navController::navigateUp,
+            onNavigateToInfoAnime = navController::navigateToInfoAnime,
+        )
+
+        actorScreen(
+            onNavigateBack = navController::navigateUp,
+            onNavigateToInfoAnime = navController::navigateToInfoAnime,
+        )
+
         rankingScreen(
             metaData = metaData,
             bottomNav = bottomNav,
             onNavigateToSearch = navController::navigateToSearch,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
+            onNavigateToInfoAnime = navController::navigateToInfoAnime,
         )
+
         exploreScreen(
             metaData = metaData,
             bottomNav = bottomNav,
             onNavigateToSearch = navController::navigateToSearch,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail
+            onNavigateToInfoAnime = navController::navigateToInfoAnime
         )
 
-        /* MyPage */
         myPageScreen(
             bottomNav = bottomNav,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
+            onNavigateToInfoAnime = navController::navigateToInfoAnime,
             onNavigateToUserContent = navController::navigateToUserContent,
-            onNavigateToMyRatings = navController::navigateToMyRatings,
             onNavigateToSetting = navController::navigateToSetting,
-            onNavigateToActorDetail = navController::navigateToActorDetail,
-            onCheckSettingRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("setting_refresh") ?: false },
-            onClearSettingRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("setting_refresh", false) },
-            onCheckStatusRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("status_refresh") ?: false },
-            onClearStatusRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("status_refresh", false) },
+            onNavigateToActor = navController::navigateToActor,
         )
         userContentScreen(
             onNavigateBack = navController::navigateUp,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
-            onNavigateToActorDetail = navController::navigateToActorDetail,
-            onCheckStatusRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("status_refresh") ?: false },
-            onStatusRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("status_refresh", true) }
-        )
-        myRatingsScreen(
-            onNavigateBack = navController::navigateUp,
+            onNavigateToInfoAnime = navController::navigateToInfoAnime,
+            onNavigateToActor = navController::navigateToActor,
             onNavigateToReviewForm = navController::navigateToReviewForm,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
         )
 
-        detailAnimeScreen(
-            onNavigateBack = navController::navigateUp,
-            onNavigateToReviewForm = navController::navigateToReviewForm,
-            onNavigateToStudioDetail = navController::navigateToStudioDetail,
-            onNavigateToAnimeActors = navController::navigateToAnimeActors,
-            onNavigateToActorDetail = navController::navigateToActorDetail,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
-            onNavigateToAnimeSeries = navController::navigateToAnimeSeries,
-            onNavigateToAnimeRecommends = navController::navigateToAnimeRecommends,
-            onCheckReviewRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("review_refresh") ?: false },
-            onClearReviewRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("review_refresh", false) },
-            onStatusRefresh = { navController.previousBackStackEntry?.savedStateHandle?.set("status_refresh", true) },
-        )
-        animeActorsScreen(
-            onNavigateBack = navController::navigateUp,
-            onNavigateToActorDetail = navController::navigateToActorDetail,
-        )
-        actorDetailScreen(
-            onNavigateBack = navController::navigateUp,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
-        )
-        studioDetailScreen(
-            onNavigateBack = navController::navigateUp,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
-        )
-        animeSeriesScreen(
-            onNavigateBack = navController::navigateUp,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
-        )
-        animeRecommendsScreen(
-            onNavigateBack = navController::navigateUp,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
-        )
-
-        /* Setting */
         settingScreen(
             onNavigateBack = navController::navigateUp,
-            onNavigateToProfileEdit = navController::navigateToProfileEdit,
+            onNavigateToUserEdit = navController::navigateToUserEdit,
             onNavigateToLogin = navController::navigateToLogin,
-            onCheckSettingRefresh = { navController.currentBackStackEntry?.savedStateHandle?.get<Boolean>("setting_refresh") ?: false },
-            onPopBackWithRefresh = {
-                navController.previousBackStackEntry?.savedStateHandle?.set("setting_refresh", true)
-            }
         )
-        profileEditScreen(
+        userEditScreen(
             onNavigateBack = navController::navigateUp,
             onNavigateToLogin = navController::navigateToLogin,
-            onPopBackWithRefresh = {
-                navController.previousBackStackEntry?.savedStateHandle?.set("setting_refresh", true)
-                navController.popBackStack()
-            }
         )
 
-        /* Search */
         searchScreen(
             onNavigateBack = navController::navigateUp,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
-            onNavigateSearchResult = navController::navigateToSearchResult
+            onNavigateToInfoAnime = navController::navigateToInfoAnime,
+            onNavigateToSearchResult = navController::navigateToSearchResult
         )
         searchResultScreen(
             onNavigateBack = navController::navigateUp,
-            onNavigateToAnimeDetail = navController::navigateToAnimeDetail,
-            onNavigateToActorDetail = navController::navigateToActorDetail,
-            onNavigateToStudioDetail = navController::navigateToStudioDetail,
+            onNavigateToInfoAnime = navController::navigateToInfoAnime,
+            onNavigateToActor = navController::navigateToActor,
+            onNavigateToStudio = navController::navigateToStudio,
         )
 
         /* review */
         reviewFormScreen(
             onNavigateBack = navController::navigateUp,
-            onPopBackWithRefresh = {
-                navController.previousBackStackEntry?.savedStateHandle?.set("review_refresh", true)
-                navController.popBackStack()
-            }
         )
     }
 }

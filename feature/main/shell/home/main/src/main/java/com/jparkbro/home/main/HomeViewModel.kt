@@ -82,7 +82,11 @@ class HomeViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                _state.update { it.copy(uiState = UiState.Error) }
+                _state.update {
+                    it.copy(
+                        uiState = UiState.Success
+                    )
+                }
             }
         }
     }

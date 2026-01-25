@@ -10,6 +10,9 @@ import com.jparkbro.model.dto.info.GetInfoSeriesResponse
 import com.jparkbro.model.dto.info.WatchStatusRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
 import com.jparkbro.model.dto.ranking.GetAnimeRankingResponse
+import com.jparkbro.model.dto.search.GetPopularAnimeResponse
+import com.jparkbro.model.dto.search.GetSearchResultResponse
+import com.jparkbro.model.search.SearchResultResponse
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
 import retrofit2.Response
@@ -20,6 +23,7 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Url
 
 interface AnimeApi {
     @GET(ApiConstants.RECOMMENDATION_ANIMES_RECENT)
@@ -142,4 +146,21 @@ interface AnimeApi {
         @Query("genreOp") genreOp: String,
         @Query("lastValue") lastValue: String?,
     ): Response<ApiResponse<GetAnimeExploreResponse>>
+
+    @GET(ApiConstants.GET_POPULAR_ANIMES)
+    suspend fun getPopularAnimes(
+    ): Response<ApiResponse<GetPopularAnimeResponse>>
+
+    @GET(ApiConstants.GET_SEARCH_ANIMES)
+    suspend fun getSearchResult(
+        @Query("query") query: String,
+        @Query("lastId") lastId: Long?,
+        @Query("size") size: Int?,
+        @Query("page") page: Int?,
+    ): Response<ApiResponse<GetSearchResultResponse>>
+
+    @GET
+    suspend fun submitLogByUrl(
+        @Url url: String
+    ): Response<ApiResponse<Unit>>
 }

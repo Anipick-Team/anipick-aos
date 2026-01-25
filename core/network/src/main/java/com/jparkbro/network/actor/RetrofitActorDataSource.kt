@@ -6,6 +6,9 @@ import com.jparkbro.model.dto.info.GetInfoCharactersResponse
 import com.jparkbro.model.dto.info.InfoActorResponse
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
+import com.jparkbro.model.dto.search.GetSearchResultRequest
+import com.jparkbro.model.dto.search.GetSearchResultResponse
+import com.jparkbro.network.search.RetrofitSearchDataSource
 import com.jparkbro.network.util.toResult
 import com.jparkbro.network.util.toUnitResult
 import javax.inject.Inject
@@ -49,5 +52,13 @@ class RetrofitActorDataSource @Inject constructor(
         return actorApi.loadUserContentActors(
             lastId = request.lastId,
         ).toResult(TAG, "loadUserContentActors")
+    }
+
+    override suspend fun getSearchResult(request: GetSearchResultRequest): Result<GetSearchResultResponse> {
+        return actorApi.getSearchResult(
+            query = request.query,
+            lastId = request.lastId,
+            size = request.size,
+        ).toResult(TAG, "getSearchResult")
     }
 }

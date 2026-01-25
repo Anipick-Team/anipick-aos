@@ -20,6 +20,10 @@ import com.jparkbro.model.dto.mypage.usercontent.toResult
 import com.jparkbro.model.dto.ranking.GetAnimeRankingRequest
 import com.jparkbro.model.dto.ranking.GetAnimeRankingResult
 import com.jparkbro.model.dto.ranking.toResult
+import com.jparkbro.model.dto.search.GetSearchResultRequest
+import com.jparkbro.model.dto.search.GetSearchResultResponse
+import com.jparkbro.model.dto.search.GetSearchResultResult
+import com.jparkbro.model.dto.search.toResult
 import com.jparkbro.model.enum.RankingType
 import com.jparkbro.model.enum.UserContentType
 import com.jparkbro.model.enum.WatchStatus
@@ -184,5 +188,20 @@ class AnimeRepositoryImpl @Inject constructor(
 
     override suspend fun getAnimeExplore(request: GetAnimeExploreRequest): Result<GetAnimeExploreResult> {
         return animeDataSource.getAnimeExplore(request).map { it.toResult() }
+    }
+
+    override suspend fun getPopularAnimes(): Result<List<Anime>> {
+        return animeDataSource.getPopularAnimes().map { response ->
+            response.popularAnimes.map { it.toAnime() }
+        }
+    }
+
+    override suspend fun getSearchResult(request: GetSearchResultRequest): Result<GetSearchResultResult> {
+        return animeDataSource.getSearchResult(request)
+            .map { it.toResult() }
+    }
+
+    override suspend fun submitAnimeLog(logUrl: String): Result<Unit> {
+        return animeDataSource.submitAnimeLog(logUrl)
     }
 }
