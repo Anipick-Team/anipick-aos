@@ -77,6 +77,7 @@ import com.jparkbro.ui.util.rememberGridInfo
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun UserContentRoot(
     onNavigateBack: () -> Unit,
@@ -112,9 +113,28 @@ internal fun UserContentRoot(
         }
 
         UiState.Error -> {
-            APErrorScreen(
-                onClick = { viewModel.onAction(UserContentAction.OnRetryClicked) }
-            )
+            Scaffold(
+                topBar = {
+                    APTitleTopAppBar(
+                        title = when (state.contentType) {
+                            UserContentType.WATCHLIST -> stringResource(R.string.user_content_header_watch_list_anime)
+                            UserContentType.WATCHING -> stringResource(R.string.user_content_header_watching_anime)
+                            UserContentType.FINISHED -> stringResource(R.string.user_content_header_finished_anime)
+                            UserContentType.LIKED_ANIME -> stringResource(R.string.user_content_header_liked_anime)
+                            UserContentType.LIKED_PERSON -> stringResource(R.string.user_content_header_liked_actor)
+                            UserContentType.RATING_REVIEW -> stringResource(R.string.user_content_header_rated_works)
+                            else -> ""
+                        },
+                        onNavigateBack = onNavigateBack,
+                    )
+                },
+                containerColor = AniPickSurface
+            ) {
+                APErrorScreen(
+                    onClick = { viewModel.onAction(UserContentAction.OnRetryClicked) },
+                    modifier = Modifier.padding(it)
+                )
+            }
         }
 
         UiState.Success -> {

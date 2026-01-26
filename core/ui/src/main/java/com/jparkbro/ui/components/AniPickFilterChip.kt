@@ -37,9 +37,9 @@ import com.jparkbro.ui.theme.ChevronDownIcon
 @Composable
 fun APFilterTriggerChip(
     title: String,
+    modifier: Modifier = Modifier,
     isSelected: Boolean = false,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier

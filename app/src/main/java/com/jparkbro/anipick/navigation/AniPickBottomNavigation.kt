@@ -18,25 +18,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.navOptions
 import com.jparkbro.explore.navigation.navigateToExplore
-import com.jparkbro.home.navigation.navigateToHome
-import com.jparkbro.mypage.navigation.navigateToMyPage
+import com.jparkbro.home.main.navigation.navigateToHome
+import com.jparkbro.mypage.main.navigation.navigateToMyPage
 import com.jparkbro.ranking.navigation.navigateToRanking
+import com.jparkbro.ui.R
 import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.theme.AniPick12Normal
+import com.jparkbro.ui.theme.AniPickGray100
+import com.jparkbro.ui.theme.AniPickPrimary
+import com.jparkbro.ui.util.extension.clearStack
 
 @Composable
 internal fun APBottomNavigation(
@@ -45,7 +49,7 @@ internal fun APBottomNavigation(
     navController: NavHostController,
     currentDestination: NavDestination? = null,
 ) {
-    var lastMainDestination by remember { mutableStateOf(BottomDestination.HOME) }
+    var lastMainDestination by rememberSaveable { mutableStateOf(BottomDestination.HOME) }
 
     LaunchedEffect(currentDestination) {
         val currentMainDest = BottomDestination.entries.find {
@@ -64,13 +68,13 @@ internal fun APBottomNavigation(
         HorizontalDivider(
             modifier = Modifier
                 .fillMaxWidth(),
-            thickness = 1.dp,
+            thickness = dimensionResource(R.dimen.border_width_default),
             color = APColors.LightGray
         )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 36.dp),
+                .padding(horizontal = dimensionResource(R.dimen.space_36)),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             items.forEach { destination ->
@@ -83,7 +87,7 @@ internal fun APBottomNavigation(
                 }
 
                 val navOptions: NavOptions = navOptions {
-                    clearBackStack(navController)
+                    clearStack(navController)
                 }
 
                 Column(
@@ -92,16 +96,16 @@ internal fun APBottomNavigation(
                         .clickable {
                             if (!isSelected) {
                                 when (destination) {
-                                    BottomDestination.HOME -> { navController.navigateToHome(navOptions) }
-                                    BottomDestination.RANKING -> { navController.navigateToRanking(navOptions) }
+                                    BottomDestination.HOME -> { navController.navigateToHome() }
+                                    BottomDestination.RANKING -> { navController.navigateToRanking() }
                                     BottomDestination.EXPLORE -> { navController.navigateToExplore(navOptions = navOptions) }
-                                    BottomDestination.MY_PAGE -> { navController.navigateToMyPage(navOptions) }
+                                    BottomDestination.MY_PAGE -> { navController.navigateToMyPage() }
                                 }
                             }
                         }
-                        .padding(vertical = 12.dp),
+                        .padding(vertical = dimensionResource(R.dimen.padding_medium)),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small)),
                 ) {
                     Icon(
                         painter = painterResource(
@@ -114,9 +118,7 @@ internal fun APBottomNavigation(
                     )
                     Text(
                         text = stringResource(destination.labelTextId),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W500,
-                        color = if (isSelected) APColors.Primary else APColors.Gray
+                        style = AniPick12Normal.copy(color = if (isSelected) AniPickPrimary else AniPickGray100)
                     )
                 }
             }

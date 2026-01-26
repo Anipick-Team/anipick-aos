@@ -58,6 +58,7 @@ import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.theme.EyeClosedIcon
 import com.jparkbro.ui.theme.EyeOpenedIcon
 import com.jparkbro.ui.util.ObserveAsEvents
+import com.jparkbro.ui.util.extension.advancedImePadding
 
 @Composable
 internal fun EmailLoginRoot(

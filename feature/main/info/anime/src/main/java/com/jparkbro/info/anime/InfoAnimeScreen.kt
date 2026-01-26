@@ -32,8 +32,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
@@ -86,6 +88,7 @@ import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APAlertDialog
 import com.jparkbro.ui.components.APAnimationLikeIcon
 import com.jparkbro.ui.components.APAnimeCard
+import com.jparkbro.ui.components.APBackStackTopAppBar
 import com.jparkbro.ui.components.APCastPairCard
 import com.jparkbro.ui.components.APConfirmDialog
 import com.jparkbro.ui.components.APEmptyContent
@@ -127,6 +130,7 @@ import com.jparkbro.ui.util.ObserveAsEvents
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun InfoAnimeRoot(
     onNavigateBack: () -> Unit,
@@ -171,9 +175,17 @@ internal fun InfoAnimeRoot(
         }
 
         UiState.Error -> {
-            APErrorScreen(
-                onClick = { viewModel.onAction(InfoAnimeAction.OnRetryClicked) }
-            )
+            Scaffold(
+                topBar = { APBackStackTopAppBar(onNavigateBack = onNavigateBack) },
+                modifier = Modifier
+                    .fillMaxSize(),
+                containerColor = AniPickWhite
+            ) {
+                APErrorScreen(
+                    onClick = { viewModel.onAction(InfoAnimeAction.OnRetryClicked) },
+                    modifier = Modifier.padding(it)
+                )
+            }
         }
 
         UiState.Success -> {

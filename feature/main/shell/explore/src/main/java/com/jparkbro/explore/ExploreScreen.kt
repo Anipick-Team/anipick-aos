@@ -68,6 +68,7 @@ import com.jparkbro.ui.util.rememberGridInfo
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ExploreRoot(
     metaData: MetaData,
@@ -101,9 +102,16 @@ internal fun ExploreRoot(
             )
         }
         UiState.Error -> {
-            APErrorScreen(
-                onClick = { viewModel.onAction(ExploreAction.OnRetryClicked) }
-            )
+            Scaffold(
+                topBar = { APMainTopAppBar(onNavigateToSearch = onNavigateToSearch) },
+                bottomBar = bottomNav,
+                containerColor = AniPickWhite
+            ) {
+                APErrorScreen(
+                    onClick = { viewModel.onAction(ExploreAction.OnRetryClicked) },
+                    modifier = Modifier.padding(it)
+                )
+            }
         }
         UiState.Success -> {
             ExploreScreen(

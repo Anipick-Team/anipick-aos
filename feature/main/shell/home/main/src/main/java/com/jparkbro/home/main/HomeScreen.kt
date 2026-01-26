@@ -54,6 +54,7 @@ import com.jparkbro.ui.theme.AniPickSmallShape
 import com.jparkbro.ui.theme.AniPickSurface
 import com.jparkbro.ui.theme.AniPickWhite
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeRoot(
     bottomNav: @Composable () -> Unit,
@@ -75,9 +76,16 @@ internal fun HomeRoot(
             )
         }
         UiState.Error -> {
-            APErrorScreen(
-                onClick = { viewModel.onAction(HomeAction.OnRetryClicked) }
-            )
+            Scaffold(
+                topBar = { APMainTopAppBar(onNavigateToSearch = onNavigateToSearch) },
+                bottomBar = bottomNav,
+                containerColor = AniPickSurface
+            ) {
+                APErrorScreen(
+                    onClick = { viewModel.onAction(HomeAction.OnRetryClicked) },
+                    modifier = Modifier.padding(it)
+                )
+            }
         }
         UiState.Success -> {
             HomeScreen(

@@ -39,6 +39,7 @@ import com.jparkbro.model.common.UiState
 import com.jparkbro.search.main.components.SkeletonScreen
 import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APAnimeCard
+import com.jparkbro.ui.components.APBackStackTopAppBar
 import com.jparkbro.ui.components.APErrorScreen
 import com.jparkbro.ui.components.APSearchTopAppBar
 import com.jparkbro.ui.theme.AniPick14Normal
@@ -52,6 +53,7 @@ import com.jparkbro.ui.theme.CloseIcon
 import com.jparkbro.ui.util.ObserveAsEvents
 import com.jparkbro.ui.util.rememberGridInfo
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SearchRoot(
     onNavigateBack: () -> Unit,
@@ -79,9 +81,19 @@ internal fun SearchRoot(
         }
 
         UiState.Error -> {
-            APErrorScreen(
-                onClick = { viewModel.onAction(SearchAction.OnRetryClicked) }
-            )
+            Scaffold(
+                topBar = {
+                    APBackStackTopAppBar(
+                        onNavigateBack = onNavigateBack,
+                    )
+                },
+                containerColor = AniPickWhite
+            ) {
+                APErrorScreen(
+                    onClick = { viewModel.onAction(SearchAction.OnRetryClicked) },
+                    modifier = Modifier.padding(it)
+                )
+            }
         }
 
         UiState.Success -> {

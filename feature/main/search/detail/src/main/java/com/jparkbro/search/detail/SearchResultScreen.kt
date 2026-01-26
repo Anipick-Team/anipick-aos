@@ -54,6 +54,7 @@ import com.jparkbro.search.detail.components.SkeletonScreen
 import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APActorCard
 import com.jparkbro.ui.components.APAnimeCard
+import com.jparkbro.ui.components.APBackStackTopAppBar
 import com.jparkbro.ui.components.APEmptyContent
 import com.jparkbro.ui.components.APErrorScreen
 import com.jparkbro.ui.components.APSearchTopAppBar
@@ -70,6 +71,7 @@ import com.jparkbro.ui.util.rememberGridInfo
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SearchResultRoot(
     onNavigateBack: () -> Unit,
@@ -90,9 +92,19 @@ internal fun SearchResultRoot(
         }
 
         UiState.Error -> {
-            APErrorScreen(
-                onClick = { viewModel.onAction(SearchResultAction.OnRetryClicked) }
-            )
+            Scaffold(
+                topBar = {
+                    APBackStackTopAppBar(
+                        onNavigateBack = onNavigateBack,
+                    )
+                },
+                containerColor = AniPickWhite
+            ) {
+                APErrorScreen(
+                    onClick = { viewModel.onAction(SearchResultAction.OnRetryClicked) },
+                    modifier = Modifier.padding(it)
+                )
+            }
         }
 
         UiState.Success -> {

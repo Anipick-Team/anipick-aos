@@ -75,9 +75,16 @@ internal fun MyPageRoot(
             )
         }
         UiState.Error -> {
-            APErrorScreen(
-                onClick = { viewModel.onAction(MyPageAction.OnRetryClicked) }
-            )
+            Scaffold(
+                topBar = { APMyPageTopAppBar(onNavigateToSetting = onNavigateToSetting) },
+                bottomBar = bottomNav,
+                containerColor = AniPickWhite
+            ) {
+                APErrorScreen(
+                    onClick = { viewModel.onAction(MyPageAction.OnRetryClicked) },
+                    modifier = Modifier.padding(it)
+                )
+            }
         }
         UiState.Success -> {
             MyPageScreen(

@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -44,6 +46,7 @@ import com.jparkbro.ui.theme.AniPickLogoImg
 import com.jparkbro.ui.theme.AniPickSmallShape
 import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.theme.ChevronLeftIcon
+import com.jparkbro.ui.theme.CloseIcon
 import com.jparkbro.ui.theme.SearchOutlineIcon
 import com.jparkbro.ui.theme.SettingIcon
 
@@ -150,11 +153,10 @@ fun APMainTopAppBar(
 @Composable
 fun APSearchTopAppBar(
     onNavigateBack: () -> Unit,
-    value: String = "",
-    onValueChange: (String) -> Unit = {},
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
-    trailingIcon: @Composable () -> Unit = {},
+    state: TextFieldState = TextFieldState(),
     scrollBehavior: TopAppBarScrollBehavior? = null,
+    onSearch: () -> Unit = {},
+    onClear: () -> Unit = {},
 ) {
     APBaseTopAppBar(
         navigationIcon = {
@@ -168,23 +170,51 @@ fun APSearchTopAppBar(
             }
         },
         title = {
-            APBaseTextField(
-                value = value,
-                onValueChange = onValueChange,
-                placeholder = {
-                    Text(
-                        text = stringResource(R.string.search_placeholder),
-                        style = AniPick16Normal.copy(color = AniPickGray400),
-                    )
-                },
-                keyboardActions = keyboardActions,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp)
-                    .padding(end = dimensionResource(R.dimen.padding_extra_small)),
-                trailingIcon = trailingIcon
-            )
+                    .padding(end = dimensionResource(R.dimen.padding_medium))
+            ) {
+                APBaseTextField(
+                    state = state,
+                    modifier = Modifier
+                        .height(42.dp),
+                    placeholder = stringResource(R.string.search_placeholder),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    onKeyboardAction = { if (state.text.isNotBlank()) onSearch() },
+                    trailingIcon = {
+                        Row(
+                            modifier = Modifier
+                                .padding(end = dimensionResource(R.dimen.padding_extra_small)),
+                            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_extra_small)),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (state.text.isNotBlank()) {
+                                Icon(
+                                    imageVector = CloseIcon,
+                                    contentDescription = stringResource(R.string.close_icon),
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .clickable { onClear() }
+                                        .padding(dimensionResource(R.dimen.padding_extra_small))
+                                        .size(dimensionResource(R.dimen.icon_size_small)),
+                                    tint = AniPickGray400
+                                )
+                            }
+                            Icon(
+                                imageVector = SearchOutlineIcon,
+                                contentDescription = stringResource(R.string.search_icon),
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .clickable { if (state.text.isNotBlank()) onSearch() }
+                                    .padding(dimensionResource(R.dimen.padding_extra_small))
+                                    .size(dimensionResource(R.dimen.icon_size_small)),
+                                tint = AniPickGray400
+                            )
+                        }
+                    }
+                )
+            }
         },
         scrollBehavior = scrollBehavior
     )
@@ -290,6 +320,8 @@ private fun APMainTopAppBarPreview() {
 private fun APSearchTopAppBarPreview() {
     APSearchTopAppBar(
         onNavigateBack = {},
+        onSearch = {  },
+        onClear = {},
     )
 }
 

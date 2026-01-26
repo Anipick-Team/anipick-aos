@@ -40,9 +40,8 @@ fun APPrimaryActionButton(
     TextButton(
         onClick = onClick,
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.padding_large)),
-        enabled = enabled,
+            .fillMaxWidth(),
+        enabled = enabled && !isLoading,
         shape = AniPickSmallShape,
         colors = colors,
         contentPadding = PaddingValues(vertical = dimensionResource(R.dimen.padding_medium))

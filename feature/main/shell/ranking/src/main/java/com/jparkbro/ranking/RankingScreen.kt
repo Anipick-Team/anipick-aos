@@ -62,6 +62,7 @@ import com.jparkbro.ui.util.ObserveAsEvents
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun RankingRoot(
     metaData: MetaData,
@@ -99,9 +100,16 @@ internal fun RankingRoot(
             )
         }
         UiState.Error -> {
-            APErrorScreen(
-                onClick = { viewModel.onAction(RankingAction.OnRetryClicked) }
-            )
+            Scaffold(
+                topBar = { APMainTopAppBar(onNavigateToSearch = onNavigateToSearch) },
+                bottomBar = bottomNav,
+                containerColor = AniPickSurface
+            ) {
+                APErrorScreen(
+                    onClick = { viewModel.onAction(RankingAction.OnRetryClicked) },
+                    modifier = Modifier.padding(it)
+                )
+            }
         }
         UiState.Success -> {
             RankingScreen(
