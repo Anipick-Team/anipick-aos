@@ -55,7 +55,6 @@ import com.jparkbro.ui.components.APFilterTriggerChip
 import com.jparkbro.ui.components.APMainTopAppBar
 import com.jparkbro.ui.model.BottomSheetData
 import com.jparkbro.ui.model.BottomSheetParams
-import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.theme.AniPick12Normal
 import com.jparkbro.ui.theme.AniPick14Normal
 import com.jparkbro.ui.theme.AniPickGray100

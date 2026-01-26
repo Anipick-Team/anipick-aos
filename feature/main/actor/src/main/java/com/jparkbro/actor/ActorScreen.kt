@@ -54,7 +54,6 @@ import com.jparkbro.ui.components.APAnimeCard
 import com.jparkbro.ui.components.APCastCard
 import com.jparkbro.ui.components.APErrorScreen
 import com.jparkbro.ui.components.APTitleTopAppBar
-import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.theme.AniPick12Normal
 import com.jparkbro.ui.theme.AniPick14Normal
 import com.jparkbro.ui.theme.AniPick16Normal

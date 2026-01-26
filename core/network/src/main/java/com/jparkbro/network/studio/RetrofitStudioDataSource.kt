@@ -4,7 +4,6 @@ import com.jparkbro.model.common.Cursor
 import com.jparkbro.model.dto.search.GetSearchResultRequest
 import com.jparkbro.model.dto.search.GetSearchResultResponse
 import com.jparkbro.model.dto.studio.GetStudioInfoResponse
-import com.jparkbro.network.search.RetrofitSearchDataSource
 import com.jparkbro.network.util.toResult
 import javax.inject.Inject
 

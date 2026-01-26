@@ -12,7 +12,6 @@ import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
 import com.jparkbro.model.dto.ranking.GetAnimeRankingResponse
 import com.jparkbro.model.dto.search.GetPopularAnimeResponse
 import com.jparkbro.model.dto.search.GetSearchResultResponse
-import com.jparkbro.model.search.SearchResultResponse
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
 import retrofit2.Response

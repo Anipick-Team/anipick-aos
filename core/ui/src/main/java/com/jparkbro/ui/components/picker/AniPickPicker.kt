@@ -37,7 +37,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
-import com.jparkbro.ui.theme.APColors
+import com.jparkbro.ui.theme.AniPickGray100
+import com.jparkbro.ui.theme.AniPickSecondary
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapNotNull
 import kotlin.math.abs
@@ -143,7 +144,7 @@ fun <T> APPicker(
                         fraction
                     )
                 } else {
-                    APColors.Gray
+                    AniPickGray100
                 }
 
                 Text(
@@ -175,7 +176,7 @@ fun <T> APPicker(
                 .height(itemHeight)
                 .border(
                     2.dp,
-                    if (enabled) APColors.Secondary else APColors.Gray,
+                    if (enabled) AniPickSecondary else AniPickGray100,
                     RoundedCornerShape(8.dp)
                 )
         )

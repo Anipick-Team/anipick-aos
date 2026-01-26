@@ -4,9 +4,7 @@ import com.jparkbro.model.dto.actor.GetActorResponse
 import com.jparkbro.model.dto.info.GetInfoCharactersResponse
 import com.jparkbro.model.dto.info.InfoActorResponse
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
-import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResult
 import com.jparkbro.model.dto.search.GetSearchResultResponse
-import com.jparkbro.model.search.SearchResultResponse
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
 import retrofit2.Response
@@ -15,7 +13,6 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
-import retrofit2.http.Url
 
 interface ActorApi {
     @GET(ApiConstants.GET_DETAIL_ACTOR)

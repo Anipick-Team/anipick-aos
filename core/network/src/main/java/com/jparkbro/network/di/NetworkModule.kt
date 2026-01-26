@@ -13,23 +13,14 @@ import com.jparkbro.network.auth.RetrofitAuthDataSource
 import com.jparkbro.network.common.CommonApi
 import com.jparkbro.network.common.CommonDataSource
 import com.jparkbro.network.common.RetrofitCommonDataSource
-import com.jparkbro.network.explore.ExploreApi
-import com.jparkbro.network.explore.ExploreDataSource
-import com.jparkbro.network.explore.RetrofitExploreDataSource
 import com.jparkbro.network.home.HomeApi
 import com.jparkbro.network.home.HomeDataSource
 import com.jparkbro.network.home.RetrofitHomeDataSource
 import com.jparkbro.network.interceptor.AuthInterceptor
-import com.jparkbro.network.ranking.RankingApi
-import com.jparkbro.network.ranking.RankingDataSource
-import com.jparkbro.network.ranking.RetrofitRankingDataSource
 import com.jparkbro.network.retrofit.ApiConstants
 import com.jparkbro.network.review.RetrofitReviewDataSource
 import com.jparkbro.network.review.ReviewApi
 import com.jparkbro.network.review.ReviewDataSource
-import com.jparkbro.network.search.RetrofitSearchDataSource
-import com.jparkbro.network.search.SearchApi
-import com.jparkbro.network.search.SearchDataSource
 import com.jparkbro.network.studio.RetrofitStudioDataSource
 import com.jparkbro.network.studio.StudioApi
 import com.jparkbro.network.studio.StudioDataSource
@@ -138,42 +129,6 @@ internal object NetworkModule {
     @Singleton
     fun provideCommonDataSource(commonApi: CommonApi): CommonDataSource {
         return RetrofitCommonDataSource(commonApi)
-    }
-
-    @Provides
-    @Singleton
-    fun provideRankingApi(retrofit: Retrofit): RankingApi {
-        return retrofit.create(RankingApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideRankingDataSource(rankingApi: RankingApi): RankingDataSource {
-        return RetrofitRankingDataSource(rankingApi)
-    }
-
-    @Provides
-    @Singleton
-    fun provideExploreApi(retrofit: Retrofit): ExploreApi {
-        return retrofit.create(ExploreApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideExploreDataSource(exploreApi: ExploreApi): ExploreDataSource {
-        return RetrofitExploreDataSource(exploreApi)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSearchApi(retrofit: Retrofit): SearchApi {
-        return retrofit.create(SearchApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSearchDataSource(searchApi: SearchApi): SearchDataSource {
-        return RetrofitSearchDataSource(searchApi)
     }
 
     @Provides

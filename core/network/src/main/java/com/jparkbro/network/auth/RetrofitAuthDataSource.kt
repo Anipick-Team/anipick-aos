@@ -1,21 +1,19 @@
 package com.jparkbro.network.auth
 
-import android.util.Log
 import com.jparkbro.model.auth.AuthResponse
-import com.jparkbro.model.auth.AuthToken
 import com.jparkbro.model.auth.EmailLoginRequest
-import com.jparkbro.model.auth.PreferenceRequest
-import com.jparkbro.model.auth.PreferenceResponse
-import com.jparkbro.model.auth.RatedAnime
+import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.auth.RequestCode
 import com.jparkbro.model.auth.ResetPassword
-import com.jparkbro.model.auth.SignupRequest
-import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.auth.SocialLoginRequest
 import com.jparkbro.model.auth.VerifyCode
+import com.jparkbro.model.dto.auth.EmailRegisterRequest
+import com.jparkbro.model.dto.auth.EmailRegisterResponse
+import com.jparkbro.model.dto.preference.RatedAnime
+import com.jparkbro.model.dto.preference.SearchRequest
+import com.jparkbro.model.dto.preference.SearchResponse
 import com.jparkbro.network.util.toResult
 import com.jparkbro.network.util.toUnitResult
-import retrofit2.HttpException
 import javax.inject.Inject
 
 /**
@@ -38,38 +36,8 @@ internal class RetrofitAuthDataSource @Inject constructor(
        ).toResult(TAG, "socialLogin")
     }
 
-    override suspend fun emailSignup(request: SignupRequest): Result<AuthToken> {
-        Log.d(TAG, "emailSignup() called - email: ${request.email}")
-        return try {
-            val response = authApi.emailSignup(request)
-            Log.d(TAG, "emailSignup() response received - isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
-
-            val apiResponse = response.body()
-            Log.d(TAG, "emailSignup() apiResponse - value: ${apiResponse?.value}, code: ${apiResponse?.code}")
-
-            when {
-                // retrofit error (200번대 이외)
-                !response.isSuccessful -> {
-                    Log.e(TAG, "emailSignup() HTTP error - code: ${response.code()}, message: ${response.message()}")
-                    Result.failure(HttpException(response))
-                }
-
-                apiResponse?.value == "success" && apiResponse.result != null -> {
-                    val authToken = apiResponse.result.token
-                    Log.d(TAG, "emailSignup() success - token received")
-                    Result.success(authToken)
-                }
-
-                // value = fail, result == null
-                else -> {
-                    Log.e(TAG, "emailSignup() API error - code: ${apiResponse?.code}, reason: ${apiResponse?.errorReason}")
-                    Result.failure(Exception(apiResponse?.errorValue))
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "emailSignup() exception", e)
-            Result.failure(e)
-        }
+    override suspend fun emailSignup(request: EmailRegisterRequest): Result<EmailRegisterResponse> {
+        return authApi.emailSignup(request).toResult(TAG, "emailSignup")
     }
 
 
@@ -89,7 +57,7 @@ internal class RetrofitAuthDataSource @Inject constructor(
         return authApi.resetPassword(request).toUnitResult(TAG, "resetPassword")
     }
 
-    override suspend fun exploreOrSearch(request: PreferenceRequest): Result<PreferenceResponse> {
+    override suspend fun exploreOrSearch(request: SearchRequest): Result<SearchResponse> {
         return authApi.exploreOrSearch(
             query = request.query,
             year = request.year,

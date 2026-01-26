@@ -57,6 +57,7 @@ import com.jparkbro.ui.theme.AniPickPoint
 import com.jparkbro.ui.theme.AniPickPrimary
 import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.util.ObserveAsEvents
+import com.jparkbro.ui.util.extension.advancedImePadding
 import java.util.Locale
 
 @Composable
@@ -126,6 +127,7 @@ private fun PasswordVerificationScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .advancedImePadding()
         ) {
             Column(
                 modifier = Modifier

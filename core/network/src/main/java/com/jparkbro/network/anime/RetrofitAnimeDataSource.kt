@@ -5,11 +5,11 @@ import com.jparkbro.model.common.anime.InfoSeriesAnimeDto
 import com.jparkbro.model.common.anime.SimpleAnimeDto
 import com.jparkbro.model.dto.explore.GetAnimeExploreRequest
 import com.jparkbro.model.dto.explore.GetAnimeExploreResponse
-import com.jparkbro.model.dto.info.WatchStatusRequest
 import com.jparkbro.model.dto.home.main.RecommendedAnimesResponse
 import com.jparkbro.model.dto.info.AnimeInfoResponse
 import com.jparkbro.model.dto.info.GetInfoRecommendResponse
 import com.jparkbro.model.dto.info.GetInfoSeriesResponse
+import com.jparkbro.model.dto.info.WatchStatusRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
 import com.jparkbro.model.dto.ranking.GetAnimeRankingRequest
@@ -18,8 +18,6 @@ import com.jparkbro.model.dto.search.GetPopularAnimeResponse
 import com.jparkbro.model.dto.search.GetSearchResultRequest
 import com.jparkbro.model.dto.search.GetSearchResultResponse
 import com.jparkbro.model.enum.WatchStatus
-import com.jparkbro.network.ranking.RetrofitRankingDataSource
-import com.jparkbro.network.search.RetrofitSearchDataSource
 import com.jparkbro.network.util.toResult
 import com.jparkbro.network.util.toUnitResult
 import javax.inject.Inject

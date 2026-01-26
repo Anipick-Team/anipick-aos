@@ -67,6 +67,7 @@ import com.jparkbro.ui.theme.AniPickGray400
 import com.jparkbro.ui.theme.AniPickPrimary
 import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.theme.ChevronRightIcon
+import com.jparkbro.ui.util.extension.advancedImePadding
 import com.jparkbro.ui.util.rememberGridInfo
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -152,6 +153,7 @@ private fun SearchResultScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .advancedImePadding()
         ) {
             PrimaryScrollableTabRow(
                 selectedTabIndex = state.searchType.ordinal,

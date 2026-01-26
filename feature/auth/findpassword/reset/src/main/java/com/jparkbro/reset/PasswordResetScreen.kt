@@ -51,6 +51,7 @@ import com.jparkbro.ui.theme.CheckIcon
 import com.jparkbro.ui.theme.EyeClosedIcon
 import com.jparkbro.ui.theme.EyeOpenedIcon
 import com.jparkbro.ui.util.ObserveAsEvents
+import com.jparkbro.ui.util.extension.advancedImePadding
 
 @Composable
 internal fun PasswordResetRoot(
@@ -103,6 +104,7 @@ private fun PasswordResetScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .advancedImePadding()
         ) {
             Column(
                 modifier = Modifier

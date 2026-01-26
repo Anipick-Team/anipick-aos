@@ -130,6 +130,7 @@ private fun EmailLoginScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .advancedImePadding()
         ) {
             Column(
                 modifier = Modifier

@@ -54,11 +54,11 @@ import com.jparkbro.ui.components.APPrimaryActionButton
 import com.jparkbro.ui.components.APSkipActionTopAppBar
 import com.jparkbro.ui.model.BottomSheetData
 import com.jparkbro.ui.preview.DevicePreviews
-import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.theme.AniPick14Normal
 import com.jparkbro.ui.theme.AniPick20Bold
 import com.jparkbro.ui.theme.AniPickBlack
 import com.jparkbro.ui.theme.AniPickGray100
+import com.jparkbro.ui.theme.AniPickGray400
 import com.jparkbro.ui.theme.AniPickPoint
 import com.jparkbro.ui.theme.AniPickPrimary
 import com.jparkbro.ui.theme.AniPickSecondary
@@ -67,6 +67,7 @@ import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.theme.CloseIcon
 import com.jparkbro.ui.theme.SearchOutlineIcon
 import com.jparkbro.ui.util.ObserveAsEvents
+import com.jparkbro.ui.util.extension.advancedImePadding
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
@@ -163,6 +164,7 @@ private fun PreferenceSetupScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .advancedImePadding()
         ) {
             Column(
                 modifier = Modifier
@@ -298,7 +300,7 @@ private fun SearchSection(
                             .clickable { onAction(PreferenceSetupAction.OnSearchClicked) }
                             .padding(dimensionResource(R.dimen.padding_extra_small))
                             .size(dimensionResource(R.dimen.icon_size_small)),
-                        tint = APColors.TextGray
+                        tint = AniPickGray400
                     )
                     Icon(
                         imageVector = CloseIcon,
@@ -308,7 +310,7 @@ private fun SearchSection(
                             .clickable { onAction(PreferenceSetupAction.OnClearTextClicked) }
                             .padding(dimensionResource(R.dimen.padding_extra_small))
                             .size(dimensionResource(R.dimen.icon_size_small)),
-                        tint = APColors.TextGray
+                        tint = AniPickGray400
                     )
                 }
             }

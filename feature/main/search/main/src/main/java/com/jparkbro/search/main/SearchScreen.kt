@@ -51,6 +51,7 @@ import com.jparkbro.ui.theme.AniPickSurface
 import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.theme.CloseIcon
 import com.jparkbro.ui.util.ObserveAsEvents
+import com.jparkbro.ui.util.extension.advancedImePadding
 import com.jparkbro.ui.util.rememberGridInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,6 +141,7 @@ private fun SearchScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .advancedImePadding()
         ) {
             val horizontalPadding = dimensionResource(R.dimen.padding_large)
             val spacing = 8.dp

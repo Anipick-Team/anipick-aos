@@ -2,14 +2,11 @@ package com.jparkbro.data.actor
 
 import com.jparkbro.model.common.Cursor
 import com.jparkbro.model.common.actor.Cast
-import com.jparkbro.model.common.anime.Anime
 import com.jparkbro.model.dto.actor.GetActorResult
 import com.jparkbro.model.dto.info.GetInfoCharactersResult
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.search.GetSearchResultRequest
-import com.jparkbro.model.dto.search.GetSearchResultResponse
 import com.jparkbro.model.dto.search.GetSearchResultResult
-import com.jparkbro.model.search.SearchResultResponse
 
 interface ActorRepository {
 
