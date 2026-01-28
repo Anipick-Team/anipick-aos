@@ -9,8 +9,8 @@ import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
 import com.jparkbro.model.dto.review.SaveMyReviewRequest
 import com.jparkbro.model.review.ReportReviewRequest
-import com.jparkbro.network.util.toResult
-import com.jparkbro.network.util.toUnitResult
+import com.jparkbro.network.util.safeApiCall
+import com.jparkbro.network.util.safeApiCallUnit
 import javax.inject.Inject
 
 class RetrofitReviewDataSource @Inject constructor(
@@ -21,71 +21,77 @@ class RetrofitReviewDataSource @Inject constructor(
     }
 
     override suspend fun getAnimeDetailMyReview(animeId: Long): Result<AnimeDetailMyReviewDto> {
-        return reviewApi.getAnimeDetailMyReview(animeId).toResult(TAG, "getAnimeDetailMyReview")
+        return safeApiCall(TAG, "getAnimeDetailMyReview") { reviewApi.getAnimeDetailMyReview(animeId) }
     }
 
     override suspend fun createAnimeRating(animeId: Long, request: ReviewRatingRequest): Result<Unit> {
-        return reviewApi.createAnimeRating(animeId, request).toUnitResult(TAG, "createAnimeRating")
+        return safeApiCallUnit(TAG, "createAnimeRating") { reviewApi.createAnimeRating(animeId, request) }
     }
 
     override suspend fun updateAnimeRating(reviewId: Long, request: ReviewRatingRequest): Result<Unit> {
-        return reviewApi.updateAnimeRating(reviewId, request).toUnitResult(TAG, "updateAnimeRating")
+        return safeApiCallUnit(TAG, "updateAnimeRating") { reviewApi.updateAnimeRating(reviewId, request) }
     }
 
     override suspend fun deleteAnimeRating(reviewId: Long): Result<Unit> {
-        return reviewApi.deleteAnimeRating(reviewId).toUnitResult(TAG, "deleteAnimeRating")
+        return safeApiCallUnit(TAG, "deleteAnimeRating") { reviewApi.deleteAnimeRating(reviewId) }
     }
 
     override suspend fun getAnimeDetailReviews(request: GetInfoReviewsRequest): Result<GetInfoReviewsResponse> {
-        return reviewApi.getAnimeDetailReviews(
-            animeId = request.animeId,
-            sort = request.sort,
-            isSpoiler = request.isSpoiler,
-            lastValue = request.lastValue,
-            lastId = request.lastId,
-            size = request.size
-        ).toResult(TAG, "getAnimeDetailReviews")
+        return safeApiCall(TAG, "getAnimeDetailReviews") {
+            reviewApi.getAnimeDetailReviews(
+                animeId = request.animeId,
+                sort = request.sort,
+                isSpoiler = request.isSpoiler,
+                lastValue = request.lastValue,
+                lastId = request.lastId,
+                size = request.size
+            )
+        }
     }
 
     override suspend fun getReviewFormAnimeReview(animeId: Long): Result<ReviewFormAnimeReviewDto> {
-        return reviewApi.getReviewFormAnimeReview(animeId).toResult(TAG, "getReviewFormAnimeReview")
+        return safeApiCall(TAG, "getReviewFormAnimeReview") { reviewApi.getReviewFormAnimeReview(animeId) }
     }
 
     override suspend fun updateMyReview(animeId: Long, request: SaveMyReviewRequest): Result<Unit> {
-        return reviewApi.updateMyReview(animeId, request).toUnitResult(TAG, "updateMyReview")
+        return safeApiCallUnit(TAG, "updateMyReview") { reviewApi.updateMyReview(animeId, request) }
     }
 
     override suspend fun loadUserContentReviews(request: GetUserContentRequest): Result<GetUserContentResponse> {
-        return reviewApi.loadUserContentReviews(
-            lastId = request.lastId,
-            lastLikeCount = request.lastLikeCount,
-            lastRating = request.lastRating,
-            sort = request.sort.param,
-            reviewOnly = request.reviewOnly,
-            size = request.size
-        ).toResult(TAG, "loadUserContentReviews")
+        return safeApiCall(TAG, "loadUserContentReviews") {
+            reviewApi.loadUserContentReviews(
+                lastId = request.lastId,
+                lastLikeCount = request.lastLikeCount,
+                lastRating = request.lastRating,
+                sort = request.sort.param,
+                reviewOnly = request.reviewOnly,
+                size = request.size
+            )
+        }
     }
 
     override suspend fun likedReview(reviewId: Long): Result<Unit> {
-        return reviewApi.likedReview(reviewId).toUnitResult(TAG, "likedReview")
+        return safeApiCallUnit(TAG, "likedReview") { reviewApi.likedReview(reviewId) }
     }
 
     override suspend fun unLikedReview(reviewId: Long): Result<Unit> {
-        return reviewApi.unLikedReview(reviewId).toUnitResult(TAG, "unLikedReview")
+        return safeApiCallUnit(TAG, "unLikedReview") { reviewApi.unLikedReview(reviewId) }
     }
 
     override suspend fun deleteReview(reviewId: Long): Result<Unit> {
-        return reviewApi.deleteReview(reviewId).toUnitResult(TAG, "deleteReview")
+        return safeApiCallUnit(TAG, "deleteReview") { reviewApi.deleteReview(reviewId) }
     }
 
     override suspend fun reportReview(reviewId: Long, request: ReportReviewRequest): Result<Unit> {
-        return reviewApi.reportReview(
-            reviewId = reviewId,
-            request = request
-        ).toUnitResult(TAG, "reportReview")
+        return safeApiCallUnit(TAG, "reportReview") {
+            reviewApi.reportReview(
+                reviewId = reviewId,
+                request = request
+            )
+        }
     }
 
     override suspend fun blockUser(userId: Long): Result<Unit> {
-        return reviewApi.blockUser(userId).toUnitResult(TAG, "blockUser")
+        return safeApiCallUnit(TAG, "blockUser") { reviewApi.blockUser(userId) }
     }
 }

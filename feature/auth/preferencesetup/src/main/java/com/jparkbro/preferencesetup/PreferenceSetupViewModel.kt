@@ -10,8 +10,13 @@ import com.jparkbro.model.dto.preference.RatedAnime
 import com.jparkbro.model.dto.preference.SearchRequest
 import com.jparkbro.model.enum.BottomSheetType
 import com.jparkbro.model.exception.ApiException
+import com.jparkbro.model.exception.NetworkException
+import com.jparkbro.ui.R
 import com.jparkbro.ui.model.BottomSheetData
 import com.jparkbro.ui.model.BottomSheetParams
+import com.jparkbro.ui.model.SnackBarData
+import com.jparkbro.ui.snackbar.GlobalSnackbarManager
+import com.jparkbro.ui.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -24,6 +29,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PreferenceSetupViewModel @Inject constructor(
+    private val globalSnackbarManager: GlobalSnackbarManager,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -106,6 +112,13 @@ class PreferenceSetupViewModel @Inject constructor(
                         it.copy(uiState = UiState.Error)
                     }
                     when (exception) {
+                        is NetworkException -> {
+                            globalSnackbarManager.showSnackbar(
+                                SnackBarData(
+                                    text = UiText.StringResource(R.string.snackbar_network_no_internet),
+                                )
+                            )
+                        }
                         is ApiException -> {
                             _eventChannel.send(
                                 PreferenceSetupEvent.InitLoadFailed(exception.errorValue)
@@ -153,6 +166,13 @@ class PreferenceSetupViewModel @Inject constructor(
                 },
                 onFailure = { exception ->
                     when (exception) {
+                        is NetworkException -> {
+                            globalSnackbarManager.showSnackbar(
+                                SnackBarData(
+                                    text = UiText.StringResource(R.string.snackbar_network_no_internet),
+                                )
+                            )
+                        }
                         is ApiException -> {
                             _eventChannel.send(
                                 PreferenceSetupEvent.AnimeLoadFailed(exception.errorValue)
@@ -204,6 +224,13 @@ class PreferenceSetupViewModel @Inject constructor(
                 },
                 onFailure = { exception ->
                     when (exception) {
+                        is NetworkException -> {
+                            globalSnackbarManager.showSnackbar(
+                                SnackBarData(
+                                    text = UiText.StringResource(R.string.snackbar_network_no_internet),
+                                )
+                            )
+                        }
                         is ApiException -> {
                             _eventChannel.send(
                                 PreferenceSetupEvent.AnimeLoadFailed(exception.errorValue)
@@ -248,6 +275,13 @@ class PreferenceSetupViewModel @Inject constructor(
                 },
                 onFailure = { exception ->
                     when (exception) {
+                        is NetworkException -> {
+                            globalSnackbarManager.showSnackbar(
+                                SnackBarData(
+                                    text = UiText.StringResource(R.string.snackbar_network_no_internet),
+                                )
+                            )
+                        }
                         is ApiException -> {
                             _eventChannel.send(
                                 PreferenceSetupEvent.SubmitFailed(exception.errorValue)

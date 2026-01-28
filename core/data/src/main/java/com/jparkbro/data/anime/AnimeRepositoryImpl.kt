@@ -57,8 +57,8 @@ class AnimeRepositoryImpl @Inject constructor(
     override val recentRecommendAnime = _recentRecommendAnime.asStateFlow()
     override suspend fun getRecentRecommendItems(animeId: Long): Result<Unit> {
         return animeDataSource.getRecentRecommendItems(animeId).map { it.toResult() }
-            .onSuccess {
-                _recentRecommendAnime.update { it }
+            .onSuccess { result ->
+                _recentRecommendAnime.update { result }
             }.map { Unit }
     }
 

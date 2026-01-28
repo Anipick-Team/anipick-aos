@@ -7,7 +7,7 @@ import com.jparkbro.model.dto.home.detail.ListDataResponse
 import com.jparkbro.model.dto.home.main.NextQuarterAnimesResponse
 import com.jparkbro.model.dto.home.main.RecommendedAnimesResponse
 import com.jparkbro.model.home.HomeDetailRequest
-import com.jparkbro.network.util.toResult
+import com.jparkbro.network.util.safeApiCall
 import javax.inject.Inject
 
 class RetrofitHomeDataSource @Inject constructor(
@@ -18,59 +18,67 @@ class RetrofitHomeDataSource @Inject constructor(
     }
 
     override suspend fun getTrendItems(): Result<List<TrendingAnimeDto>> {
-        return homeApi.getTrendItems().toResult(TAG, "getTrendItems")
+        return safeApiCall(TAG, "getTrendItems") { homeApi.getTrendItems() }
     }
 
     override suspend fun getRecommendItems(): Result<RecommendedAnimesResponse> {
-        return homeApi.getRecommendItems().toResult(TAG, "getRecommendItems")
+        return safeApiCall(TAG, "getRecommendItems") { homeApi.getRecommendItems() }
     }
 
     override suspend fun getRecentRecommendItems(animeId: Long): Result<RecommendedAnimesResponse> {
-        return homeApi.getRecentRecommendItems(animeId).toResult(TAG, "getRecentRecommendItems")
+        return safeApiCall(TAG, "getRecentRecommendItems") { homeApi.getRecentRecommendItems(animeId) }
     }
 
     override suspend fun getRecentReviews(): Result<List<HomeReviewDto>> {
-        return homeApi.getRecentReviews().toResult(TAG, "getRecentReviews")
+        return safeApiCall(TAG, "getRecentReviews") { homeApi.getRecentReviews() }
     }
 
     override suspend fun getNextQuarterAnimes(): Result<NextQuarterAnimesResponse> {
-        return homeApi.getNextQuarterAnimes().toResult(TAG, "getUpcomingSeasonItems")
+        return safeApiCall(TAG, "getUpcomingSeasonItems") { homeApi.getNextQuarterAnimes() }
     }
 
     override suspend fun getComingSoonItems(): Result<List<UpcomingReleasesAnimeDto>> {
-        return homeApi.getComingSoonItems().toResult(TAG, "getComingSoonItems")
+        return safeApiCall(TAG, "getComingSoonItems") { homeApi.getComingSoonItems() }
     }
 
     override suspend fun getDetailRecommends(request: HomeDetailRequest): Result<ListDataResponse> {
-        return homeApi.getDetailRecommends(
-            lastId = request.lastId,
-            lastValue = request.lastValue,
-            size = request.size
-        ).toResult(TAG, "getDetailRecommends")
+        return safeApiCall(TAG, "getDetailRecommends") {
+            homeApi.getDetailRecommends(
+                lastId = request.lastId,
+                lastValue = request.lastValue,
+                size = request.size
+            )
+        }
     }
 
     override suspend fun getDetailRecentRecommends(request: HomeDetailRequest): Result<ListDataResponse> {
-        return homeApi.getDetailRecentRecommends(
-            animeId = request.animeId as Long,
-            lastId = request.lastId,
-            lastValue = request.lastValue,
-            size = request.size
-        ).toResult(TAG, "getDetailRecentRecommends")
+        return safeApiCall(TAG, "getDetailRecentRecommends") {
+            homeApi.getDetailRecentRecommends(
+                animeId = request.animeId as Long,
+                lastId = request.lastId,
+                lastValue = request.lastValue,
+                size = request.size
+            )
+        }
     }
 
     override suspend fun getDetailRecentReviews(request: HomeDetailRequest): Result<ListDataResponse> {
-        return homeApi.getDetailRecentReviews(
-            lastId = request.lastId,
-            size = request.size
-        ).toResult(TAG, "getDetailRecentReviews")
+        return safeApiCall(TAG, "getDetailRecentReviews") {
+            homeApi.getDetailRecentReviews(
+                lastId = request.lastId,
+                size = request.size
+            )
+        }
     }
 
     override suspend fun getDetailComingSoon(request: HomeDetailRequest): Result<ListDataResponse> {
-        return homeApi.getDetailComingSoon(
-            sort = request.sort,
-            lastId = request.lastId,
-            lastValue = request.lastValue,
-            size = request.size
-        ).toResult(TAG, "getDetailComingSoon")
+        return safeApiCall(TAG, "getDetailComingSoon") {
+            homeApi.getDetailComingSoon(
+                sort = request.sort,
+                lastId = request.lastId,
+                lastValue = request.lastValue,
+                size = request.size
+            )
+        }
     }
 }

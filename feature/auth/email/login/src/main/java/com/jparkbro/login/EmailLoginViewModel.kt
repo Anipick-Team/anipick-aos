@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.jparkbro.domain.EmailLoginUseCase
 import com.jparkbro.model.enum.DialogType
 import com.jparkbro.model.exception.ApiException
+import com.jparkbro.model.exception.NetworkException
 import com.jparkbro.ui.R
 import com.jparkbro.ui.model.DialogData
 import com.jparkbro.ui.model.SnackBarData
@@ -43,18 +44,8 @@ class EmailLoginViewModel @Inject constructor(
 
     fun onAction(action: EmailLoginAction) {
         when (action) {
-            EmailLoginAction.OnLoginClicked -> {
-                login()
-            }
-
-            EmailLoginAction.OnTogglePasswordVisibility -> {
-                _state.update {
-                    it.copy(
-                        isPasswordVisible = !it.isPasswordVisible
-                    )
-                }
-            }
-
+            EmailLoginAction.OnLoginClicked -> login()
+            EmailLoginAction.OnTogglePasswordVisibility -> _state.update { it.copy(isPasswordVisible = !it.isPasswordVisible) }
             else -> Unit
         }
     }
@@ -119,25 +110,35 @@ class EmailLoginViewModel @Inject constructor(
                         _eventChannel.send(EmailLoginEvent.LoginSuccess(reviewCompletedYn))
                     },
                     onFailure = { exception ->
-                        if (exception is ApiException) {
-                            when (exception.errorCode) {
-                                132 -> {
-                                    showWithdrawnAccountDialog()
-                                }
-                                else -> {
-                                    _state.update {
-                                        it.copy(
-                                            loginErrorMessage = exception.errorValue
-                                        )
+                        when (exception) {
+                            is NetworkException -> {
+                                globalSnackbarManager.showSnackbar(
+                                    SnackBarData(
+                                        text = UiText.StringResource(R.string.snackbar_network_no_internet),
+                                    )
+                                )
+                            }
+                            is ApiException -> {
+                                when (exception.errorCode) {
+                                    132 -> {
+                                        showWithdrawnAccountDialog()
+                                    }
+                                    else -> {
+                                        _state.update {
+                                            it.copy(
+                                                loginErrorMessage = exception.errorValue
+                                            )
+                                        }
                                     }
                                 }
                             }
-                        } else {
-                            globalSnackbarManager.showSnackbar(
-                                SnackBarData(
-                                    text = UiText.StringResource(R.string.snackbar_login_failed),
+                            else -> {
+                                globalSnackbarManager.showSnackbar(
+                                    SnackBarData(
+                                        text = UiText.StringResource(R.string.snackbar_login_failed),
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 )

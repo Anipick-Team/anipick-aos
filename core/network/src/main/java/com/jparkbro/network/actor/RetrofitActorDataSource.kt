@@ -8,8 +8,8 @@ import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
 import com.jparkbro.model.dto.search.GetSearchResultRequest
 import com.jparkbro.model.dto.search.GetSearchResultResponse
-import com.jparkbro.network.util.toResult
-import com.jparkbro.network.util.toUnitResult
+import com.jparkbro.network.util.safeApiCall
+import com.jparkbro.network.util.safeApiCallUnit
 import javax.inject.Inject
 
 class RetrofitActorDataSource @Inject constructor(
@@ -20,44 +20,51 @@ class RetrofitActorDataSource @Inject constructor(
     }
 
     override suspend fun getDetailActor(animeId: Long): Result<List<InfoActorResponse>> {
-        return actorApi.getDetailActor(animeId).toResult(TAG, "getDetailActor")
+        return safeApiCall(TAG, "getDetailActor") { actorApi.getDetailActor(animeId) }
     }
 
     override suspend fun getInfoCharacters(animeId: Long, cursor: Cursor?): Result<GetInfoCharactersResponse> {
-        return actorApi.getInfoCharacters(
-            animeId = animeId,
-            lastId = cursor?.lastId,
-            lastValue = cursor?.lastValue
-        ).toResult(TAG, "getInfoCharacters")
+        return safeApiCall(TAG, "getInfoCharacters") {
+            actorApi.getInfoCharacters(
+                animeId = animeId,
+                lastId = cursor?.lastId,
+                lastValue = cursor?.lastValue
+            )
+        }
     }
 
     override suspend fun getActor(personId: Long, cursor: Cursor?): Result<GetActorResponse> {
-        return actorApi.getActor(
-            personId = personId,
-            lastId = cursor?.lastId,
-        ).toResult(TAG, "getInfoCharacters")
+        return safeApiCall(TAG, "getActor") {
+            actorApi.getActor(
+                personId = personId,
+                lastId = cursor?.lastId,
+            )
+        }
     }
 
     override suspend fun likeActor(personId: Long): Result<Unit> {
-        return actorApi.likeActor(personId).toUnitResult(TAG, "likeActor")
-
+        return safeApiCallUnit(TAG, "likeActor") { actorApi.likeActor(personId) }
     }
 
     override suspend fun unLikeActor(personId: Long): Result<Unit> {
-        return actorApi.unLikeActor(personId).toUnitResult(TAG, "likeActor")
+        return safeApiCallUnit(TAG, "unLikeActor") { actorApi.unLikeActor(personId) }
     }
 
     override suspend fun loadUserContentActors(request: GetUserContentRequest): Result<GetUserContentResponse> {
-        return actorApi.loadUserContentActors(
-            lastId = request.lastId,
-        ).toResult(TAG, "loadUserContentActors")
+        return safeApiCall(TAG, "loadUserContentActors") {
+            actorApi.loadUserContentActors(
+                lastId = request.lastId,
+            )
+        }
     }
 
     override suspend fun getSearchResult(request: GetSearchResultRequest): Result<GetSearchResultResponse> {
-        return actorApi.getSearchResult(
-            query = request.query,
-            lastId = request.lastId,
-            size = request.size,
-        ).toResult(TAG, "getSearchResult")
+        return safeApiCall(TAG, "getSearchResult") {
+            actorApi.getSearchResult(
+                query = request.query,
+                lastId = request.lastId,
+                size = request.size,
+            )
+        }
     }
 }
