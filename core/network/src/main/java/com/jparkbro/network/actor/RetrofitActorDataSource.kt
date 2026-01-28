@@ -8,7 +8,6 @@ import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
 import com.jparkbro.model.dto.search.GetSearchResultRequest
 import com.jparkbro.model.dto.search.GetSearchResultResponse
-import com.jparkbro.network.search.RetrofitSearchDataSource
 import com.jparkbro.network.util.toResult
 import com.jparkbro.network.util.toUnitResult
 import javax.inject.Inject

@@ -36,9 +36,9 @@ import com.jparkbro.home.main.navigation.navigateToHome
 import com.jparkbro.mypage.main.navigation.navigateToMyPage
 import com.jparkbro.ranking.navigation.navigateToRanking
 import com.jparkbro.ui.R
-import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.theme.AniPick12Normal
 import com.jparkbro.ui.theme.AniPickGray100
+import com.jparkbro.ui.theme.AniPickGray50
 import com.jparkbro.ui.theme.AniPickPrimary
 import com.jparkbro.ui.util.extension.clearStack
 
@@ -69,7 +69,7 @@ internal fun APBottomNavigation(
             modifier = Modifier
                 .fillMaxWidth(),
             thickness = dimensionResource(R.dimen.border_width_default),
-            color = APColors.LightGray
+            color = AniPickGray50
         )
         Row(
             modifier = Modifier
