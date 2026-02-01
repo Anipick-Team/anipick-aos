@@ -190,7 +190,7 @@ fun APReviewCard(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             AsyncImage(
-                                model = review.profileImageUrl,
+                                model = review.profileImageByteArray,
                                 contentDescription = stringResource(R.string.profile_img),
                                 error = painterResource(R.drawable.profile_default_img),
                                 placeholder = painterResource(R.drawable.profile_default_img),

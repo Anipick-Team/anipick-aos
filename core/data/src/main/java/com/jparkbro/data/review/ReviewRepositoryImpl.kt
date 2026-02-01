@@ -21,6 +21,7 @@ import com.jparkbro.model.home.HomeDetailRequest
 import com.jparkbro.model.review.ReportReviewRequest
 import com.jparkbro.network.home.HomeDataSource
 import com.jparkbro.network.review.ReviewDataSource
+import com.jparkbro.network.user.UserDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,6 +36,7 @@ class ReviewRepositoryImpl @Inject constructor(
     private val homeDataSource: HomeDataSource,
     private val userRepository: UserRepository,
     private val animeRepository: AnimeRepository,
+    private val userDataSource: UserDataSource,
 ) : ReviewRepository {
 
     /** Home Recent Reviews - 홈 화면용 (전체 데이터 제공) */
@@ -61,14 +63,26 @@ class ReviewRepositoryImpl @Inject constructor(
             request = HomeDetailRequest(lastId = cursor?.lastId)
         ).fold(
             onSuccess = { response ->
+                val reviewsWithImages = response.reviews.map { review ->
+                    val url = review.profileImageUrl
+                    val id = url?.substringAfterLast("/")?.toLongOrNull()
+                    if (id != null && id != -1L) {
+                        val imageBytes = userDataSource.getUserProfileImage(url).getOrNull()
+                        review.copy(profileImageByteArray = imageBytes)
+                    } else {
+                        review
+                    }
+                }
+                val updatedResponse = response.copy(reviews = reviewsWithImages)
+
                 _detailRecentReviews.update { current ->
                     if (isInitialLoad) {
-                        response.toResult()
+                        updatedResponse.toResult()
                     } else {
                         current?.copy(
-                            reviews = current.reviews + response.toResult().reviews,
-                            cursor = response.toResult().cursor
-                        ) ?: response.toResult()
+                            reviews = current.reviews + updatedResponse.toResult().reviews,
+                            cursor = updatedResponse.toResult().cursor
+                        ) ?: updatedResponse.toResult()
                     }
                 }
                 Result.success(Unit)
@@ -90,9 +104,21 @@ class ReviewRepositoryImpl @Inject constructor(
         return reviewDataSource.getAnimeDetailReviews(request = request)
             .fold(
                 onSuccess = { response ->
+                    val reviewsWithImages = response.reviews.map { review ->
+                        val url = review.profileImageUrl
+                        val id = url?.substringAfterLast("/")?.toLongOrNull()
+                        if (id != null && id != -1L) {
+                            val imageBytes = userDataSource.getUserProfileImage(url).getOrNull()
+                            review.copy(profileImageByteArray = imageBytes)
+                        } else {
+                            review
+                        }
+                    }
+                    val updatedResponse = response.copy(reviews = reviewsWithImages)
+
                     animeReviewsCache.update { cache ->
                         val current = cache[animeId]
-                        val result = response.toResult()
+                        val result = updatedResponse.toResult()
                         val newData = if (isInitialLoad || current == null) {
                             // 초기 로드: 기존 데이터 대체
                             result

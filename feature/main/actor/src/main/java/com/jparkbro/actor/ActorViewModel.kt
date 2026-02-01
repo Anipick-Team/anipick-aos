@@ -6,9 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.actor.ActorRepository
 import com.jparkbro.model.common.UiState
 import com.jparkbro.model.exception.NetworkException
-import com.jparkbro.ui.R
-import com.jparkbro.ui.model.SnackBarData
-import com.jparkbro.ui.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
