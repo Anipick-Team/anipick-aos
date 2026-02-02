@@ -236,6 +236,9 @@
     <string name="anime_detail_empty_reviews">아직 리뷰가 없어요!\n첫 번째 리뷰의 주인공이 되어볼까요?</string>
     <string name="anime_detail_shared_link">https://anipick.p-e.kr/app/anime/detail/%d</string>
 
+    <!-- Actor & Character-->
+    <string name="actor_and_character_header">캐릭터/성우진</string>
+
     <!-- Info Series -->
     <string name="info_series_header">관련 작품</string>
     <string name="info_series_banner_mid">" 의"</string>

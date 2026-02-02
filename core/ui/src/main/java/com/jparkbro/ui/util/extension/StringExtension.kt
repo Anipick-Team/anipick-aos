@@ -39,6 +39,16 @@ fun String.quarterStringToInt(): Int? {
     }
 }
 
+fun Int.quarterIntToString(): String? {
+    return when (this) {
+        1 -> "1분기"
+        2 -> "2분기"
+        3 -> "3분기"
+        4 -> "4분기"
+        else -> null
+    }
+}
+
 /**
  * URL에 default.jpg가 포함되어 있으면 기본 이미지 리소스 ID를 반환하고,
  * 그렇지 않으면 원본 URL을 반환합니다.

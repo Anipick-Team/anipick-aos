@@ -53,6 +53,7 @@ import com.jparkbro.ui.theme.AniPickGray400
 import com.jparkbro.ui.theme.AniPickSmallShape
 import com.jparkbro.ui.theme.AniPickSurface
 import com.jparkbro.ui.theme.AniPickWhite
+import com.jparkbro.ui.util.extension.quarterIntToString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -394,7 +395,7 @@ private fun NextQuarter(
                 }
             }
         },
-        onNavigateClick = { onAction(HomeAction.NavigateToNextQuarter(state.year.toString(), state.season.toString())) }
+        onNavigateClick = { onAction(HomeAction.NavigateToNextQuarter(state.year.toString(), state.season.quarterIntToString() ?: "1분기")) }
     )
 }
 
