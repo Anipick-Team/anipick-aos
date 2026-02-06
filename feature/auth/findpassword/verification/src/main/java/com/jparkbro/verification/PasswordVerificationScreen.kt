@@ -252,9 +252,6 @@ private fun EmailCodeInputSection(
             APLabeledTextField(
                 label = stringResource(R.string.password_verification_verification_code),
                 state = state.code,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                ),
                 onKeyboardAction = {
                     focusManager.clearFocus()
                 },
