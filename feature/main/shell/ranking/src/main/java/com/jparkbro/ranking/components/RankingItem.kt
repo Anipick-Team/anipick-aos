@@ -45,6 +45,7 @@ import com.jparkbro.ui.theme.RankingUpIcon
 @Composable
 internal fun RankingItem(
     anime: Anime,
+    showRankChange: Boolean = false,
     onClick: (Long) -> Unit
 ) {
     Row(
@@ -84,25 +85,29 @@ internal fun RankingItem(
                                 else -> AniPickGray400
                             }
                         )
-                        anime.change?.let {
-                            Text(
-                                text = if (anime.change == "N") stringResource(R.string.ranking_rank_new) else it,
-                                style = AniPick14Normal.copy(
-                                    color = when (anime.trend) {
-                                        RankingTrend.UP -> AniPickPoint
-                                        RankingTrend.DOWN -> AniPickSecondary
-                                        else -> AniPickGray400
-                                    }
+                        if (showRankChange) {
+                            anime.change?.let {
+                                Text(
+                                    text = if (anime.change == "N") stringResource(R.string.ranking_rank_new) else it,
+                                    style = AniPick14Normal.copy(
+                                        color = when (anime.trend) {
+                                            RankingTrend.UP -> AniPickPoint
+                                            RankingTrend.DOWN -> AniPickSecondary
+                                            else -> AniPickGray400
+                                        }
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }
                 else -> {
-                    Text(
-                        text = stringResource(R.string.ranking_rank_new),
-                        style = AniPick14Normal.copy(color = AniPickPrimary)
-                    )
+                    if (showRankChange) {
+                        Text(
+                            text = stringResource(R.string.ranking_rank_new),
+                            style = AniPick14Normal.copy(color = AniPickPrimary)
+                        )
+                    }
                 }
             }
         }

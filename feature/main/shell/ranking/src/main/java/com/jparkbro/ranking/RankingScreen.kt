@@ -254,6 +254,7 @@ private fun RankingScreen(
                     items(state.animes) { anime ->
                         RankingItem(
                             anime = anime,
+                            showRankChange = state.type == RankingType.REAL_TIME,
                             onClick = { onAction(RankingAction.NavigateToInfoAnime(it)) }
                         )
                     }
