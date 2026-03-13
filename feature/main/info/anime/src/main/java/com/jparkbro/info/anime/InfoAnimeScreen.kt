@@ -390,6 +390,8 @@ private fun ExpandedHeader(
                         Text(
                             text = it,
                             style = AniPick20Bold.copy(color = AniPickBlack),
+                            modifier = Modifier
+                                .weight(weight = 1f, fill = false)
                         )
                     }
                     APAnimationLikeIcon(

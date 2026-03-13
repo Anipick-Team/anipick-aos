@@ -124,7 +124,7 @@ private fun InfoCharacterScreen(
     Scaffold(
         topBar = {
             APTitleTopAppBar(
-                title = stringResource(R.string.info_series_header),
+                title = stringResource(R.string.actor_and_character_header),
                 onNavigateBack = { onAction(InfoCharacterAction.NavigateBack) },
             )
         },

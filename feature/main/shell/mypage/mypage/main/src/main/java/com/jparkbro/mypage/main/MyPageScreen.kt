@@ -1,5 +1,6 @@
 package com.jparkbro.mypage.main
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,26 +20,25 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.jparkbro.model.common.UiState
 import com.jparkbro.model.enum.UserContentType
 import com.jparkbro.mypage.main.components.EmptyListItem
+import com.jparkbro.mypage.main.components.FeedbackLinkCard
 import com.jparkbro.mypage.main.components.NavigateTitle
 import com.jparkbro.mypage.main.components.SkeletonScreen
 import com.jparkbro.mypage.main.components.WatchStatusBox
@@ -47,8 +47,6 @@ import com.jparkbro.ui.components.APActorCard
 import com.jparkbro.ui.components.APAnimeCard
 import com.jparkbro.ui.components.APErrorScreen
 import com.jparkbro.ui.components.APMyPageTopAppBar
-import com.jparkbro.ui.theme.AniPick18ExtraBold
-import com.jparkbro.ui.theme.AniPickBlack
 import com.jparkbro.ui.theme.AniPickPrimary
 import com.jparkbro.ui.theme.AniPickSurface
 import com.jparkbro.ui.theme.AniPickWhite
@@ -64,6 +62,7 @@ internal fun MyPageRoot(
     onNavigateToActor: (Long) -> Unit,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -74,6 +73,7 @@ internal fun MyPageRoot(
                 onAction = viewModel::onAction
             )
         }
+
         UiState.Error -> {
             Scaffold(
                 topBar = { APMyPageTopAppBar(onNavigateToSetting = onNavigateToSetting) },
@@ -86,6 +86,7 @@ internal fun MyPageRoot(
                 )
             }
         }
+
         UiState.Success -> {
             MyPageScreen(
                 bottomNav = bottomNav,
@@ -96,6 +97,10 @@ internal fun MyPageRoot(
                         is MyPageAction.NavigateToUserContent -> onNavigateToUserContent(action.contentType)
                         is MyPageAction.NavigateToInfoAnime -> onNavigateToInfoAnime(action.animeId)
                         is MyPageAction.NavigateToActor -> onNavigateToActor(action.actorId)
+                        MyPageAction.OnFeedBackClicked -> {
+                            val intent = Intent(Intent.ACTION_VIEW, "https://forms.gle/SJ7mbQfyfoe2HDLd7".toUri())
+                            context.startActivity(intent)
+                        }
                     }
                     viewModel.onAction(action)
                 }
@@ -112,7 +117,17 @@ private fun MyPageScreen(
     onAction: (MyPageAction) -> Unit
 ) {
     Scaffold(
-        topBar = { APMyPageTopAppBar(onNavigateToSetting = { onAction(MyPageAction.NavigateToSetting) }) },
+        topBar = {
+            APMyPageTopAppBar(
+                onNavigateToSetting = { onAction(MyPageAction.NavigateToSetting) },
+                actions = {
+                    ProfileImage(
+                        state = state,
+                        onAction = onAction
+                    )
+                }
+            )
+        },
         bottomBar = bottomNav,
         containerColor = AniPickWhite
     ) { innerPadding ->
@@ -129,29 +144,11 @@ private fun MyPageScreen(
                 )
             }
             item {
-                Row(
+                FeedbackLinkCard(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(R.dimen.padding_large), vertical = dimensionResource(R.dimen.padding_default)),
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_extra_large)),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    ProfileImage(
-                        state = state,
-                        onAction = onAction
-                    )
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(color = AniPickPrimary)) {
-                                append(state.nickname)
-                            }
-                            withStyle(style = SpanStyle(color = AniPickBlack)) {
-                                append(stringResource(R.string.mypage_welcome_title))
-                            }
-                        },
-                        style = AniPick18ExtraBold
-                    )
-                }
+                        .padding(horizontal = dimensionResource(R.dimen.padding_large)),
+                    onFeedbackClick = { onAction(MyPageAction.OnFeedBackClicked) }
+                )
             }
             item {
                 Row(
@@ -163,17 +160,17 @@ private fun MyPageScreen(
                     WatchStatusBox(
                         title = stringResource(R.string.mypage_watch_list_anime),
                         count = state.watchCounts?.watchList ?: 0,
-                        onAction = { onAction(MyPageAction.NavigateToUserContent(UserContentType.WATCHLIST))}
+                        onAction = { onAction(MyPageAction.NavigateToUserContent(UserContentType.WATCHLIST)) }
                     )
                     WatchStatusBox(
                         title = stringResource(R.string.mypage_watching_anime),
                         count = state.watchCounts?.watching ?: 0,
-                        onAction = { onAction(MyPageAction.NavigateToUserContent(UserContentType.WATCHING))}
+                        onAction = { onAction(MyPageAction.NavigateToUserContent(UserContentType.WATCHING)) }
                     )
                     WatchStatusBox(
                         title = stringResource(R.string.mypage_finished_anime),
                         count = state.watchCounts?.finished ?: 0,
-                        onAction = { onAction(MyPageAction.NavigateToUserContent(UserContentType.FINISHED))}
+                        onAction = { onAction(MyPageAction.NavigateToUserContent(UserContentType.FINISHED)) }
                     )
                 }
             }
@@ -267,7 +264,8 @@ private fun ProfileImage(
 
     Box(
         modifier = Modifier
-            .size(102.dp)
+            .padding(end = dimensionResource(R.dimen.padding_default))
+            .size(60.dp)
             .clickable { launchPhotoPicker() }
     ) {
         AsyncImage(
@@ -276,7 +274,7 @@ private fun ProfileImage(
             error = painterResource(R.drawable.profile_default_img),
             placeholder = painterResource(R.drawable.profile_default_img),
             modifier = Modifier
-                .size(96.dp)
+                .size(48.dp)
                 .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
@@ -286,9 +284,9 @@ private fun ProfileImage(
             tint = AniPickWhite,
             modifier = Modifier
                 .background(AniPickPrimary, CircleShape)
-                .padding(dimensionResource(R.dimen.padding_small))
+                .padding(dimensionResource(R.dimen.padding_extra_small))
                 .size(dimensionResource(R.dimen.icon_size_small))
-                .align(Alignment.BottomEnd)
+                .align(Alignment.TopEnd)
         )
     }
 }

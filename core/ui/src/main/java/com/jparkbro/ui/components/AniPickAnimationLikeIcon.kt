@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ import com.jparkbro.ui.theme.FavoriteOnIcon
 
 @Composable
 fun APAnimationLikeIcon(
+    modifier: Modifier = Modifier,
     size: Dp = dimensionResource(R.dimen.icon_size_medium),
     isLiked: Boolean = false,
     isLikingAnime: Boolean = false,
@@ -57,7 +59,8 @@ fun APAnimationLikeIcon(
         imageVector = if (isLiked) FavoriteOnIcon else FavoriteOffIcon,
         contentDescription = stringResource(R.string.favorite_icon),
         tint = Color.Unspecified,
-        modifier = Modifier
+        modifier = modifier
+            .padding(horizontal = dimensionResource(R.dimen.padding_small))
             .size(size)
             .graphicsLayer {
                 scaleX = scale
@@ -70,5 +73,6 @@ fun APAnimationLikeIcon(
             ) {
                 onClick(isLiked)
             }
+
     )
 }

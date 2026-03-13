@@ -254,12 +254,13 @@ fun APTitleTopAppBar(
 @Composable
 fun APMyPageTopAppBar(
     onNavigateToSetting: () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {}
 ) {
     APBaseTopAppBar(
         navigationIcon = {
             Row(
                 modifier = Modifier
-                .padding(start = dimensionResource(R.dimen.padding_default)),
+                    .padding(start = dimensionResource(R.dimen.padding_default)),
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium)),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -283,7 +284,8 @@ fun APMyPageTopAppBar(
                     )
                 }
             }
-        }
+        },
+        actions = actions
     )
 }
 
@@ -320,7 +322,7 @@ private fun APMainTopAppBarPreview() {
 private fun APSearchTopAppBarPreview() {
     APSearchTopAppBar(
         onNavigateBack = {},
-        onSearch = {  },
+        onSearch = { },
         onClear = {},
     )
 }

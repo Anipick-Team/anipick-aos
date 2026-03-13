@@ -286,6 +286,9 @@
     <string name="mypage_liked_actor">좋아요한 인물</string>
     <string name="mypage_empty_liked_anime">아직 좋아요한 작품이 없어요.\n좋아요를 누르러 가볼까요?</string>
     <string name="mypage_empty_liked_actor">아직 좋아요한 인물이 없어요.\n좋아요를 누르러 가볼까요?</string>
+    <string name="mypage_feedback_title">애니픽을 사용해 보셨나요?</string>
+    <string name="mypage_feedback_description">더 좋은 서비스를 만들 수 있도록 여러분의 의견을 들려주세요.</string>
+    <string name="mypage_feedback_button">바로가기</string>
 
     <!-- User Content -->
     <string name="user_content_header_watch_list_anime">볼 애니</string>
