@@ -99,11 +99,13 @@ internal fun PreferenceSetupRoot(
         UiState.Loading -> {
             SkeletonScreen(state)
         }
+
         UiState.Error -> {
             APErrorScreen(
                 onClick = { viewModel.onAction(PreferenceSetupAction.OnRetryClicked) }
             )
         }
+
         UiState.Success -> {
             PreferenceSetupScreen(
                 state = state,
@@ -164,11 +166,11 @@ private fun PreferenceSetupScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .advancedImePadding()
         ) {
             Column(
                 modifier = Modifier
-                    .weight(1f),
+                    .weight(1f)
+                    .advancedImePadding(),
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_40))
             ) {
                 Header()
