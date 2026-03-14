@@ -79,15 +79,25 @@ fun <T> APPicker(
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 
     val itemHeight = with(density) {
-        (selectedTextStyle.fontSize.toDp() + itemPadding.calculateTopPadding() + itemPadding.calculateBottomPadding()).let {
-            (it.value.toInt() + 1).dp // TODO 수정 해야 할 수도 있음
+        val textHeightDp = if (selectedTextStyle.lineHeight.isSp) {
+            selectedTextStyle.lineHeight.toDp()
+        } else {
+            selectedTextStyle.fontSize.toDp() * 1.2f
         }
+        textHeightDp + itemPadding.calculateTopPadding() + itemPadding.calculateBottomPadding()
     }
 
     LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemIndex }
-            .mapNotNull { index -> getItem(index + visibleItemsMiddle) }
+        snapshotFlow { listState.layoutInfo }
+            .mapNotNull { layoutInfo ->
+                val viewportCenter =
+                    (layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset) / 2
+                layoutInfo.visibleItemsInfo
+                    .minByOrNull { abs((it.offset + it.size / 2) - viewportCenter) }
+                    ?.index
+            }
             .distinctUntilChanged()
+            .mapNotNull { index -> getItem(index) }
             .collect { item -> state.selectedItem = item }
     }
 
@@ -95,7 +105,7 @@ fun <T> APPicker(
         resetTrigger.let {
             val targetIndex = items.indexOf(state.selectedItem)
             if (targetIndex != -1) {
-                if (targetIndex >= 0 && targetIndex < listScrollCount) {
+                if (targetIndex in 0..<listScrollCount) {
                     listState.animateScrollToItem(targetIndex)
                 }
             }

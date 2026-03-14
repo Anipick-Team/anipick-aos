@@ -98,7 +98,7 @@ internal fun MyPageRoot(
                         is MyPageAction.NavigateToInfoAnime -> onNavigateToInfoAnime(action.animeId)
                         is MyPageAction.NavigateToActor -> onNavigateToActor(action.actorId)
                         MyPageAction.OnFeedBackClicked -> {
-                            val intent = Intent(Intent.ACTION_VIEW, "https://forms.gle/SJ7mbQfyfoe2HDLd7".toUri())
+                            val intent = Intent(Intent.ACTION_VIEW, "https://docs.google.com/forms/d/e/1FAIpQLSdV4UANNQuVanRQ99JLJ1PU9ElXMN2iKx9gPaBXAb0QkVreDg/viewform".toUri())
                             context.startActivity(intent)
                         }
                     }

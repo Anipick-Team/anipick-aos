@@ -100,6 +100,7 @@ internal fun ExploreRoot(
                 onNavigateToSearch = onNavigateToSearch,
             )
         }
+
         UiState.Error -> {
             Scaffold(
                 topBar = { APMainTopAppBar(onNavigateToSearch = onNavigateToSearch) },
@@ -112,6 +113,7 @@ internal fun ExploreRoot(
                 )
             }
         }
+
         UiState.Success -> {
             ExploreScreen(
                 bottomNav = bottomNav,
@@ -179,11 +181,15 @@ private fun ExploreScreen(
                 .padding(innerPadding)
         ) {
             stickyHeader {
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    thickness = dimensionResource(R.dimen.border_width_default),
-                    color = AniPickSurface
-                )
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .background(AniPickWhite)) {
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        thickness = dimensionResource(R.dimen.border_width_default),
+                        color = AniPickSurface
+                    )
+                }
             }
             item {
                 Row(
@@ -211,77 +217,81 @@ private fun ExploreScreen(
                 }
             }
             stickyHeader {
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    thickness = dimensionResource(R.dimen.border_width_default),
-                    color = AniPickSurface
-                )
-                if ((state.year != "전체년도" && state.year != null) || state.genres.isNotEmpty() || state.type != null) {
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(AniPickWhite)
-                            .padding(vertical = dimensionResource(R.dimen.padding_default)),
-                        contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.padding_large)),
-                        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
-                    ) {
-                        state.year?.let {
-                            if (it != "전체년도") {
-                                item {
-                                    SelectedFilter(
-                                        title = it,
-                                        onClick = { onAction(ExploreAction.OnYearFilterCancelClicked) }
-                                    )
-                                }
-                            }
-                        }
-                        state.quarter.name?.let {
-                            if (it != "전체분기") {
-                                item {
-                                    SelectedFilter(
-                                        title = it,
-                                        onClick = { onAction(ExploreAction.OnQuarterFilterCancelClicked) }
-                                    )
-                                }
-                            }
-                        }
-                        if (state.genres.isNotEmpty()) {
-                            items(state.genres) { genre ->
-                                genre.name?.let {
-                                    SelectedFilter(
-                                        title = it,
-                                        onClick = { onAction(ExploreAction.OnGenreFilterCancelClicked(genre.id)) }
-                                    )
-                                }
-                            }
-                        }
-                        state.type?.let {
-                            item {
-                                SelectedFilter(
-                                    title = it,
-                                    onClick = { onAction(ExploreAction.OnTypeFilterCancelClicked) }
-                                )
-                            }
-                        }
-                    }
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .background(AniPickWhite)) {
                     HorizontalDivider(
                         modifier = Modifier.fillMaxWidth(),
                         thickness = dimensionResource(R.dimen.border_width_default),
                         color = AniPickSurface
                     )
-                }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(AniPickWhite)
-                        .padding(horizontal = dimensionResource(R.dimen.padding_large), vertical = dimensionResource(R.dimen.padding_default)),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    SortButton(
-                        state = state,
-                        onAction = onAction
-                    )
-                }
+                    if ((state.year != "전체년도" && state.year != null) || state.genres.isNotEmpty() || state.type != null) {
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(AniPickWhite)
+                                .padding(vertical = dimensionResource(R.dimen.padding_default)),
+                            contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.padding_large)),
+                            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
+                        ) {
+                            state.year?.let {
+                                if (it != "전체년도") {
+                                    item {
+                                        SelectedFilter(
+                                            title = it,
+                                            onClick = { onAction(ExploreAction.OnYearFilterCancelClicked) }
+                                        )
+                                    }
+                                }
+                            }
+                            state.quarter.name?.let {
+                                if (it != "전체분기") {
+                                    item {
+                                        SelectedFilter(
+                                            title = it,
+                                            onClick = { onAction(ExploreAction.OnQuarterFilterCancelClicked) }
+                                        )
+                                    }
+                                }
+                            }
+                            if (state.genres.isNotEmpty()) {
+                                items(state.genres) { genre ->
+                                    genre.name?.let {
+                                        SelectedFilter(
+                                            title = it,
+                                            onClick = { onAction(ExploreAction.OnGenreFilterCancelClicked(genre.id)) }
+                                        )
+                                    }
+                                }
+                            }
+                            state.type?.let {
+                                item {
+                                    SelectedFilter(
+                                        title = it,
+                                        onClick = { onAction(ExploreAction.OnTypeFilterCancelClicked) }
+                                    )
+                                }
+                            }
+                        }
+                        HorizontalDivider(
+                            modifier = Modifier.fillMaxWidth(),
+                            thickness = dimensionResource(R.dimen.border_width_default),
+                            color = AniPickSurface
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(AniPickWhite)
+                            .padding(horizontal = dimensionResource(R.dimen.padding_large), vertical = dimensionResource(R.dimen.padding_default)),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        SortButton(
+                            state = state,
+                            onAction = onAction
+                        )
+                    }
+                } // Column
             }
 
             if (state.animes.isNotEmpty()) {
