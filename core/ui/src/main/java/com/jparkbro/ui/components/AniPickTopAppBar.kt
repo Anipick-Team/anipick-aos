@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -85,6 +86,7 @@ fun APBackStackTopAppBar(
                 Icon(
                     imageVector = ChevronLeftIcon,
                     contentDescription = stringResource(R.string.back_stack_icon),
+                    tint = Color.Unspecified,
                 )
             }
         },
@@ -166,6 +168,7 @@ fun APSearchTopAppBar(
                 Icon(
                     imageVector = ChevronLeftIcon,
                     contentDescription = stringResource(R.string.back_stack_icon),
+                    tint = Color.Unspecified,
                 )
             }
         },
@@ -236,6 +239,7 @@ fun APTitleTopAppBar(
                 Icon(
                     imageVector = ChevronLeftIcon,
                     contentDescription = stringResource(R.string.back_stack_icon),
+                    tint = Color.Unspecified,
                 )
             }
         },
