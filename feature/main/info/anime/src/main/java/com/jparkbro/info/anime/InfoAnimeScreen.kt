@@ -329,8 +329,12 @@ private fun ExpandedHeader(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(240.dp)
-                    .background(AniPickGray50),
-                contentScale = ContentScale.FillHeight
+                    .background(AniPickGray50)
+                    .drawWithContent {
+                        drawContent()
+                        drawRect(color = Color(0x66000000))
+                    },
+                contentScale = ContentScale.FillHeight,
             )
             Icon(
                 imageVector = BorderChevronLeftIcon,
