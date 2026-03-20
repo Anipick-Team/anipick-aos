@@ -37,7 +37,12 @@ class SearchResultViewModel @Inject constructor(
 
     private val keyword = savedStateHandle.get<String>("keyword")
 
-    private val _state = MutableStateFlow(SearchResultState(keyword = keyword))
+    private val _state = MutableStateFlow(
+        SearchResultState(
+            keyword = keyword,
+            searchKeyword = TextFieldState(initialText = keyword ?: "")
+        )
+    )
     val state = _state.asStateFlow()
 
     init {
