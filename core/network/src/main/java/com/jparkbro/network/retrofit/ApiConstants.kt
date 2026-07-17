@@ -1,7 +1,7 @@
 package com.jparkbro.network.retrofit
 
 object ApiConstants {
-    const val BASE_URL = "http://anipick.p-e.kr:8080/api/"
+    const val BASE_URL = "https://anipick.p-e.kr/api/"
 
     /** GET version */
     const val APP_INIT_CHECK = "version"

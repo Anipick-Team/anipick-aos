@@ -32,8 +32,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
@@ -86,6 +88,7 @@ import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APAlertDialog
 import com.jparkbro.ui.components.APAnimationLikeIcon
 import com.jparkbro.ui.components.APAnimeCard
+import com.jparkbro.ui.components.APBackStackTopAppBar
 import com.jparkbro.ui.components.APCastPairCard
 import com.jparkbro.ui.components.APConfirmDialog
 import com.jparkbro.ui.components.APEmptyContent
@@ -127,6 +130,7 @@ import com.jparkbro.ui.util.ObserveAsEvents
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun InfoAnimeRoot(
     onNavigateBack: () -> Unit,
@@ -171,9 +175,17 @@ internal fun InfoAnimeRoot(
         }
 
         UiState.Error -> {
-            APErrorScreen(
-                onClick = { viewModel.onAction(InfoAnimeAction.OnRetryClicked) }
-            )
+            Scaffold(
+                topBar = { APBackStackTopAppBar(onNavigateBack = onNavigateBack) },
+                modifier = Modifier
+                    .fillMaxSize(),
+                containerColor = AniPickWhite
+            ) {
+                APErrorScreen(
+                    onClick = { viewModel.onAction(InfoAnimeAction.OnRetryClicked) },
+                    modifier = Modifier.padding(it)
+                )
+            }
         }
 
         UiState.Success -> {
@@ -317,8 +329,12 @@ private fun ExpandedHeader(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(240.dp)
-                    .background(AniPickGray50),
-                contentScale = ContentScale.FillHeight
+                    .background(AniPickGray50)
+                    .drawWithContent {
+                        drawContent()
+                        drawRect(color = Color(0x66000000))
+                    },
+                contentScale = ContentScale.FillHeight,
             )
             Icon(
                 imageVector = BorderChevronLeftIcon,
@@ -378,6 +394,8 @@ private fun ExpandedHeader(
                         Text(
                             text = it,
                             style = AniPick20Bold.copy(color = AniPickBlack),
+                            modifier = Modifier
+                                .weight(weight = 1f, fill = false)
                         )
                     }
                     APAnimationLikeIcon(
@@ -627,13 +645,15 @@ private fun InfoTab(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         state.animeInfo?.genres?.forEach { genre ->
-                            Text(
-                                text = genre.name,
-                                style = AniPick12Normal.copy(color = AniPickPrimary),
-                                modifier = Modifier
-                                    .background(AniPickPrimary.copy(alpha = 0.1f), AniPickSmallShape)
-                                    .padding(horizontal = dimensionResource(R.dimen.padding_small), vertical = dimensionResource(R.dimen.padding_extra_small)),
-                            )
+                            genre.name?.let {
+                                Text(
+                                    text = it,
+                                    style = AniPick12Normal.copy(color = AniPickPrimary),
+                                    modifier = Modifier
+                                        .background(AniPickPrimary.copy(alpha = 0.1f), AniPickSmallShape)
+                                        .padding(horizontal = dimensionResource(R.dimen.padding_small), vertical = dimensionResource(R.dimen.padding_extra_small)),
+                                )
+                            }
                         }
                     }
                 }

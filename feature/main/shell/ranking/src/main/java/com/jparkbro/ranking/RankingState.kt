@@ -9,7 +9,7 @@ data class RankingState(
     val uiState: UiState = UiState.Loading,
     val type: RankingType = RankingType.REAL_TIME,
     val year: String? = null,
-    val quarter: String? = null,
+    val quarter: ResponseMap = ResponseMap(),
     val genre: ResponseMap = ResponseMap(),
 
     /* API 통신 로딩 */

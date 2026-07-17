@@ -8,6 +8,7 @@ import com.jparkbro.model.auth.RequestCode
 import com.jparkbro.model.auth.VerifyCode
 import com.jparkbro.model.enum.DialogType
 import com.jparkbro.model.exception.ApiException
+import com.jparkbro.model.exception.NetworkException
 import com.jparkbro.ui.R
 import com.jparkbro.ui.model.DialogData
 import com.jparkbro.ui.model.SnackBarData
@@ -88,6 +89,13 @@ class PasswordVerificationViewModel @Inject constructor(
                 },
                 onFailure = { exception ->
                     when (exception) {
+                        is NetworkException -> {
+                            globalSnackbarManager.showSnackbar(
+                                SnackBarData(
+                                    text = UiText.StringResource(R.string.snackbar_network_no_internet),
+                                )
+                            )
+                        }
                         is ApiException -> {
                             if (exception.errorCode == 122) {
                                 showWithAlreadySnsDialog()
@@ -182,6 +190,13 @@ class PasswordVerificationViewModel @Inject constructor(
                 },
                 onFailure = { exception ->
                     when (exception) {
+                        is NetworkException -> {
+                            globalSnackbarManager.showSnackbar(
+                                SnackBarData(
+                                    text = UiText.StringResource(R.string.snackbar_network_no_internet),
+                                )
+                            )
+                        }
                         is ApiException -> {
                             _state.update {
                                 it.copy(

@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.auth.AuthRepository
 import com.jparkbro.model.auth.ResetPassword
 import com.jparkbro.model.exception.ApiException
+import com.jparkbro.model.exception.NetworkException
 import com.jparkbro.ui.R
 import com.jparkbro.ui.model.SnackBarData
+import com.jparkbro.ui.snackbar.GlobalSnackbarManager
 import com.jparkbro.ui.util.UiText
 import com.jparkbro.util.UserDataValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PasswordResetViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val globalSnackbarManager: GlobalSnackbarManager,
     private val userDataValidator: UserDataValidator,
     private val authRepository: AuthRepository,
 ) : ViewModel() {
@@ -88,6 +91,13 @@ class PasswordResetViewModel @Inject constructor(
                 },
                 onFailure = { exception ->
                     when (exception) {
+                        is NetworkException -> {
+                            globalSnackbarManager.showSnackbar(
+                                SnackBarData(
+                                    text = UiText.StringResource(R.string.snackbar_network_no_internet),
+                                )
+                            )
+                        }
                         is ApiException -> {
                             _state.update {
                                 it.copy(
@@ -96,7 +106,7 @@ class PasswordResetViewModel @Inject constructor(
                             }
                         }
                         else -> {
-                            showSnackBar(
+                            globalSnackbarManager.showSnackbar(
                                 SnackBarData(
                                     text = UiText.StringResource(R.string.snackbar_http_500_error),
                                 )
@@ -140,16 +150,6 @@ class PasswordResetViewModel @Inject constructor(
                     }
                 }
 
-        }
-    }
-
-    private fun showSnackBar(snackBarData: SnackBarData) {
-        viewModelScope.launch(Dispatchers.Main) {
-            _eventChannel.send(
-                PasswordResetEvent.PasswordChangeFailWithSnackBar(
-                    snackBarData = snackBarData,
-                )
-            )
         }
     }
 }

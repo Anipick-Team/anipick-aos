@@ -23,6 +23,7 @@ data class HomeDetailReviewDto(
     val nickname: String?,
     @SerialName("profileImageUrl")
     val profileImageUrl: String?,
+    val profileImageByteArray: ByteArray? = null,
     @SerialName("createdAt")
     val createdAt: String?,
     @SerialName("likeCount")
@@ -43,6 +44,7 @@ fun HomeDetailReviewDto.toReview(): Review = Review(
     content = content,
     nickname = nickname,
     profileImageUrl = profileImageUrl,
+    profileImageByteArray = profileImageByteArray,
     createdAt = createdAt,
     likeCount = likeCount,
     isLiked = likedByCurrentUser ?: false,

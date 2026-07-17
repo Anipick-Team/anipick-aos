@@ -8,7 +8,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import com.jparkbro.home.main.HomeRoot
 import com.jparkbro.model.enum.HomeDetailType
-import com.jparkbro.model.home.ContentType
 import com.jparkbro.ui.util.extension.clearAllBackStack
 import kotlinx.serialization.Serializable
 

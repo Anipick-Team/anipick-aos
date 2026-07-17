@@ -1,7 +1,7 @@
 package com.jparkbro.model.dto.info
 
 import com.jparkbro.model.common.ResponseMap
-import com.jparkbro.model.common.StudioMap
+import com.jparkbro.model.common.Studio
 import com.jparkbro.model.enum.WatchStatus
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -39,5 +39,5 @@ data class AnimeInfoResponse(
     @SerialName("age")
     val age: String? = null,
     @SerialName("studios")
-    val studios: List<StudioMap> = emptyList()
+    val studios: List<Studio> = emptyList()
 )

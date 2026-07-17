@@ -7,6 +7,7 @@ import com.jparkbro.domain.GoogleLoginUseCase
 import com.jparkbro.domain.KakaoLoginUseCase
 import com.jparkbro.model.enum.DialogType
 import com.jparkbro.model.exception.ApiException
+import com.jparkbro.model.exception.NetworkException
 import com.jparkbro.ui.R
 import com.jparkbro.ui.util.UiText
 import com.jparkbro.ui.model.DialogData
@@ -49,21 +50,31 @@ class LoginViewModel @Inject constructor(
                         _eventChannel.send(LoginEvent.LoginSuccess(reviewCompletedYn))
                     },
                     onFailure = { exception ->
-                        if (exception is ApiException) {
-                            when (exception.errorCode) {
-                                132 -> {
-                                    showWithdrawnAccountDialog()
-                                }
+                        when (exception) {
+                            is NetworkException -> {
+                                globalSnackbarManager.showSnackbar(
+                                    SnackBarData(
+                                        text = UiText.StringResource(R.string.snackbar_network_no_internet),
+                                    )
+                                )
+                            }
+                            is ApiException -> {
+                                when (exception.errorCode) {
+                                    132 -> {
+                                        showWithdrawnAccountDialog()
+                                    }
 
-                                133 -> {
-                                    showDuplicateEmailDialog()
+                                    133 -> {
+                                        showDuplicateEmailDialog()
+                                    }
                                 }
                             }
-                        } else {
-                            globalSnackbarManager.showSnackbar(
-                                SnackBarData(
-                                    text = UiText.StringResource(R.string.snackbar_login_failed))
-                            )
+                            else -> {
+                                globalSnackbarManager.showSnackbar(
+                                    SnackBarData(
+                                        text = UiText.StringResource(R.string.snackbar_login_failed))
+                                )
+                            }
                         }
                     }
                 )
@@ -79,21 +90,31 @@ class LoginViewModel @Inject constructor(
                         _eventChannel.send(LoginEvent.LoginSuccess(reviewCompletedYn))
                     },
                     onFailure = { exception ->
-                        if (exception is ApiException) {
-                            when (exception.errorCode) {
-                                132 -> {
-                                    showWithdrawnAccountDialog()
-                                }
+                        when (exception) {
+                            is NetworkException -> {
+                                globalSnackbarManager.showSnackbar(
+                                    SnackBarData(
+                                        text = UiText.StringResource(R.string.snackbar_network_no_internet),
+                                    )
+                                )
+                            }
+                            is ApiException -> {
+                                when (exception.errorCode) {
+                                    132 -> {
+                                        showWithdrawnAccountDialog()
+                                    }
 
-                                133 -> {
-                                    showDuplicateEmailDialog()
+                                    133 -> {
+                                        showDuplicateEmailDialog()
+                                    }
                                 }
                             }
-                        } else {
-                            globalSnackbarManager.showSnackbar(
-                                SnackBarData(
-                                    text = UiText.StringResource(R.string.snackbar_login_failed))
-                            )
+                            else -> {
+                                globalSnackbarManager.showSnackbar(
+                                    SnackBarData(
+                                        text = UiText.StringResource(R.string.snackbar_login_failed))
+                                )
+                            }
                         }
                     }
                 )

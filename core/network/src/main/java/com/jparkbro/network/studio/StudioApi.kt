@@ -1,5 +1,6 @@
 package com.jparkbro.network.studio
 
+import com.jparkbro.model.dto.search.GetSearchResultResponse
 import com.jparkbro.model.dto.studio.GetStudioInfoResponse
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
@@ -15,4 +16,11 @@ interface StudioApi {
         @Query("lastId") lastId: Long?,
         @Query("lastValue") lastValue: String?
     ): Response<ApiResponse<GetStudioInfoResponse>>
+
+    @GET(ApiConstants.GET_SEARCH_STUDIOS)
+    suspend fun getSearchResult(
+        @Query("query") query: String,
+        @Query("lastId") lastId: Long?,
+        @Query("size") size: Int?,
+    ): Response<ApiResponse<GetSearchResultResponse>>
 }

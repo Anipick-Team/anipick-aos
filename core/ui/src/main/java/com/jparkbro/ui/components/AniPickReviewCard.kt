@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -59,8 +58,6 @@ import com.jparkbro.ui.theme.AniPickSurface
 import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.theme.ChevronDownIcon
 import com.jparkbro.ui.theme.ChevronUpIcon
-import com.jparkbro.ui.theme.FavoriteOffIcon
-import com.jparkbro.ui.theme.FavoriteOnIcon
 import com.jparkbro.ui.theme.MoreVerticalIcon
 import com.jparkbro.ui.theme.StarFillIcon
 import com.jparkbro.ui.theme.StarOutlineIcon
@@ -68,21 +65,18 @@ import com.jparkbro.ui.theme.StarOutlineIcon
 @Composable
 fun APReviewCard(
     review: Review,
-    onClickEdit: (Int, Int) -> Unit = {_, _ ->},
-    onClickDelete: (Int) -> Unit = {},
-    onCLickReport: (Int) -> Unit = {},
-    onClickBlock: (Int) -> Unit = {},
-    onClickLiked: (reviewId: Int, isLiked: Boolean, callback: (Boolean) -> Unit) -> Unit = {_, _, _ ->},
-    onNavigateAnimeDetail: (Int) -> Unit = {},
+    onClickEdit: (Long, Long) -> Unit = {_, _ ->},
+    onClickDelete: (Long) -> Unit = {},
+    onCLickReport: (Long) -> Unit = {},
+    onClickBlock: (Long) -> Unit = {},
+    onClickLiked: (reviewId: Long, animeId: Long, isLiked: Boolean, callback: (Boolean) -> Unit) -> Unit = {_, _, _, _ ->},
+    onNavigateInfoAnime: (Long) -> Unit = {},
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     var isTextOverflowing by rememberSaveable { mutableStateOf(false) }
 
     var showDropDown by rememberSaveable { mutableStateOf(false) }
     var isLikedLoading by rememberSaveable { mutableStateOf(false) }
-
-    var isLiked by rememberSaveable { mutableStateOf(review.likedByCurrentUser) }
-    var likeCount by rememberSaveable { mutableIntStateOf(review.likeCount ?: 0) }
 
     Column(
         modifier = Modifier
@@ -94,14 +88,15 @@ fun APReviewCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onNavigateAnimeDetail(review.animeId ?: -1) },
+                    .clickable { onNavigateInfoAnime(review.animeId ?: -1) },
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_default)),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
-                    model = review.animeCoverImageUrl,
+                    model = review.animeCoverImageUrl?.takeIf { !it.contains("default.jpg") },
                     contentDescription = stringResource(R.string.anime_cover_img),
                     error = painterResource(R.drawable.thumbnail_img),
+                    placeholder = painterResource(R.drawable.thumbnail_img),
                     modifier = Modifier
                         .width(132.dp)
                         .aspectRatio(2f/3f)
@@ -195,11 +190,12 @@ fun APReviewCard(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             AsyncImage(
-                                model = review.profileImageUrl,
+                                model = review.profileImageByteArray,
                                 contentDescription = stringResource(R.string.profile_img),
-                                error = painterResource(R.drawable.ic_mascot),
+                                error = painterResource(R.drawable.profile_default_img),
+                                placeholder = painterResource(R.drawable.profile_default_img),
                                 modifier = Modifier
-                                    .size(30.dp)
+                                    .size(dimensionResource(R.dimen.icon_size_extra_large))
                                     .clip(CircleShape),
                                 contentScale = ContentScale.Crop,
                             )
@@ -265,28 +261,19 @@ fun APReviewCard(
                     horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_extra_small)),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = if (isLiked) FavoriteOnIcon else FavoriteOffIcon,
-                        contentDescription = null,
-                        tint = Color.Unspecified,
-                        modifier = Modifier
-                            .size(dimensionResource(R.dimen.icon_size_small))
-                            .clickable(enabled = !isLikedLoading) {
-                                isLikedLoading = true
-
-                                onClickLiked(review.reviewId ?: 0, !isLiked) { result ->
-                                    if (result) {
-                                        if (isLiked) likeCount -= 1 else likeCount += 1
-                                        isLiked = !isLiked
-                                    }
-                                    isLikedLoading = false
-                                }
+                    APAnimationLikeIcon(
+                        isLiked = review.isLiked,
+                        isLikingAnime = isLikedLoading,
+                        onClick = {
+                            onClickLiked(review.reviewId ?: 0, review.animeId ?: 0, !review.isLiked) {
+                                isLikedLoading = false
                             }
+                        }
                     )
                     Text(
-                        text = likeCount.toString(),
+                        text = (review.likeCount ?: 0).toString(),
                         style = AniPick14Normal.copy(
-                            color = if (isLiked) AniPickPrimary else AniPickGray100
+                            color = if (review.isLiked) AniPickPrimary else AniPickGray100
                         )
                     )
                 }

@@ -1,21 +1,19 @@
 package com.jparkbro.network.auth
 
-import android.util.Log
 import com.jparkbro.model.auth.AuthResponse
-import com.jparkbro.model.auth.AuthToken
 import com.jparkbro.model.auth.EmailLoginRequest
-import com.jparkbro.model.auth.PreferenceRequest
-import com.jparkbro.model.auth.PreferenceResponse
-import com.jparkbro.model.auth.RatedAnime
+import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.auth.RequestCode
 import com.jparkbro.model.auth.ResetPassword
-import com.jparkbro.model.auth.SignupRequest
-import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.auth.SocialLoginRequest
 import com.jparkbro.model.auth.VerifyCode
-import com.jparkbro.network.util.toResult
-import com.jparkbro.network.util.toUnitResult
-import retrofit2.HttpException
+import com.jparkbro.model.dto.auth.EmailRegisterRequest
+import com.jparkbro.model.dto.auth.EmailRegisterResponse
+import com.jparkbro.model.dto.preference.RatedAnime
+import com.jparkbro.model.dto.preference.SearchRequest
+import com.jparkbro.model.dto.preference.SearchResponse
+import com.jparkbro.network.util.safeApiCall
+import com.jparkbro.network.util.safeApiCallUnit
 import javax.inject.Inject
 
 /**
@@ -29,78 +27,52 @@ internal class RetrofitAuthDataSource @Inject constructor(
     }
 
     override suspend fun socialLogin(provider: LoginProvider, socialToken: String): Result<AuthResponse> {
-       return authApi.socialLogin(
-           provider = provider.value,
-           request = SocialLoginRequest(
-               platform = "android",
-               code = socialToken
-           )
-       ).toResult(TAG, "socialLogin")
+        return safeApiCall(TAG, "socialLogin") {
+            authApi.socialLogin(
+                provider = provider.value,
+                request = SocialLoginRequest(
+                    platform = "android",
+                    code = socialToken
+                )
+            )
+        }
     }
 
-    override suspend fun emailSignup(request: SignupRequest): Result<AuthToken> {
-        Log.d(TAG, "emailSignup() called - email: ${request.email}")
-        return try {
-            val response = authApi.emailSignup(request)
-            Log.d(TAG, "emailSignup() response received - isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
-
-            val apiResponse = response.body()
-            Log.d(TAG, "emailSignup() apiResponse - value: ${apiResponse?.value}, code: ${apiResponse?.code}")
-
-            when {
-                // retrofit error (200번대 이외)
-                !response.isSuccessful -> {
-                    Log.e(TAG, "emailSignup() HTTP error - code: ${response.code()}, message: ${response.message()}")
-                    Result.failure(HttpException(response))
-                }
-
-                apiResponse?.value == "success" && apiResponse.result != null -> {
-                    val authToken = apiResponse.result.token
-                    Log.d(TAG, "emailSignup() success - token received")
-                    Result.success(authToken)
-                }
-
-                // value = fail, result == null
-                else -> {
-                    Log.e(TAG, "emailSignup() API error - code: ${apiResponse?.code}, reason: ${apiResponse?.errorReason}")
-                    Result.failure(Exception(apiResponse?.errorValue))
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "emailSignup() exception", e)
-            Result.failure(e)
-        }
+    override suspend fun emailSignup(request: EmailRegisterRequest): Result<EmailRegisterResponse> {
+        return safeApiCall(TAG, "emailSignup") { authApi.emailSignup(request) }
     }
 
 
     override suspend fun emailLogin(request: EmailLoginRequest): Result<AuthResponse> {
-        return authApi.emailLogin(request).toResult(TAG, "emailLogin")
+        return safeApiCall(TAG, "emailLogin") { authApi.emailLogin(request) }
     }
 
     override suspend fun requestResetCode(request: RequestCode): Result<Unit> {
-        return authApi.requestResetCode(request).toUnitResult(TAG, "requestResetCode")
+        return safeApiCallUnit(TAG, "requestResetCode") { authApi.requestResetCode(request) }
     }
 
     override suspend fun verifyResetCode(request: VerifyCode): Result<Unit> {
-        return authApi.verifyResetCode(request).toUnitResult(TAG, "verifyResetCode")
+        return safeApiCallUnit(TAG, "verifyResetCode") { authApi.verifyResetCode(request) }
     }
 
     override suspend fun resetPassword(request: ResetPassword): Result<Unit> {
-        return authApi.resetPassword(request).toUnitResult(TAG, "resetPassword")
+        return safeApiCallUnit(TAG, "resetPassword") { authApi.resetPassword(request) }
     }
 
-    override suspend fun exploreOrSearch(request: PreferenceRequest): Result<PreferenceResponse> {
-        return authApi.exploreOrSearch(
-            query = request.query,
-            year = request.year,
-            season = request.season,
-            genres = request.genres,
-            lastId = request.lastId,
-            size = request.size
-        ).toResult(TAG, "exploreOrSearch")
+    override suspend fun exploreOrSearch(request: SearchRequest): Result<SearchResponse> {
+        return safeApiCall(TAG, "exploreOrSearch") {
+            authApi.exploreOrSearch(
+                query = request.query,
+                year = request.year,
+                season = request.season,
+                genres = request.genres,
+                lastId = request.lastId,
+                size = request.size
+            )
+        }
     }
 
     override suspend fun submitReviews(request: List<RatedAnime>): Result<Unit> {
-        return authApi.submitReviews(request).toUnitResult(TAG, "submitReviews")
+        return safeApiCallUnit(TAG, "submitReviews") { authApi.submitReviews(request) }
     }
 }

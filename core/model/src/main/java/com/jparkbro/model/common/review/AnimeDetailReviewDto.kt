@@ -13,6 +13,7 @@ data class AnimeDetailReviewDto(
     val nickname: String?,
     @SerialName("profileImageUrl")
     val profileImageUrl: String?,
+    val profileImageByteArray: ByteArray? = null,
     @SerialName("rating")
     val rating: Float?,
     @SerialName("content")
@@ -34,6 +35,7 @@ fun AnimeDetailReviewDto.toReview() : Review = Review(
     reviewId = reviewId,
     nickname = nickname,
     profileImageUrl = profileImageUrl,
+    profileImageByteArray = profileImageByteArray,
     rating = rating,
     content = content,
     createdAt = createdAt,

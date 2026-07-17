@@ -57,6 +57,7 @@ import com.jparkbro.ui.theme.AniPickPoint
 import com.jparkbro.ui.theme.AniPickPrimary
 import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.util.ObserveAsEvents
+import com.jparkbro.ui.util.extension.advancedImePadding
 import java.util.Locale
 
 @Composable
@@ -126,6 +127,7 @@ private fun PasswordVerificationScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .advancedImePadding()
         ) {
             Column(
                 modifier = Modifier
@@ -250,9 +252,6 @@ private fun EmailCodeInputSection(
             APLabeledTextField(
                 label = stringResource(R.string.password_verification_verification_code),
                 state = state.code,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                ),
                 onKeyboardAction = {
                     focusManager.clearFocus()
                 },

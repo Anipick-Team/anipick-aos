@@ -76,6 +76,7 @@ import com.jparkbro.ui.theme.StarOutlineIcon
 import com.jparkbro.ui.util.ObserveAsEvents
 import com.jparkbro.ui.util.extension.advancedImePadding
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ReviewFormRoot(
     onNavigateBack: () -> Unit,
@@ -103,9 +104,25 @@ internal fun ReviewFormRoot(
         }
 
         UiState.Error -> {
-            APErrorScreen(
-                onClick = { viewModel.onAction(ReviewFormAction.OnRetryClicked) }
-            )
+            Scaffold(
+                topBar = {
+                    APTitleTopAppBar(
+                        title = stringResource(
+                            when (state.formType) {
+                                FormType.CREATE -> R.string.review_form_header_create
+                                FormType.EDIT -> R.string.review_form_header_update
+                            }
+                        ),
+                        onNavigateBack = onNavigateBack,
+                    )
+                },
+                containerColor = AniPickWhite
+            ) {
+                APErrorScreen(
+                    onClick = { viewModel.onAction(ReviewFormAction.OnRetryClicked) },
+                    modifier = Modifier.padding(it)
+                )
+            }
         }
 
         UiState.Success -> {

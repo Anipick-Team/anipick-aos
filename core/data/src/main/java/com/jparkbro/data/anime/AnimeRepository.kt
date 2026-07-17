@@ -2,14 +2,17 @@ package com.jparkbro.data.anime
 
 import com.jparkbro.model.common.Cursor
 import com.jparkbro.model.common.anime.Anime
+import com.jparkbro.model.dto.explore.GetAnimeExploreRequest
+import com.jparkbro.model.dto.explore.GetAnimeExploreResult
 import com.jparkbro.model.dto.home.main.RecommendedAnimesResult
 import com.jparkbro.model.dto.info.AnimeInfoResponse
 import com.jparkbro.model.dto.info.GetInfoRecommendResult
 import com.jparkbro.model.dto.info.GetInfoSeriesResult
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
-import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResult
 import com.jparkbro.model.dto.ranking.GetAnimeRankingRequest
 import com.jparkbro.model.dto.ranking.GetAnimeRankingResult
+import com.jparkbro.model.dto.search.GetSearchResultRequest
+import com.jparkbro.model.dto.search.GetSearchResultResult
 import com.jparkbro.model.enum.WatchStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,4 +45,12 @@ interface AnimeRepository {
 
     /** Ranking */
     suspend fun getAnimeRanking(request: GetAnimeRankingRequest): Result<GetAnimeRankingResult>
+
+    /** Explore */
+    suspend fun getAnimeExplore(request: GetAnimeExploreRequest): Result<GetAnimeExploreResult>
+
+    /** Search */
+    suspend fun getPopularAnimes(): Result<List<Anime>>
+    suspend fun getSearchResult(request: GetSearchResultRequest): Result<GetSearchResultResult>
+    suspend fun submitAnimeLog(logUrl: String): Result<Unit>
 }

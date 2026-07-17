@@ -2,23 +2,15 @@ package com.jparkbro.studio
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
@@ -27,38 +19,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jparkbro.model.common.UiState
 import com.jparkbro.studio.components.SkeletonScreen
 import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APAnimeCard
-import com.jparkbro.ui.components.APCardItem
 import com.jparkbro.ui.components.APErrorScreen
 import com.jparkbro.ui.components.APTitleTopAppBar
-import com.jparkbro.ui.theme.APColors
-import com.jparkbro.ui.theme.AniPick12Normal
 import com.jparkbro.ui.theme.AniPick14Normal
 import com.jparkbro.ui.theme.AniPickBlack
-import com.jparkbro.ui.theme.AniPickGray100
-import com.jparkbro.ui.theme.AniPickGray400
 import com.jparkbro.ui.theme.AniPickGray50
-import com.jparkbro.ui.theme.AniPickPrimary
 import com.jparkbro.ui.theme.AniPickSurface
 import com.jparkbro.ui.theme.AniPickWhite
-import com.jparkbro.ui.util.calculateCardWidth
-import com.jparkbro.ui.util.calculateItemSpacing
 import com.jparkbro.ui.util.rememberGridInfo
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun StudioRoot(
     onNavigateBack: () -> Unit,
@@ -79,9 +61,20 @@ internal fun StudioRoot(
         }
 
         UiState.Error -> {
-            APErrorScreen(
-                onClick = { viewModel.onAction(StudioAction.OnRetryClicked) }
-            )
+            Scaffold(
+                topBar = {
+                    APTitleTopAppBar(
+                        title = state.studioName ?: stringResource(R.string.studio_header),
+                        onNavigateBack = onNavigateBack,
+                    )
+                },
+                containerColor = AniPickSurface
+            ) {
+                APErrorScreen(
+                    onClick = { viewModel.onAction(StudioAction.OnRetryClicked) },
+                    modifier = Modifier.padding(it)
+                )
+            }
         }
 
         UiState.Success -> {
@@ -162,7 +155,7 @@ private fun StudioScreen(
                 HorizontalDivider(
                     modifier = Modifier.fillMaxWidth(),
                     thickness = dimensionResource(R.dimen.border_width_default),
-                    color = AniPickGray100
+                    color = AniPickSurface
                 )
                 LazyColumn(
                     state = listState,

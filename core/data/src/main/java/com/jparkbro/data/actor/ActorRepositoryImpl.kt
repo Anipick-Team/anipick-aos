@@ -11,6 +11,10 @@ import com.jparkbro.model.dto.info.toResult
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResult
 import com.jparkbro.model.dto.mypage.usercontent.toResult
+import com.jparkbro.model.dto.search.GetSearchResultRequest
+import com.jparkbro.model.dto.search.GetSearchResultResponse
+import com.jparkbro.model.dto.search.GetSearchResultResult
+import com.jparkbro.model.dto.search.toResult
 import com.jparkbro.network.actor.ActorDataSource
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -69,5 +73,10 @@ class ActorRepositoryImpl @Inject constructor(
         val currentType = userRepository.userContentCache.value.contentType ?: return
         userRepository.userContentCache.update { GetUserContentResult(contentType = currentType) }
         loadUserContentActors(GetUserContentRequest(contentType = currentType))
+    }
+
+    override suspend fun getSearchResult(request: GetSearchResultRequest): Result<GetSearchResultResult> {
+        return actorDataSource.getSearchResult(request)
+            .map { it.toResult() }
     }
 }

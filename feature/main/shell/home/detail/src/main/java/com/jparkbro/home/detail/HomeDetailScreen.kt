@@ -64,6 +64,7 @@ import com.jparkbro.ui.util.rememberGridInfo
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeDetailRoot(
     onNavigateBack: () -> Unit,
@@ -95,9 +96,20 @@ internal fun HomeDetailRoot(
         }
 
         UiState.Error -> {
-            APErrorScreen(
-                onClick = { viewModel.onAction(HomeDetailAction.OnRetryClicked) }
-            )
+            Scaffold(
+                topBar = {
+                    APTitleTopAppBar(
+                        title = state.type.title,
+                        onNavigateBack = onNavigateBack,
+                    )
+                },
+                containerColor = AniPickSurface
+            ) {
+                APErrorScreen(
+                    onClick = { viewModel.onAction(HomeDetailAction.OnRetryClicked) },
+                    modifier = Modifier.padding(it)
+                )
+            }
         }
 
         UiState.Success -> {

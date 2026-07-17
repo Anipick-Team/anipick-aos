@@ -6,7 +6,7 @@ enum class HomeDetailSortType(val param: String, val displayName: String) {
     START_DATE("startDate", "방영 예정 순"),
 }
 
-enum class ExpireSortType(val param: String, val displayName: String) {
+enum class ExploreSortType(val param: String, val displayName: String) {
     POPULARITY("popularity", "인기순"),
     RATING("rating", "평점순"),
 }

@@ -11,12 +11,8 @@ import com.jparkbro.data.anime.AnimeRepository
 import com.jparkbro.data.anime.AnimeRepositoryImpl
 import com.jparkbro.data.common.CommonRepository
 import com.jparkbro.data.common.CommonRepositoryImpl
-import com.jparkbro.data.explore.ExploreRepository
-import com.jparkbro.data.explore.ExploreRepositoryImpl
 import com.jparkbro.data.home.HomeRepository
 import com.jparkbro.data.home.HomeRepositoryImpl
-import com.jparkbro.data.ranking.RankingRepository
-import com.jparkbro.data.ranking.RankingRepositoryImpl
 import com.jparkbro.data.review.ReviewRepository
 import com.jparkbro.data.review.ReviewRepositoryImpl
 import com.jparkbro.data.search.SearchRepository
@@ -65,18 +61,6 @@ abstract class DataModule {
     internal abstract fun bindsCommonRepository(
         commonRepositoryImpl: CommonRepositoryImpl
     ): CommonRepository
-
-    @Binds
-    @Singleton
-    internal abstract fun bindsRankingRepository(
-        rankingRepositoryImpl: RankingRepositoryImpl
-    ): RankingRepository
-
-    @Binds
-    @Singleton
-    internal abstract fun bindsExploreRepository(
-        exploreRepositoryImpl: ExploreRepositoryImpl
-    ): ExploreRepository
 
     @Binds
     @Singleton

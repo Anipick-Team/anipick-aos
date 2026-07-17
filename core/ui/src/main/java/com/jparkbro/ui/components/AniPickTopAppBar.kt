@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -44,6 +47,7 @@ import com.jparkbro.ui.theme.AniPickLogoImg
 import com.jparkbro.ui.theme.AniPickSmallShape
 import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.theme.ChevronLeftIcon
+import com.jparkbro.ui.theme.CloseIcon
 import com.jparkbro.ui.theme.SearchOutlineIcon
 import com.jparkbro.ui.theme.SettingIcon
 
@@ -82,6 +86,7 @@ fun APBackStackTopAppBar(
                 Icon(
                     imageVector = ChevronLeftIcon,
                     contentDescription = stringResource(R.string.back_stack_icon),
+                    tint = Color.Unspecified,
                 )
             }
         },
@@ -150,11 +155,10 @@ fun APMainTopAppBar(
 @Composable
 fun APSearchTopAppBar(
     onNavigateBack: () -> Unit,
-    value: String = "",
-    onValueChange: (String) -> Unit = {},
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
-    trailingIcon: @Composable () -> Unit = {},
+    state: TextFieldState = TextFieldState(),
     scrollBehavior: TopAppBarScrollBehavior? = null,
+    onSearch: () -> Unit = {},
+    onClear: () -> Unit = {},
 ) {
     APBaseTopAppBar(
         navigationIcon = {
@@ -164,27 +168,56 @@ fun APSearchTopAppBar(
                 Icon(
                     imageVector = ChevronLeftIcon,
                     contentDescription = stringResource(R.string.back_stack_icon),
+                    tint = Color.Unspecified,
                 )
             }
         },
         title = {
-            APBaseTextField(
-                value = value,
-                onValueChange = onValueChange,
-                placeholder = {
-                    Text(
-                        text = stringResource(R.string.search_placeholder),
-                        style = AniPick16Normal.copy(color = AniPickGray400),
-                    )
-                },
-                keyboardActions = keyboardActions,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp)
-                    .padding(end = dimensionResource(R.dimen.padding_extra_small)),
-                trailingIcon = trailingIcon
-            )
+                    .padding(end = dimensionResource(R.dimen.padding_medium))
+            ) {
+                APBaseTextField(
+                    state = state,
+                    modifier = Modifier
+                        .height(42.dp),
+                    placeholder = stringResource(R.string.search_placeholder),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    onKeyboardAction = { if (state.text.isNotBlank()) onSearch() },
+                    trailingIcon = {
+                        Row(
+                            modifier = Modifier
+                                .padding(end = dimensionResource(R.dimen.padding_extra_small)),
+                            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_extra_small)),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (state.text.isNotBlank()) {
+                                Icon(
+                                    imageVector = CloseIcon,
+                                    contentDescription = stringResource(R.string.close_icon),
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .clickable { onClear() }
+                                        .padding(dimensionResource(R.dimen.padding_extra_small))
+                                        .size(dimensionResource(R.dimen.icon_size_small)),
+                                    tint = AniPickGray400
+                                )
+                            }
+                            Icon(
+                                imageVector = SearchOutlineIcon,
+                                contentDescription = stringResource(R.string.search_icon),
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .clickable { if (state.text.isNotBlank()) onSearch() }
+                                    .padding(dimensionResource(R.dimen.padding_extra_small))
+                                    .size(dimensionResource(R.dimen.icon_size_small)),
+                                tint = AniPickGray400
+                            )
+                        }
+                    }
+                )
+            }
         },
         scrollBehavior = scrollBehavior
     )
@@ -206,6 +239,7 @@ fun APTitleTopAppBar(
                 Icon(
                     imageVector = ChevronLeftIcon,
                     contentDescription = stringResource(R.string.back_stack_icon),
+                    tint = Color.Unspecified,
                 )
             }
         },
@@ -224,12 +258,13 @@ fun APTitleTopAppBar(
 @Composable
 fun APMyPageTopAppBar(
     onNavigateToSetting: () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {}
 ) {
     APBaseTopAppBar(
         navigationIcon = {
             Row(
                 modifier = Modifier
-                .padding(start = dimensionResource(R.dimen.padding_default)),
+                    .padding(start = dimensionResource(R.dimen.padding_default)),
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium)),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -253,7 +288,8 @@ fun APMyPageTopAppBar(
                     )
                 }
             }
-        }
+        },
+        actions = actions
     )
 }
 
@@ -290,6 +326,8 @@ private fun APMainTopAppBarPreview() {
 private fun APSearchTopAppBarPreview() {
     APSearchTopAppBar(
         onNavigateBack = {},
+        onSearch = { },
+        onClear = {},
     )
 }
 

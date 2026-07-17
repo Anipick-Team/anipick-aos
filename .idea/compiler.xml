@@ -12,6 +12,7 @@
       <module name="AniPick.feature.explore" target="21" />
       <module name="AniPick.feature.home" target="21" />
       <module name="AniPick.feature.main.detail" target="21" />
+      <module name="AniPick.feature.main.explore" target="21" />
       <module name="AniPick.feature.main.home" target="21" />
       <module name="AniPick.feature.main.info.actor" target="21" />
       <module name="AniPick.feature.main.info.studio" target="21" />

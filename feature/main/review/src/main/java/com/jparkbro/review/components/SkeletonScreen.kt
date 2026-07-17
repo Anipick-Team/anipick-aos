@@ -31,7 +31,6 @@ import com.jparkbro.ui.R
 import com.jparkbro.ui.components.APPrimaryActionButton
 import com.jparkbro.ui.components.APTitleTopAppBar
 import com.jparkbro.ui.components.APToggleSwitch
-import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.theme.AniPick16Bold
 import com.jparkbro.ui.theme.AniPickGray100
 import com.jparkbro.ui.theme.AniPickSmallShape

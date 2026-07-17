@@ -88,7 +88,7 @@ class SettingViewModel @Inject constructor(
 
     private fun logout() {
         viewModelScope.launch(Dispatchers.IO) {
-            userRepository.loadUser()
+            userRepository.userLogout()
                 .fold(
                     onSuccess = { _eventChannel.send(SettingEvent.LogoutSuccess) },
                     onFailure = {

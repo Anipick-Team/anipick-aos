@@ -47,6 +47,7 @@ import com.jparkbro.ui.theme.AniPickRed
 import com.jparkbro.ui.theme.AniPickSurface
 import com.jparkbro.ui.util.ObserveAsEvents
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SettingRoot(
     onNavigateBack: () -> Unit,
@@ -83,9 +84,20 @@ internal fun SettingRoot(
         }
 
         UiState.Error -> {
-            APErrorScreen(
-                onClick = { viewModel.onAction(SettingAction.OnRetryClicked) }
-            )
+            Scaffold(
+                topBar = {
+                    APTitleTopAppBar(
+                        title = stringResource(R.string.setting_header),
+                        onNavigateBack = onNavigateBack,
+                    )
+                },
+                containerColor = AniPickSurface
+            ) {
+                APErrorScreen(
+                    onClick = { viewModel.onAction(SettingAction.OnRetryClicked) },
+                    modifier = Modifier.padding(it)
+                )
+            }
         }
 
         UiState.Success -> {

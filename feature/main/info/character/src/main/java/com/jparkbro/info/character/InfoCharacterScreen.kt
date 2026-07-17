@@ -44,6 +44,7 @@ import com.jparkbro.ui.util.rememberGridInfo
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun InfoCharacterRoot(
     onNavigateBack: () -> Unit,
@@ -65,9 +66,20 @@ internal fun InfoCharacterRoot(
         }
 
         UiState.Error -> {
-            APErrorScreen(
-                onClick = { viewModel.onAction(InfoCharacterAction.OnRetryClicked) }
-            )
+            Scaffold(
+                topBar = {
+                    APTitleTopAppBar(
+                        title = stringResource(R.string.info_series_header),
+                        onNavigateBack = onNavigateBack,
+                    )
+                },
+                containerColor = AniPickSurface
+            ) {
+                APErrorScreen(
+                    onClick = { viewModel.onAction(InfoCharacterAction.OnRetryClicked) },
+                    modifier = Modifier.padding(it)
+                )
+            }
         }
 
         UiState.Success -> {
@@ -112,7 +124,7 @@ private fun InfoCharacterScreen(
     Scaffold(
         topBar = {
             APTitleTopAppBar(
-                title = stringResource(R.string.info_series_header),
+                title = stringResource(R.string.actor_and_character_header),
                 onNavigateBack = { onAction(InfoCharacterAction.NavigateBack) },
             )
         },

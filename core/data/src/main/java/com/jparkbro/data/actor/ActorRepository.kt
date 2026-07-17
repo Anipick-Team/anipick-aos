@@ -5,6 +5,8 @@ import com.jparkbro.model.common.actor.Cast
 import com.jparkbro.model.dto.actor.GetActorResult
 import com.jparkbro.model.dto.info.GetInfoCharactersResult
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
+import com.jparkbro.model.dto.search.GetSearchResultRequest
+import com.jparkbro.model.dto.search.GetSearchResultResult
 
 interface ActorRepository {
 
@@ -21,4 +23,7 @@ interface ActorRepository {
     /** User Content */
     suspend fun loadUserContentActors(request: GetUserContentRequest): Result<Unit>
     suspend fun invalidateUserContent()
+
+    /** Search */
+    suspend fun getSearchResult(request: GetSearchResultRequest): Result<GetSearchResultResult>
 }

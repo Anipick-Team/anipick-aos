@@ -8,6 +8,8 @@ import com.jparkbro.model.dto.info.InfoActorResponse
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentRequest
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResult
+import com.jparkbro.model.dto.search.GetSearchResultRequest
+import com.jparkbro.model.dto.search.GetSearchResultResponse
 import kotlinx.coroutines.flow.Flow
 
 interface ActorDataSource {
@@ -24,4 +26,7 @@ interface ActorDataSource {
 
     /** User Content */
     suspend fun loadUserContentActors(request: GetUserContentRequest): Result<GetUserContentResponse>
+
+    /** Search */
+    suspend fun getSearchResult(request: GetSearchResultRequest): Result<GetSearchResultResponse>
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.domain.EmailRegisterUseCase
 import com.jparkbro.model.exception.ApiException
+import com.jparkbro.model.exception.NetworkException
 import com.jparkbro.ui.R
 import com.jparkbro.ui.model.SnackBarData
 import com.jparkbro.ui.snackbar.GlobalSnackbarManager
@@ -151,6 +152,13 @@ class EmailRegisterViewModel @Inject constructor(
                     },
                     onFailure = { exception ->
                         when (exception) {
+                            is NetworkException -> {
+                                globalSnackbarManager.showSnackbar(
+                                    SnackBarData(
+                                        text = UiText.StringResource(R.string.snackbar_network_no_internet),
+                                    )
+                                )
+                            }
                             is ApiException -> {
                                 if (exception.errorCode == 109) {
                                     _state.update {

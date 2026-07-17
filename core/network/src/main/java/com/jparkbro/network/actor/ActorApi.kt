@@ -4,7 +4,7 @@ import com.jparkbro.model.dto.actor.GetActorResponse
 import com.jparkbro.model.dto.info.GetInfoCharactersResponse
 import com.jparkbro.model.dto.info.InfoActorResponse
 import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResponse
-import com.jparkbro.model.dto.mypage.usercontent.GetUserContentResult
+import com.jparkbro.model.dto.search.GetSearchResultResponse
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants
 import retrofit2.Response
@@ -47,4 +47,11 @@ interface ActorApi {
     suspend fun loadUserContentActors(
         @Query("lastId") lastId: Long?,
     ): Response<ApiResponse<GetUserContentResponse>>
+
+    @GET(ApiConstants.GET_SEARCH_PERSONS)
+    suspend fun getSearchResult(
+        @Query("query") query: String,
+        @Query("lastId") lastId: Long?,
+        @Query("size") size: Int?,
+    ): Response<ApiResponse<GetSearchResultResponse>>
 }

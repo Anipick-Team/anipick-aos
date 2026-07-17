@@ -1,25 +1,23 @@
 package com.jparkbro.model.dto.preference
 
-import com.jparkbro.model.common.Anime
 import com.jparkbro.model.common.Cursor
-import com.jparkbro.model.common.ResponseMap
+import com.jparkbro.model.common.anime.PreferenceAnimeDto
+import com.jparkbro.model.common.anime.toAnime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class SearchResponse(
     @SerialName("count")
-    val count: Int,
+    val count: Int? = null,
     @SerialName("cursor")
-    val cursor: Cursor,
+    val cursor: Cursor? = null,
     @SerialName("animes")
-    val animes: List<PreferenceAnime>
+    val animes: List<PreferenceAnimeDto> = emptyList()
 )
 
-@Serializable
-data class PreferenceAnime(
-    override val animeId: Int = -1,
-    override val title: String = "애니메이션 제목",
-    override val coverImageUrl: String? = null,
-    val genres: List<String?> = emptyList()
-) : Anime
+fun SearchResponse.toResult(): SearchResult = SearchResult(
+    count = count,
+    cursor = cursor,
+    animes = animes.map { it.toAnime() }
+)

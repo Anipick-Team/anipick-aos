@@ -10,4 +10,5 @@ interface MyPageAction {
     data class NavigateToUserContent(val contentType: UserContentType) : MyPageAction
     data class NavigateToInfoAnime(val animeId: Long) : MyPageAction
     data class NavigateToActor(val actorId: Long) : MyPageAction
+    data object OnFeedBackClicked : MyPageAction
 }

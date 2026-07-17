@@ -1,6 +1,7 @@
 package com.jparkbro.setting.detail
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -59,6 +61,7 @@ import com.jparkbro.ui.theme.CheckIcon
 import com.jparkbro.ui.theme.EyeClosedIcon
 import com.jparkbro.ui.theme.EyeOpenedIcon
 import com.jparkbro.ui.util.ObserveAsEvents
+import com.jparkbro.ui.util.extension.advancedImePadding
 
 @Composable
 internal fun UserEditRoot(
@@ -114,6 +117,12 @@ private fun UserEditScreen(
     val focusManager = LocalFocusManager.current
 
     Scaffold(
+        modifier = Modifier
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = { focusManager.clearFocus() }
+                )
+            },
         topBar = {
             APTitleTopAppBar(
                 title = when (state.editType) {

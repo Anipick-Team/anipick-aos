@@ -54,11 +54,11 @@ import com.jparkbro.ui.components.APPrimaryActionButton
 import com.jparkbro.ui.components.APSkipActionTopAppBar
 import com.jparkbro.ui.model.BottomSheetData
 import com.jparkbro.ui.preview.DevicePreviews
-import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.theme.AniPick14Normal
 import com.jparkbro.ui.theme.AniPick20Bold
 import com.jparkbro.ui.theme.AniPickBlack
 import com.jparkbro.ui.theme.AniPickGray100
+import com.jparkbro.ui.theme.AniPickGray400
 import com.jparkbro.ui.theme.AniPickPoint
 import com.jparkbro.ui.theme.AniPickPrimary
 import com.jparkbro.ui.theme.AniPickSecondary
@@ -67,6 +67,7 @@ import com.jparkbro.ui.theme.AniPickWhite
 import com.jparkbro.ui.theme.CloseIcon
 import com.jparkbro.ui.theme.SearchOutlineIcon
 import com.jparkbro.ui.util.ObserveAsEvents
+import com.jparkbro.ui.util.extension.advancedImePadding
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
@@ -98,11 +99,13 @@ internal fun PreferenceSetupRoot(
         UiState.Loading -> {
             SkeletonScreen(state)
         }
+
         UiState.Error -> {
             APErrorScreen(
                 onClick = { viewModel.onAction(PreferenceSetupAction.OnRetryClicked) }
             )
         }
+
         UiState.Success -> {
             PreferenceSetupScreen(
                 state = state,
@@ -166,7 +169,8 @@ private fun PreferenceSetupScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .weight(1f),
+                    .weight(1f)
+                    .advancedImePadding(),
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_40))
             ) {
                 Header()
@@ -298,7 +302,7 @@ private fun SearchSection(
                             .clickable { onAction(PreferenceSetupAction.OnSearchClicked) }
                             .padding(dimensionResource(R.dimen.padding_extra_small))
                             .size(dimensionResource(R.dimen.icon_size_small)),
-                        tint = APColors.TextGray
+                        tint = AniPickGray400
                     )
                     Icon(
                         imageVector = CloseIcon,
@@ -308,7 +312,7 @@ private fun SearchSection(
                             .clickable { onAction(PreferenceSetupAction.OnClearTextClicked) }
                             .padding(dimensionResource(R.dimen.padding_extra_small))
                             .size(dimensionResource(R.dimen.icon_size_small)),
-                        tint = APColors.TextGray
+                        tint = AniPickGray400
                     )
                 }
             }
@@ -323,13 +327,13 @@ private fun SearchSection(
                 onClick = { onAction(PreferenceSetupAction.OnFilterChipClicked(BottomSheetType.YEAR_QUARTER)) }
             )
             APFilterTriggerChip(
-                title = if (state.quarterFilter.name == "전체분기") stringResource(R.string.preference_setup_quarter) else state.quarterFilter.name,
-                isSelected = state.quarterFilter.name != "전체분기",
+                title = state.quarterFilter.name?.takeIf { it != "전체분기" } ?: stringResource(R.string.preference_setup_quarter),
+                isSelected = state.quarterFilter.name?.let { it != "전체분기" } == true,
                 onClick = { onAction(PreferenceSetupAction.OnFilterChipClicked(BottomSheetType.YEAR_QUARTER)) }
             )
             APFilterTriggerChip(
-                title = if (state.genreFilter.name == "") stringResource(R.string.preference_setup_genre) else state.genreFilter.name,
-                isSelected = state.genreFilter.name != "",
+                title = state.genreFilter.name?.takeIf { it.isNotEmpty() } ?: stringResource(R.string.preference_setup_genre),
+                isSelected = !state.genreFilter.name.isNullOrEmpty(),
                 onClick = { onAction(PreferenceSetupAction.OnFilterChipClicked(BottomSheetType.GENRE)) }
             )
         }

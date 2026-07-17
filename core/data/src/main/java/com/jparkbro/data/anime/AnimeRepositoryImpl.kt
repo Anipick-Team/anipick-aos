@@ -5,6 +5,9 @@ import com.jparkbro.datastore.RecentAnimeDataStore
 import com.jparkbro.model.common.Cursor
 import com.jparkbro.model.common.anime.Anime
 import com.jparkbro.model.common.anime.toAnime
+import com.jparkbro.model.dto.explore.GetAnimeExploreRequest
+import com.jparkbro.model.dto.explore.GetAnimeExploreResult
+import com.jparkbro.model.dto.explore.toResult
 import com.jparkbro.model.dto.home.main.RecommendedAnimesResult
 import com.jparkbro.model.dto.home.main.toResult
 import com.jparkbro.model.dto.info.AnimeInfoResponse
@@ -17,6 +20,10 @@ import com.jparkbro.model.dto.mypage.usercontent.toResult
 import com.jparkbro.model.dto.ranking.GetAnimeRankingRequest
 import com.jparkbro.model.dto.ranking.GetAnimeRankingResult
 import com.jparkbro.model.dto.ranking.toResult
+import com.jparkbro.model.dto.search.GetSearchResultRequest
+import com.jparkbro.model.dto.search.GetSearchResultResponse
+import com.jparkbro.model.dto.search.GetSearchResultResult
+import com.jparkbro.model.dto.search.toResult
 import com.jparkbro.model.enum.RankingType
 import com.jparkbro.model.enum.UserContentType
 import com.jparkbro.model.enum.WatchStatus
@@ -50,8 +57,8 @@ class AnimeRepositoryImpl @Inject constructor(
     override val recentRecommendAnime = _recentRecommendAnime.asStateFlow()
     override suspend fun getRecentRecommendItems(animeId: Long): Result<Unit> {
         return animeDataSource.getRecentRecommendItems(animeId).map { it.toResult() }
-            .onSuccess {
-                _recentRecommendAnime.update { it }
+            .onSuccess { result ->
+                _recentRecommendAnime.update { result }
             }.map { Unit }
     }
 
@@ -177,5 +184,24 @@ class AnimeRepositoryImpl @Inject constructor(
         }
 
         return apiCall.map { it.toResult() }
+    }
+
+    override suspend fun getAnimeExplore(request: GetAnimeExploreRequest): Result<GetAnimeExploreResult> {
+        return animeDataSource.getAnimeExplore(request).map { it.toResult() }
+    }
+
+    override suspend fun getPopularAnimes(): Result<List<Anime>> {
+        return animeDataSource.getPopularAnimes().map { response ->
+            response.popularAnimes.map { it.toAnime() }
+        }
+    }
+
+    override suspend fun getSearchResult(request: GetSearchResultRequest): Result<GetSearchResultResult> {
+        return animeDataSource.getSearchResult(request)
+            .map { it.toResult() }
+    }
+
+    override suspend fun submitAnimeLog(logUrl: String): Result<Unit> {
+        return animeDataSource.submitAnimeLog(logUrl)
     }
 }

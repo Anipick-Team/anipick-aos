@@ -17,7 +17,6 @@ import androidx.compose.foundation.text.BasicSecureTextField
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
-import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.TextObfuscationMode
@@ -36,7 +35,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.jparkbro.ui.R
 import com.jparkbro.ui.preview.DevicePreviews
-import com.jparkbro.ui.theme.APColors
 import com.jparkbro.ui.theme.AniPick16Normal
 import com.jparkbro.ui.theme.AniPick18ExtraBold
 import com.jparkbro.ui.theme.AniPickBlack
@@ -420,7 +418,7 @@ private fun APBaseTextFieldPreview() {
                         .clickable {  }
                         .padding(4.dp)
                         .size(16.dp),
-                    tint = APColors.TextGray
+                    tint = AniPickGray400
                 )
                 Icon(
                     painter = painterResource(R.drawable.ic_search_outline),
@@ -431,7 +429,7 @@ private fun APBaseTextFieldPreview() {
                         }
                         .padding(4.dp)
                         .size(16.dp),
-                    tint = APColors.TextGray
+                    tint = AniPickGray400
                 )
             }
         }
@@ -450,7 +448,7 @@ private fun APLabeledTextFieldPreview() {
                 imageVector = EyeClosedIcon,
                 contentDescription = null,
                 modifier = Modifier,
-                tint = APColors.TextGray
+                tint = AniPickGray400
             )
         }
     )
@@ -468,7 +466,7 @@ private fun APLabeledTextFieldWithLabelTrailingComponentPreview() {
                 imageVector = CheckIcon,
                 contentDescription = null,
                 modifier = Modifier,
-                tint = APColors.TextGray
+                tint = AniPickGray400
             )
         },
     )

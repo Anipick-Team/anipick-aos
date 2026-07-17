@@ -4,7 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -15,6 +15,14 @@ class SearchDataStoreImpl @Inject constructor(
         private val SEARCH_KEYWORDS_KEY = stringPreferencesKey("search_keywords")
         private const val MAX_SEARCH_KEYWORDS = 10
     }
+
+    override val searchKeywords: Flow<List<String>> = dataStore.data
+        .map { preferences ->
+            preferences[SEARCH_KEYWORDS_KEY]
+                ?.split(",")
+                ?.filter { it.isNotBlank() }
+                ?: emptyList()
+        }
 
     override suspend fun saveSearchKeyword(keyWord: String): Result<Unit> {
         return try {
@@ -36,23 +44,6 @@ class SearchDataStoreImpl @Inject constructor(
                 preferences[SEARCH_KEYWORDS_KEY] = currentKeywords.joinToString(",")
             }
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun loadSearchKeyword(): Result<List<String>> {
-        return try {
-            val keywords = dataStore.data
-                .map { preferences ->
-                    preferences[SEARCH_KEYWORDS_KEY]
-                        ?.split(",")
-                        ?.filter { it.isNotBlank() }
-                        ?: emptyList()
-                }
-                .first()
-
-            Result.success(keywords)
         } catch (e: Exception) {
             Result.failure(e)
         }
