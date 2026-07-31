@@ -16,7 +16,7 @@ import javax.inject.Inject
 import kotlin.math.roundToInt
 
 class ImageCompressor @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) {
     suspend fun compressImage(
         contentUri: Uri,

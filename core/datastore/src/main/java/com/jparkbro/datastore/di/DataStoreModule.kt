@@ -6,6 +6,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.jparkbro.datastore.JwtTokenDataStore
 import com.jparkbro.datastore.JwtTokenDataStoreImpl
+import com.jparkbro.datastore.NoticeDataStore
+import com.jparkbro.datastore.NoticeDataStoreImpl
 import com.jparkbro.datastore.RecentAnimeDataStore
 import com.jparkbro.datastore.RecentAnimeDataStoreImpl
 import com.jparkbro.datastore.SearchDataStore
@@ -51,6 +53,12 @@ abstract class DataStoreModule {
     internal abstract fun bindsSearchDataStore(
         searchDataStoreImpl: SearchDataStoreImpl
     ): SearchDataStore
+
+    @Binds
+    @Singleton
+    internal abstract fun bindsNoticeDataStore(
+        noticeDataStoreImpl: NoticeDataStoreImpl
+    ): NoticeDataStore
 
     companion object {
         @Provides

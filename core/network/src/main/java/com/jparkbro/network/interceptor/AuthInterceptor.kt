@@ -2,7 +2,6 @@ package com.jparkbro.network.interceptor
 
 import android.util.Log
 import com.jparkbro.model.auth.AuthToken
-import com.jparkbro.network.auth.AuthApi
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.repository.TokenRepository
 import com.jparkbro.network.retrofit.ApiConstants
@@ -18,7 +17,8 @@ import javax.inject.Singleton
 
 @Singleton
 class AuthInterceptor @Inject constructor(
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val logoutEventManager: LogoutEventManager
 ) : Interceptor {
     companion object {
         private const val TAG = "AuthInterceptor"
@@ -95,6 +95,7 @@ class AuthInterceptor @Inject constructor(
                 refreshResult.isFailure -> {
                     Log.e(TAG, "에러 발생: ${refreshResult.exceptionOrNull()?.message}")
                     // 에러 (로그아웃 처리)
+                    logout()
                     return@withLock chain.proceed(originalRequest)
                 }
 
@@ -103,6 +104,7 @@ class AuthInterceptor @Inject constructor(
                     if (refreshToken.isNullOrEmpty()) {
                         // 토큰 없음 로그아웃 처리
                         Log.e(TAG, "저장된 토큰 없음")
+                        logout()
                         return@withLock chain.proceed(originalRequest)
                     } else {
                         Log.d(TAG, "Refresh Token Get 성공 - Token 재요청 진행")
@@ -137,6 +139,8 @@ class AuthInterceptor @Inject constructor(
                         } else {
                             Log.e(TAG, "토큰 갱신 요청 실패 - code: ${refreshResponse.code}")
                             refreshResponse.close()
+                            // RefreshToken도 만료됨 - 로그아웃 처리
+                            logout()
                         }
                         return@withLock chain.proceed(originalRequest)
                     }
@@ -165,7 +169,17 @@ class AuthInterceptor @Inject constructor(
         }
     }
 
-    private fun logout() {
+    private suspend fun logout() {
+        Log.d(TAG, "로그아웃 처리 시작")
+        try {
+            // 1. 토큰 삭제
+            tokenRepository.clearAllData()
 
+            // 2. 로그아웃 이벤트 발생
+            logoutEventManager.emitLogoutEvent()
+            Log.d(TAG, "로그아웃 이벤트 발생 완료")
+        } catch (e: Exception) {
+            Log.e(TAG, "로그아웃 처리 중 에러 발생: ${e.message}")
+        }
     }
 }

@@ -44,7 +44,7 @@ fun APEmptyContent(
         ) {
             Image(
                 imageVector = randomImageResource,
-                contentDescription = stringResource(R.string.error_image)
+                contentDescription = stringResource(R.string.error_image),
             )
             Text(
                 text = comment,

@@ -1,16 +1,13 @@
 package com.jparkbro.datastore
 
-import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.jparkbro.model.auth.AuthToken
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -23,7 +20,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class JwtTokenDataStoreImpl @Inject constructor(
-    @Named("jwt") private val dataStore: DataStore<Preferences>
+    @param:Named("jwt") private val dataStore: DataStore<Preferences>
 ) : JwtTokenDataStore {
     
     companion object {
@@ -84,16 +81,21 @@ class JwtTokenDataStoreImpl @Inject constructor(
         return String(decryptedData)
     }
 
-    override suspend fun saveToken(token: AuthToken): Result<Unit> {
+    override suspend fun setToken(token: AuthToken?): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                val encryptedAccessToken = encryptData(token.accessToken)
-                
-                val encryptedRefreshToken = encryptData(token.refreshToken)
-                
-                dataStore.edit { preferences ->
-                    preferences[ACCESS_TOKEN_KEY] = encryptedAccessToken
-                    preferences[REFRESH_TOKEN_KEY] = encryptedRefreshToken
+                if (token == null) {
+                    dataStore.edit { preferences ->
+                        preferences.clear()
+                    }
+                } else {
+                    val encryptedAccessToken = encryptData(token.accessToken)
+                    val encryptedRefreshToken = encryptData(token.refreshToken)
+
+                    dataStore.edit { preferences ->
+                        preferences[ACCESS_TOKEN_KEY] = encryptedAccessToken
+                        preferences[REFRESH_TOKEN_KEY] = encryptedRefreshToken
+                    }
                 }
                 Result.success(Unit)
             } catch (e: Exception) {
@@ -120,19 +122,6 @@ class JwtTokenDataStoreImpl @Inject constructor(
                 val encryptedToken = dataStore.data.first()[REFRESH_TOKEN_KEY]
                 val refreshToken = encryptedToken?.let { decryptData(it) }
                 Result.success(refreshToken)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-    }
-
-    override suspend fun clearToken(): Result<Unit> {
-        return withContext(Dispatchers.IO) {
-            try {
-                dataStore.edit { preferences ->
-                    preferences.clear()
-                }
-                Result.success(Unit)
             } catch (e: Exception) {
                 Result.failure(e)
             }

@@ -1,7 +1,6 @@
 package com.jparkbro.data.common
 
 import com.jparkbro.datastore.RecentAnimeDataStore
-import com.jparkbro.model.common.AppInitRequest
 import com.jparkbro.model.common.AppInitResponse
 import com.jparkbro.model.common.MetaData
 import com.jparkbro.network.common.CommonDataSource

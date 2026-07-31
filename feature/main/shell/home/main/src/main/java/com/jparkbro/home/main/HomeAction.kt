@@ -10,4 +10,7 @@ interface HomeAction {
     data object NavigateToSimilar : HomeAction
     data object NavigateToUpcoming : HomeAction
     data class NavigateToAnimeDetail(val animeId: Long) : HomeAction
+    data object NavigateToInstagram : HomeAction
+    data object ShowNotice : HomeAction
+    data object DismissNotice : HomeAction
 }

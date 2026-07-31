@@ -35,6 +35,7 @@ import androidx.compose.ui.window.Dialog
 import com.jparkbro.model.enum.DialogType
 import com.jparkbro.ui.R
 import com.jparkbro.ui.model.DialogData
+import com.jparkbro.ui.model.DialogStyle
 import com.jparkbro.ui.preview.DevicePreviews
 import com.jparkbro.ui.theme.AniPick12Normal
 import com.jparkbro.ui.theme.AniPick14Normal
@@ -131,7 +132,8 @@ fun APConfirmDialog(
 
 @Composable
 fun APAlertDialog(
-    dialogData: DialogData
+    dialogData: DialogData,
+    style: DialogStyle = DialogStyle()
 ) {
     Dialog(
         onDismissRequest = dialogData.onDismiss
@@ -156,14 +158,17 @@ fun APAlertDialog(
                 dialogData.title?.let {
                     Text(
                         text = it.asString(),
-                        style = AniPick20Bold.copy(color = AniPickBlack),
+                        style = AniPick20Bold.copy(color = style.titleColor),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = style.titleAlign
                     )
                 }
                 dialogData.subTitle?.let {
                     Text(
                         text = it.asString(),
-                        style = AniPick14Normal.copy(color = AniPickGray500),
-                        textAlign = TextAlign.Center
+                        style = AniPick14Normal.copy(color = style.subTitleColor),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = style.subTitleAlign
                     )
                 }
             }
@@ -175,7 +180,7 @@ fun APAlertDialog(
                 dialogData.confirm?.let {
                     Text(
                         text = it.asString(),
-                        style = AniPick16Normal.copy(color = AniPickPrimary)
+                        style = AniPick16Normal.copy(color = style.buttonColor)
                     )
                 }
             }

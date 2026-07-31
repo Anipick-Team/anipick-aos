@@ -5,12 +5,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.common.CommonRepository
+import com.jparkbro.datastore.NoticeDataStore
 import com.jparkbro.domain.AutoLoginUseCase
-import com.jparkbro.model.common.AppInitDialogType
-import com.jparkbro.model.common.AppInitRequest
+import com.jparkbro.network.interceptor.LogoutEventManager
 import com.jparkbro.model.common.MetaData
-import com.jparkbro.ui.DialogData
-import com.jparkbro.ui.DialogType
+import com.jparkbro.ui.model.DialogData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +20,8 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     private val commonRepository: CommonRepository,
     private val autoLoginUseCase: AutoLoginUseCase,
+    private val logoutEventManager: LogoutEventManager,
+    private val noticeDataStore: NoticeDataStore,
 ) : ViewModel() {
 
     private val _metaData = MutableStateFlow(MetaData())
@@ -35,10 +36,33 @@ class MainActivityViewModel @Inject constructor(
     private val _pendingDeepLink = MutableStateFlow<Uri?>(null)
     val pendingDeepLink = _pendingDeepLink.asStateFlow()
 
+    private val _updateDownloaded = MutableStateFlow(false)
+    val updateDownloaded = _updateDownloaded.asStateFlow()
+
+    private val _showNoticeDialog = MutableStateFlow(false)
+    val showNoticeDialog = _showNoticeDialog.asStateFlow()
+
     init {
-//        checkAppInit()
-        getMetaData()
-        autoLogin()
+        try {
+            getMetaData()
+            autoLogin()
+            observeLogoutEvent()
+            checkNotice()
+        } catch (e: Exception) {
+            Log.e("MainActivityViewModel", "Initialization error", e)
+            _uiState.value = MainActivityUiState.Error(
+                "앱 초기화 중 오류가 발생했습니다.\n${e.message}"
+            )
+        }
+    }
+
+    private fun observeLogoutEvent() {
+        viewModelScope.launch {
+            logoutEventManager.logoutEvent.collect {
+                Log.d("MainActivityViewModel", "로그아웃 이벤트 수신 - Login 화면으로 이동")
+                _uiState.value = MainActivityUiState.Success(isAutoLogin = false)
+            }
+        }
     }
 
     fun setPendingDeepLink(uri: Uri?) {
@@ -51,51 +75,26 @@ class MainActivityViewModel @Inject constructor(
         _pendingDeepLink.value = null
     }
 
-    private fun checkAppInit() {
-        val appVersion = BuildConfig.APP_VERSION_NAME
+    fun setUpdateDownloaded(downloaded: Boolean) {
+        Log.d("MainActivityViewModel", "Update downloaded state: $downloaded")
+        _updateDownloaded.value = downloaded
+    }
+
+    private fun checkNotice() {
         viewModelScope.launch {
-            commonRepository.checkAppInit(appVersion).fold(
-                onSuccess = {
-                    _dialogData.value = DialogData(
-                        type = if (it.type === AppInitDialogType.NOTICE) DialogType.ALERT else DialogType.CONFIRM,
-                        title = it.title.toString(),
-                        dismiss = "취소",
-                        confirm = "확인",
-                        onDismiss = {
-                            when (it.type) {
-                                AppInitDialogType.NOTICE -> { _dialogData.value = null }
-                                AppInitDialogType.UPDATE -> {
-                                    _dialogData.value = null
-                                    if (it.isRequiredUpdate) _uiState.value = MainActivityUiState.FinishApp(null)
-                                }
-                            }
-                        },
-                        onConfirm = {
-                            when (it.type) {
-                                AppInitDialogType.NOTICE -> { _dialogData.value = null }
-                                AppInitDialogType.UPDATE -> {
-                                    _dialogData.value = null
-                                    val playStoreUrl = "market://details?id=${BuildConfig.APPLICATION_ID}"
-                                    _uiState.value = MainActivityUiState.FinishApp(playStoreUrl)
-                                }
-                            }
-                        },
-                        errorMsg = it.content.toString()
-                    )
-                },
-                onFailure = {
-                    Log.e("AppInitCheck", "API Error: ${it.message}")
-                    _uiState.value = MainActivityUiState.Error(
-                        "네트워크 연결을 확인해주세요.\n앱 초기화에 실패했습니다."
-                    )
-                }
-            )
+            _showNoticeDialog.value = !noticeDataStore.hasSeenNotice()
+        }
+    }
+
+    fun dismissNoticeDialog() {
+        _showNoticeDialog.value = false
+        viewModelScope.launch {
+            noticeDataStore.setNoticeSeen()
         }
     }
 
     fun retryAppInit() {
         _uiState.value = MainActivityUiState.Loading
-//        checkAppInit()
         getMetaData()
         autoLogin()
     }
@@ -116,6 +115,10 @@ class MainActivityViewModel @Inject constructor(
                 Log.e("MainActivityViewModel", "Unexpected error in getMetaData", e)
             }
         }
+    }
+
+    fun updateDialog() {
+
     }
 
     private fun autoLogin() {
@@ -143,10 +146,9 @@ class MainActivityViewModel @Inject constructor(
 }
 
 sealed interface MainActivityUiState {
-    data object Loading: MainActivityUiState
-    data class Success(val isAutoLogin: Boolean): MainActivityUiState
-    data class Error(val message: String): MainActivityUiState
-    data class FinishApp(val storeUrl: String?): MainActivityUiState
+    data object Loading : MainActivityUiState
+    data class Success(val isAutoLogin: Boolean) : MainActivityUiState
+    data class Error(val message: String) : MainActivityUiState
 
     fun shouldKeepSplashScreen() = this is Loading
 }
