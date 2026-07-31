@@ -1,6 +1,6 @@
 package com.jparkbro.model.auth
 
-import com.jparkbro.model.common.AuthToken
+import com.jparkbro.model.auth.AuthToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -14,7 +14,7 @@ data class AuthResponse(
     @SerialName("reviewCompletedYn")
     val reviewCompletedYn: Boolean = false,
     @SerialName("userId")
-    val userId: Int = 0,
+    val userId: Long = 0,
     @SerialName("nickname")
     val nickname: String = "",
     @SerialName("token")

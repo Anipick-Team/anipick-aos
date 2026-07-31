@@ -42,6 +42,8 @@ class HomeViewModel @Inject constructor(
     fun onAction(action: HomeAction) {
         when (action) {
             HomeAction.OnRetryClicked -> initDataLoad()
+            HomeAction.ShowNotice -> _state.update { it.copy(showNoticeDialog = true) }
+            HomeAction.DismissNotice -> _state.update { it.copy(showNoticeDialog = false) }
         }
     }
 

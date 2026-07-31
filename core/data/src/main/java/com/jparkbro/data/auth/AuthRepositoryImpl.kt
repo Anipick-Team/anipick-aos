@@ -1,4 +1,4 @@
-package com.jparkbro.data
+package com.jparkbro.data.auth
 
 import android.app.Activity
 import android.util.Log
@@ -10,17 +10,19 @@ import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.jparkbro.data.BuildConfig
 import com.jparkbro.model.auth.AuthResponse
 import com.jparkbro.model.auth.EmailLoginRequest
 import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.auth.RequestCode
 import com.jparkbro.model.auth.ResetPassword
-import com.jparkbro.model.auth.SignupRequest
 import com.jparkbro.model.auth.VerifyCode
-import com.jparkbro.model.common.AuthToken
+import com.jparkbro.model.dto.auth.EmailRegisterRequest
+import com.jparkbro.model.dto.auth.EmailRegisterResponse
 import com.jparkbro.model.dto.preference.RatedAnime
 import com.jparkbro.model.dto.preference.SearchRequest
-import com.jparkbro.model.dto.preference.SearchResponse
+import com.jparkbro.model.dto.preference.SearchResult
+import com.jparkbro.model.dto.preference.toResult
 import com.jparkbro.network.auth.AuthDataSource
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
@@ -32,7 +34,7 @@ import javax.inject.Inject
 class AuthRepositoryImpl @Inject constructor(
     private val authDataSource: AuthDataSource,
 ) : AuthRepository {
-    override suspend fun emailSignup(request: SignupRequest): Result<AuthToken> {
+    override suspend fun emailSignup(request: EmailRegisterRequest): Result<EmailRegisterResponse> {
         return authDataSource.emailSignup(request)
     }
 
@@ -184,8 +186,8 @@ class AuthRepositoryImpl @Inject constructor(
 
     }
 
-    override suspend fun exploreOrSearch(request: SearchRequest): Result<SearchResponse> {
-        return authDataSource.exploreOrSearch(request)
+    override suspend fun exploreOrSearch(request: SearchRequest): Result<SearchResult> {
+        return authDataSource.exploreOrSearch(request).map { it.toResult() }
     }
 
     override suspend fun submitReviews(request: List<RatedAnime>): Result<Unit> {

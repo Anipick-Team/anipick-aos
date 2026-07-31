@@ -1,8 +1,14 @@
 package com.jparkbro.home.main
 
+import android.content.Intent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,25 +17,40 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jparkbro.home.main.components.AnimesSection
@@ -39,11 +60,16 @@ import com.jparkbro.home.main.components.ReviewsSection
 import com.jparkbro.home.main.components.SkeletonScreen
 import com.jparkbro.model.common.UiState
 import com.jparkbro.model.enum.HomeDetailType
+import com.jparkbro.model.enum.DialogType
 import com.jparkbro.ui.R
+import com.jparkbro.ui.components.APAlertDialog
 import com.jparkbro.ui.components.APAnimeCard
 import com.jparkbro.ui.components.APErrorScreen
 import com.jparkbro.ui.components.APMainTopAppBar
+import com.jparkbro.ui.model.DialogData
+import com.jparkbro.ui.model.DialogStyle
 import com.jparkbro.ui.preview.DevicePreviews
+import com.jparkbro.ui.util.UiText
 import com.jparkbro.ui.theme.AniPick12Normal
 import com.jparkbro.ui.theme.AniPick16Normal
 import com.jparkbro.ui.theme.AniPick20Bold
@@ -53,6 +79,9 @@ import com.jparkbro.ui.theme.AniPickGray400
 import com.jparkbro.ui.theme.AniPickSmallShape
 import com.jparkbro.ui.theme.AniPickSurface
 import com.jparkbro.ui.theme.AniPickWhite
+import com.jparkbro.ui.theme.FavoriteOffIcon
+import com.jparkbro.ui.theme.FavoriteOnIcon
+import com.jparkbro.ui.theme.Folder
 import com.jparkbro.ui.util.extension.quarterIntToString
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,6 +96,7 @@ internal fun HomeRoot(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
+    val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     when (state.uiState) {
@@ -76,6 +106,7 @@ internal fun HomeRoot(
                 onNavigateToSearch = onNavigateToSearch
             )
         }
+
         UiState.Error -> {
             Scaffold(
                 topBar = { APMainTopAppBar(onNavigateToSearch = onNavigateToSearch) },
@@ -88,6 +119,7 @@ internal fun HomeRoot(
                 )
             }
         }
+
         UiState.Success -> {
             HomeScreen(
                 bottomNav = bottomNav,
@@ -95,13 +127,23 @@ internal fun HomeRoot(
                 onAction = { action ->
                     when (action) {
                         HomeAction.NavigateToSearch -> onNavigateToSearch()
-                        is HomeAction.NavigateToAnimeDetail -> { onNavigateToInfoAnime(action.animeId) }
-                        is HomeAction.NavigateToNextQuarter -> { onNavigateToExplore(action.year, action.quarter)}
+                        is HomeAction.NavigateToAnimeDetail -> {
+                            onNavigateToInfoAnime(action.animeId)
+                        }
+
+                        is HomeAction.NavigateToNextQuarter -> {
+                            onNavigateToExplore(action.year, action.quarter)
+                        }
+
                         HomeAction.NavigateToTrending -> onNavigateToRanking()
                         HomeAction.NavigateToRecommend -> onNavigateToHomeDetail(HomeDetailType.RECOMMENDS)
                         HomeAction.NavigateToReview -> onNavigateToHomeDetail(HomeDetailType.RECENT_REVIEWS)
                         HomeAction.NavigateToSimilar -> onNavigateToHomeDetail(HomeDetailType.SIMILAR_TO_WATCHED)
                         HomeAction.NavigateToUpcoming -> onNavigateToHomeDetail(HomeDetailType.UPCOMING_RELEASE)
+                        HomeAction.NavigateToInstagram -> {
+                            val intent = Intent(Intent.ACTION_VIEW, "https://www.instagram.com/anipick.official/".toUri())
+                            context.startActivity(intent)
+                        }
                     }
                     viewModel.onAction(action)
                 }
@@ -138,6 +180,84 @@ private fun HomeScreen(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
                 ) {
+                    /*Image(
+                        imageVector = ImageVector.vectorResource(R.drawable.instagram_banner),
+                        contentDescription = "Move Instagram Banner",
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .clickable {
+                                onAction(HomeAction.NavigateToInstagram)
+                            }
+                    )*/
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Folder,
+                            contentDescription = "Show Notice",
+                            modifier = Modifier
+                                .size(64.dp)
+                                .background(color = Color(0xFFE3E3E3), shape = CircleShape)
+                                .border(width = 1.dp, color = Color(0xFFCCCCCC), shape = CircleShape)
+                                .padding(16.dp)
+                        )
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "데이터 롤백 안내",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W700,
+                                    color = Color.Black,
+                                )
+                                Text(
+                                    text = "자세히 보기",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.W600,
+                                    color = Color.White,
+                                    modifier = Modifier
+                                        .background(Color.Black, CircleShape)
+                                        .clickable { onAction(HomeAction.ShowNotice) }
+                                        .padding(horizontal = 12.dp, vertical = 2.dp)
+
+                                )
+                            }
+                            BoxWithConstraints {
+                                val noticeTextStyle = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.W400)
+                                val firstSentence = "서버 복구 과정에서 일부 데이터가 롤백되었음을 안내 드립니다."
+                                val secondSentence = "서비스 이용에 큰 불편을 드린 점 진심으로 사과드립니다."
+
+                                val textMeasurer = rememberTextMeasurer()
+                                val density = LocalDensity.current
+                                val availableWidthPx = with(density) { maxWidth.toPx() }
+                                val firstSentenceWidthPx = remember(firstSentence, noticeTextStyle) {
+                                    textMeasurer.measure(firstSentence, style = noticeTextStyle).size.width
+                                }
+
+                                // 첫 문장이 한 줄에 다 들어갈 만큼 화면이 넓으면 문장 사이에 강제 개행,
+                                // 그렇지 않고 첫 문장 안에서 이미 자연 개행이 일어나면 강제 개행 생략
+                                val noticeText = if (firstSentenceWidthPx <= availableWidthPx) {
+                                    "$firstSentence\n$secondSentence"
+                                } else {
+                                    "$firstSentence $secondSentence"
+                                }
+
+                                Text(
+                                    text = noticeText,
+                                    style = noticeTextStyle,
+                                    color = Color.Black,
+                                )
+                            }
+                        }
+                    }
                     if (state.trendingAnimeDtos.isNotEmpty()) {
                         TrendingAnimes(
                             state = state,
@@ -181,6 +301,26 @@ private fun HomeScreen(
                 }
             }
         }
+    }
+
+    if (state.showNoticeDialog) {
+        APAlertDialog(
+            dialogData = DialogData(
+                type = DialogType.ALERT,
+                title = UiText.DynamicString("서버 복구 과정 중\n데이터 롤백 및 재가입 안내"),
+                subTitle = UiText.DynamicString("7월 7일서버 복구 과정에서 데이터가 7월 4일 기준으로 롤백되는 문제가 발생했습니다.\n\n" +
+                        "이로 인해 7월 4일 이후에 작성된 리뷰, 평가, 시청 기록 등의 데이터가 복구되지 않았으며, 해당 기간에 가입하신 계정 정보 또한 손실되었습니다.\n\n" +
+                        "7월 4일 ~ 7월 7일 가입하신 회원분들은 번거러우시겠지만 다시 가입을 진행해 주시기 바랍니다.\n\n" +
+                        "현재 동일한 문제가 재발하지 않도록 서버 증설 및 시스템 개선 작업을 진행하고 있습니다.\n\n" +
+                        "서비스 이용에 큰 불편을 드린 점 진심으로 사과드립니다."),
+                confirm = UiText.DynamicString("닫기"),
+                onConfirm = { onAction(HomeAction.DismissNotice) },
+                onDismiss = { onAction(HomeAction.DismissNotice) }
+            ),
+            style = DialogStyle(
+                subTitleAlign = TextAlign.Start
+            )
+        )
     }
 }
 

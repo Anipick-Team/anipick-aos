@@ -5,9 +5,9 @@ import com.jparkbro.model.auth.EmailLoginRequest
 import com.jparkbro.model.auth.LoginProvider
 import com.jparkbro.model.auth.RequestCode
 import com.jparkbro.model.auth.ResetPassword
-import com.jparkbro.model.auth.SignupRequest
 import com.jparkbro.model.auth.VerifyCode
-import com.jparkbro.model.common.AuthToken
+import com.jparkbro.model.dto.auth.EmailRegisterRequest
+import com.jparkbro.model.dto.auth.EmailRegisterResponse
 import com.jparkbro.model.dto.preference.RatedAnime
 import com.jparkbro.model.dto.preference.SearchRequest
 import com.jparkbro.model.dto.preference.SearchResponse
@@ -22,8 +22,8 @@ interface AuthDataSource {
     ): Result<AuthResponse>
 
     suspend fun emailSignup(
-        request: SignupRequest
-    ): Result<AuthToken>
+        request: EmailRegisterRequest
+    ): Result<EmailRegisterResponse>
 
     suspend fun emailLogin(
         request: EmailLoginRequest

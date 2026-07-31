@@ -19,4 +19,5 @@ data class HomeState(
     val referenceAnimeTitle: String? = null,
     val similarAnimeTitle: String? = null,
     val nickname: String = "방랑자",
+    val showNoticeDialog: Boolean = false,
 )

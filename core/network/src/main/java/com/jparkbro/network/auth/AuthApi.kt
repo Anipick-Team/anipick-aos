@@ -4,9 +4,10 @@ import com.jparkbro.model.auth.AuthResponse
 import com.jparkbro.model.auth.EmailLoginRequest
 import com.jparkbro.model.auth.RequestCode
 import com.jparkbro.model.auth.ResetPassword
-import com.jparkbro.model.auth.SignupRequest
 import com.jparkbro.model.auth.SocialLoginRequest
 import com.jparkbro.model.auth.VerifyCode
+import com.jparkbro.model.dto.auth.EmailRegisterRequest
+import com.jparkbro.model.dto.auth.EmailRegisterResponse
 import com.jparkbro.model.dto.preference.RatedAnime
 import com.jparkbro.model.dto.preference.SearchResponse
 import com.jparkbro.network.model.ApiResponse
@@ -28,8 +29,8 @@ interface AuthApi {
 
     @POST(ApiConstants.EMAIL_SIGNUP)
     suspend fun emailSignup(
-        @Body request: SignupRequest
-    ): Response<ApiResponse<AuthResponse>>
+        @Body request: EmailRegisterRequest
+    ): Response<ApiResponse<EmailRegisterResponse>>
 
     @POST(ApiConstants.EMAIL_LOGIN)
     suspend fun emailLogin(
@@ -57,7 +58,7 @@ interface AuthApi {
         @Query("year") year: String?,
         @Query("season") season: Int?,
         @Query("genres") genres: Int?,
-        @Query("lastId") lastId: Int?,
+        @Query("lastId") lastId: Long?,
         @Query("size") size: Int?,
     ): Response<ApiResponse<SearchResponse>>
 

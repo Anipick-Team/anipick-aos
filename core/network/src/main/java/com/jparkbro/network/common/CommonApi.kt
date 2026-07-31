@@ -1,8 +1,7 @@
 package com.jparkbro.network.common
 
-import com.jparkbro.model.auth.AuthToken
-import com.jparkbro.model.common.AppInitRequest
 import com.jparkbro.model.common.AppInitResponse
+import com.jparkbro.model.auth.AuthToken
 import com.jparkbro.model.common.MetaData
 import com.jparkbro.network.model.ApiResponse
 import com.jparkbro.network.retrofit.ApiConstants

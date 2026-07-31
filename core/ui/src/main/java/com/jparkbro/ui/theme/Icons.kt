@@ -85,13 +85,17 @@ val EditIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.ic_edit)
 
+val FavoriteOffIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.ic_favorite_off)
+
 val FavoriteOnIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.ic_favorite_on)
 
-val FavoriteOffIcon: ImageVector
+val Folder: ImageVector
     @Composable
-    get() = ImageVector.vectorResource(R.drawable.ic_favorite_off)
+    get() = ImageVector.vectorResource(R.drawable.ic_folder)
 
 val MascotIcon: ImageVector
     @Composable

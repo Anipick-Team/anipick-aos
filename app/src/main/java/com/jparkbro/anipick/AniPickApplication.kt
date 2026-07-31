@@ -1,6 +1,7 @@
 package com.jparkbro.anipick
 
 import android.app.Application
+import com.jparkbro.anipick.firebase.FirebaseManager
 import com.kakao.sdk.common.KakaoSdk
 import dagger.hilt.android.HiltAndroidApp
 
@@ -12,5 +13,7 @@ class AniPickApplication : Application() {
         super.onCreate()
 
         KakaoSdk.init(this@AniPickApplication, KAKAO_APP_KEY)
+
+        FirebaseManager.getInstance(this).initialize()
     }
 }
