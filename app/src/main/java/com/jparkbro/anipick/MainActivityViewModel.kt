@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.data.common.CommonRepository
-import com.jparkbro.datastore.NoticeDataStore
 import com.jparkbro.domain.AutoLoginUseCase
 import com.jparkbro.network.interceptor.LogoutEventManager
 import com.jparkbro.model.common.MetaData
@@ -14,6 +13,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,7 +22,6 @@ class MainActivityViewModel @Inject constructor(
     private val commonRepository: CommonRepository,
     private val autoLoginUseCase: AutoLoginUseCase,
     private val logoutEventManager: LogoutEventManager,
-    private val noticeDataStore: NoticeDataStore,
 ) : ViewModel() {
 
     private val _metaData = MutableStateFlow(MetaData())
@@ -81,16 +81,12 @@ class MainActivityViewModel @Inject constructor(
     }
 
     private fun checkNotice() {
-        viewModelScope.launch {
-            _showNoticeDialog.value = !noticeDataStore.hasSeenNotice()
-        }
+        val noticeEndAt = ZonedDateTime.of(2026, 9, 12, 4, 0, 0, 0, ZoneId.of("Asia/Seoul"))
+        _showNoticeDialog.value = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).isBefore(noticeEndAt)
     }
 
     fun dismissNoticeDialog() {
         _showNoticeDialog.value = false
-        viewModelScope.launch {
-            noticeDataStore.setNoticeSeen()
-        }
     }
 
     fun retryAppInit() {

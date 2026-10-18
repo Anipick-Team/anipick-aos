@@ -180,7 +180,7 @@ private fun HomeScreen(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
                 ) {
-                    /*Image(
+                    Image(
                         imageVector = ImageVector.vectorResource(R.drawable.instagram_banner),
                         contentDescription = "Move Instagram Banner",
                         modifier = Modifier
@@ -188,76 +188,7 @@ private fun HomeScreen(
                             .clickable {
                                 onAction(HomeAction.NavigateToInstagram)
                             }
-                    )*/
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Folder,
-                            contentDescription = "Show Notice",
-                            modifier = Modifier
-                                .size(64.dp)
-                                .background(color = Color(0xFFE3E3E3), shape = CircleShape)
-                                .border(width = 1.dp, color = Color(0xFFCCCCCC), shape = CircleShape)
-                                .padding(16.dp)
-                        )
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "데이터 롤백 안내",
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W700,
-                                    color = Color.Black,
-                                )
-                                Text(
-                                    text = "자세히 보기",
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.W600,
-                                    color = Color.White,
-                                    modifier = Modifier
-                                        .background(Color.Black, CircleShape)
-                                        .clickable { onAction(HomeAction.ShowNotice) }
-                                        .padding(horizontal = 12.dp, vertical = 2.dp)
-
-                                )
-                            }
-                            BoxWithConstraints {
-                                val noticeTextStyle = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.W400)
-                                val firstSentence = "서버 복구 과정에서 일부 데이터가 롤백되었음을 안내 드립니다."
-                                val secondSentence = "서비스 이용에 큰 불편을 드린 점 진심으로 사과드립니다."
-
-                                val textMeasurer = rememberTextMeasurer()
-                                val density = LocalDensity.current
-                                val availableWidthPx = with(density) { maxWidth.toPx() }
-                                val firstSentenceWidthPx = remember(firstSentence, noticeTextStyle) {
-                                    textMeasurer.measure(firstSentence, style = noticeTextStyle).size.width
-                                }
-
-                                // 첫 문장이 한 줄에 다 들어갈 만큼 화면이 넓으면 문장 사이에 강제 개행,
-                                // 그렇지 않고 첫 문장 안에서 이미 자연 개행이 일어나면 강제 개행 생략
-                                val noticeText = if (firstSentenceWidthPx <= availableWidthPx) {
-                                    "$firstSentence\n$secondSentence"
-                                } else {
-                                    "$firstSentence $secondSentence"
-                                }
-
-                                Text(
-                                    text = noticeText,
-                                    style = noticeTextStyle,
-                                    color = Color.Black,
-                                )
-                            }
-                        }
-                    }
+                    )
                     if (state.trendingAnimeDtos.isNotEmpty()) {
                         TrendingAnimes(
                             state = state,

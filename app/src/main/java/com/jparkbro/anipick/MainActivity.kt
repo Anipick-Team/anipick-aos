@@ -243,12 +243,9 @@ class MainActivity : ComponentActivity() {
                                 APAlertDialog(
                                     dialogData = DialogData(
                                         type = DialogType.ALERT,
-                                        title = UiText.DynamicString("서버 복구 과정 중\n데이터 롤백 및 재가입 안내"),
-                                        subTitle = UiText.DynamicString("7월 7일서버 복구 과정에서 데이터가 7월 4일 기준으로 롤백되는 문제가 발생했습니다.\n\n" +
-                                                "이로 인해 7월 4일 이후에 작성된 리뷰, 평가, 시청 기록 등의 데이터가 복구되지 않았으며, 해당 기간에 가입하신 계정 정보 또한 손실되었습니다.\n\n" +
-                                                "7월 4일 ~ 7월 7일 가입하신 회원분들은 번거러우시겠지만 다시 가입을 진행해 주시기 바랍니다.\n\n" +
-                                                "현재 동일한 문제가 재발하지 않도록 서버 증설 및 시스템 개선 작업을 진행하고 있습니다.\n\n" +
-                                                "서비스 이용에 큰 불편을 드린 점 진심으로 사과드립니다."),
+                                        title = UiText.DynamicString("서버 점검 안내"),
+                                        subTitle = UiText.DynamicString("안정적인 서비스 제공을 위한 서버 점검으로 9월 12일(토) 00:00 ~ 04:00 동안 서비스 이용이 일시 중단될 예정입니다.\n\n" +
+                                                "더 안정적인 서비스로 찾아뵙겠습니다."),
                                         confirm = UiText.DynamicString("닫기"),
                                         onConfirm = { viewModel.dismissNoticeDialog() },
                                         onDismiss = { viewModel.dismissNoticeDialog() }
