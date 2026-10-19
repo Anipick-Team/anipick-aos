@@ -3,46 +3,16 @@ package com.jparkbro.data
 import com.jparkbro.datastore.JwtTokenDataStore
 import com.jparkbro.datastore.UserDataStore
 import com.jparkbro.model.auth.AuthToken
-import com.jparkbro.network.common.CommonDataSource
-import javax.inject.Inject
 
-class UserPreferenceRepositoryImpl @Inject constructor(
+class UserPreferenceRepositoryImpl(
     private val jwtTokenDataStore: JwtTokenDataStore,
-    private val commonDataSource: CommonDataSource,
     private val userDataStore: UserDataStore,
 ) : UserPreferenceRepository {
     override suspend fun saveToken(token: AuthToken): Result<Unit> {
         return jwtTokenDataStore.setToken(token)
     }
 
-    override suspend fun getAccessToken(): Result<String?> {
-        return jwtTokenDataStore.getAccessToken()
-    }
-
-    override suspend fun getRefreshToken(): Result<String?> {
-        return jwtTokenDataStore.getRefreshToken()
-    }
-
-    override suspend fun requestToken(refreshToken: String): Result<AuthToken> {
-        return commonDataSource.requestToken(refreshToken)
-    }
-
     override suspend fun saveUserInfo(userId: Long, nickname: String): Result<Unit> {
         return userDataStore.saveUserInfo(userId, nickname)
-    }
-
-    override suspend fun getUserId(): Result<Long> {
-        return userDataStore.getUserId()
-    }
-
-    override suspend fun getUserNickName(): Result<String> {
-        return userDataStore.getUserNickName()
-    }
-
-    override suspend fun clearAllData(): Result<Unit> {
-        return runCatching {
-            jwtTokenDataStore.setToken().getOrThrow()
-            userDataStore.clearUserInfo().getOrThrow()
-        }
     }
 }

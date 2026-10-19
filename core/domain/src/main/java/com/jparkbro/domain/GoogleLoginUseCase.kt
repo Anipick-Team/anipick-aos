@@ -6,9 +6,8 @@ import com.jparkbro.data.UserPreferenceRepository
 import com.jparkbro.model.auth.LoginProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 
-class GoogleLoginUseCase @Inject constructor(
+class GoogleLoginUseCase(
     private val authRepository: AuthRepository,
     private val userPreferenceRepository: UserPreferenceRepository,
 ) {

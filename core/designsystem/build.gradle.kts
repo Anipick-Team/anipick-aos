@@ -1,0 +1,11 @@
+plugins {
+    alias(libs.plugins.anipick.android.library.compose)
+}
+
+android {
+    namespace = "com.jparkbro.core.designsystem"
+}
+
+dependencies {
+
+}

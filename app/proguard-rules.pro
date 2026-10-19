@@ -18,15 +18,11 @@
 # ============================================
 -keep class com.google.android.gms.** { *; }
 -keep class com.google.firebase.** { *; }
--keep class com.google.android.gms.internal.** { *; }
--keep class com.google.android.gms.measurement.** { *; }
--keep class com.google.android.gms.internal.measurement.** { *; }
 
 -dontwarn com.google.android.gms.**
 -dontwarn com.google.firebase.**
 
 # Firebase Crashlytics
--keepattributes *Annotation*
 -keep public class * extends java.lang.Exception
 -keep class com.crashlytics.** { *; }
 -dontwarn com.crashlytics.**
@@ -42,9 +38,6 @@
 -keep interface com.google.android.play.** { *; }
 -dontwarn com.google.android.play.**
 
-# OSS Licenses
--keep class com.google.android.gms.oss.licenses.** { *; }
-
 # ============================================
 # Kakao SDK
 # ============================================
@@ -52,14 +45,8 @@
 -keep class com.kakao.sdk.** { *; }
 -dontwarn com.kakao.sdk.**
 
-# ============================================
-# Retrofit & OkHttp
-# ============================================
--dontwarn org.bouncycastle.jsse.**
--dontwarn org.conscrypt.*
--dontwarn org.openjsse.**
-
-# Retrofit (with R8 full mode)
+# Retrofit: Kakao SDK가 내부에서 쓴다 (앱 네트워크는 Ktor)
+# 빠지면 R8 full mode가 Call<T> 제네릭 시그니처를 지워 "Unable to create call adapter"로 크래시
 -if interface * { @retrofit2.http.* <methods>; }
 -keep,allowobfuscation interface <1>
 
@@ -69,12 +56,17 @@
 -if interface * { @retrofit2.http.* public *** *(...); }
 -keep,allowoptimization,allowshrinking,allowobfuscation class <3>
 
-# Retrofit 인터페이스 보호
--keep interface com.jparkbro.network.** { *; }
 -keep class retrofit2.** { *; }
 -keepclasseswithmembers class * {
     @retrofit2.http.* <methods>;
 }
+
+# ============================================
+# OkHttp (Coil 이미지 로딩, Kakao SDK)
+# ============================================
+-dontwarn org.bouncycastle.jsse.**
+-dontwarn org.conscrypt.*
+-dontwarn org.openjsse.**
 
 # OkHttp
 -keep class okhttp3.** { *; }
@@ -85,16 +77,7 @@
 # ============================================
 # Kotlin Serialization
 # ============================================
--keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.AnnotationsKt
-
--keep,includedescriptorclasses class com.jparkbro.model.**$$serializer { *; }
--keepclassmembers class com.jparkbro.model.** {
-    *** Companion;
-}
--keepclasseswithmembers class com.jparkbro.model.** {
-    kotlinx.serialization.KSerializer serializer(...);
-}
 
 # Serializable 클래스들 보호
 -keep @kotlinx.serialization.Serializable class * { *; }
@@ -107,7 +90,7 @@
 -dontwarn kotlinx.serialization.**
 
 # ============================================
-# Model 모듈 보호
+# Model 모듈 보호 (v1 소셜 로그인 요청/응답 모델)
 # ============================================
 -keep class com.jparkbro.model.** { *; }
 -keepclassmembers class com.jparkbro.model.** { *; }
@@ -123,27 +106,6 @@
 }
 
 # ============================================
-# Hilt / Dagger
-# ============================================
--keep class dagger.** { *; }
--keep class javax.inject.** { *; }
--keep class * extends dagger.hilt.android.lifecycle.HiltViewModel { *; }
--keep class * extends dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
-
--keepclasseswithmembernames class * {
-    @dagger.* <fields>;
-}
--keepclasseswithmembernames class * {
-    @javax.inject.* <fields>;
-}
--keepclasseswithmembernames class * {
-    @dagger.* <methods>;
-}
-
--dontwarn dagger.**
--dontwarn javax.inject.**
-
-# ============================================
 # Jetpack Compose
 # ============================================
 -keep class androidx.compose.** { *; }
@@ -153,25 +115,12 @@
 # DataStore
 # ============================================
 -keep class androidx.datastore.** { *; }
--keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite { *; }
-
-# ============================================
-# Navigation
-# ============================================
--keep class * extends androidx.navigation.Navigator { *; }
--keep class * implements androidx.navigation.NavArgs { *; }
 
 # ============================================
 # ViewModel
 # ============================================
 -keep class * extends androidx.lifecycle.ViewModel { *; }
 -keep class * extends androidx.lifecycle.AndroidViewModel { *; }
-
-# ============================================
-# Coil (이미지 로딩)
-# ============================================
--keep class coil.** { *; }
--dontwarn coil.**
 
 # ============================================
 # Coroutines

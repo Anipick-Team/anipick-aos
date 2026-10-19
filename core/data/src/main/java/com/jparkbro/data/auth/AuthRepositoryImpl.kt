@@ -12,36 +12,17 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.jparkbro.data.BuildConfig
 import com.jparkbro.model.auth.AuthResponse
-import com.jparkbro.model.auth.EmailLoginRequest
 import com.jparkbro.model.auth.LoginProvider
-import com.jparkbro.model.auth.RequestCode
-import com.jparkbro.model.auth.ResetPassword
-import com.jparkbro.model.auth.VerifyCode
-import com.jparkbro.model.dto.auth.EmailRegisterRequest
-import com.jparkbro.model.dto.auth.EmailRegisterResponse
-import com.jparkbro.model.dto.preference.RatedAnime
-import com.jparkbro.model.dto.preference.SearchRequest
-import com.jparkbro.model.dto.preference.SearchResult
-import com.jparkbro.model.dto.preference.toResult
 import com.jparkbro.network.auth.AuthDataSource
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import kotlinx.coroutines.CompletableDeferred
-import javax.inject.Inject
 
-class AuthRepositoryImpl @Inject constructor(
+class AuthRepositoryImpl(
     private val authDataSource: AuthDataSource,
 ) : AuthRepository {
-    override suspend fun emailSignup(request: EmailRegisterRequest): Result<EmailRegisterResponse> {
-        return authDataSource.emailSignup(request)
-    }
-
-    override suspend fun emailLogin(request: EmailLoginRequest): Result<AuthResponse> {
-        return authDataSource.emailLogin(request)
-    }
-
     override suspend fun getKakaoAuthToken(activity: Activity): Result<String> {
         // 결과를 저장할 CompletableDeferred 객체 생성
         val deferred = CompletableDeferred<Result<String>>()
@@ -81,38 +62,6 @@ class AuthRepositoryImpl @Inject constructor(
         }
 
         // 비동기 작업의 결과를 반환
-        return deferred.await()
-    }
-
-    override suspend fun kakaoLogout(): Result<Unit> {
-        val deferred = CompletableDeferred<Result<Unit>>()
-
-        UserApiClient.instance.logout { error ->
-            if (error != null) {
-                Log.e("kakao", "로그아웃 실패. SDK에서 토큰 폐기됨", error)
-                deferred.complete(Result.failure(error))
-            } else {
-                Log.i("kakao", "로그아웃 성공. SDK에서 토큰 폐기됨")
-                deferred.complete(Result.success(Unit))
-            }
-        }
-
-        return deferred.await()
-    }
-
-    override suspend fun kakaoUnlink(): Result<Unit> {
-        val deferred = CompletableDeferred<Result<Unit>>()
-
-        UserApiClient.instance.unlink { error ->
-            if (error != null) {
-                Log.e("kakao", "연결 해제 실패", error)
-                deferred.complete(Result.failure(error))
-            } else {
-                Log.i("kakao", "연결 해제 성공. SDK에서 토큰 폐기 됨")
-                deferred.complete(Result.success(Unit))
-            }
-        }
-
         return deferred.await()
     }
 
@@ -169,28 +118,5 @@ class AuthRepositoryImpl @Inject constructor(
             provider = provider,
             socialToken = socialToken,
         )
-    }
-
-    override suspend fun requestResetCode(request: RequestCode): Result<Unit> {
-        return authDataSource.requestResetCode(request)
-
-    }
-
-    override suspend fun verifyResetCode(request: VerifyCode): Result<Unit> {
-        return authDataSource.verifyResetCode(request)
-
-    }
-
-    override suspend fun resetPassword(request: ResetPassword): Result<Unit> {
-        return authDataSource.resetPassword(request)
-
-    }
-
-    override suspend fun exploreOrSearch(request: SearchRequest): Result<SearchResult> {
-        return authDataSource.exploreOrSearch(request).map { it.toResult() }
-    }
-
-    override suspend fun submitReviews(request: List<RatedAnime>): Result<Unit> {
-        return authDataSource.submitReviews(request)
     }
 }

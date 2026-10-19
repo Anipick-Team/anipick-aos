@@ -1,13 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample backup rules file; uncomment and customize as necessary.
-   See https://developer.android.com/guide/topics/data/autobackup
-   for details.
-   Note: This file is ignored for devices older than API 31
-   See https://developer.android.com/about/versions/12/backup-restore
--->
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 이하. allowBackup="false"라 클라우드 백업은 하지 않지만, 기기 간 이전 등에 대비해 토큰 파일은 항상 제외한다.
+     토큰은 기기 밖으로 나가지 않는 Android Keystore 키로 암호화돼 있어 다른 기기에서는 복호화할 수 없다. -->
 <full-backup-content>
-    <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
--->
+    <exclude domain="file" path="datastore/jwt_tokens_secure.preferences_pb" />
 </full-backup-content>

@@ -5,9 +5,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import kotlinx.coroutines.flow.first
-import javax.inject.Inject
 
-class RecentAnimeDataStoreImpl @Inject constructor(
+class RecentAnimeDataStoreImpl(
     private val dataStore: DataStore<Preferences>
 ) : RecentAnimeDataStore {
     companion object {

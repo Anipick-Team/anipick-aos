@@ -1,19 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample data extraction rules file; uncomment and customize as necessary.
-   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
-   for details.
--->
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+. allowBackup="false"여도 기기 간 이전(device-transfer)은 이 규칙을 따른다.
+     토큰은 기기 밖으로 나가지 않는 Android Keystore 키로 암호화돼 있어 다른 기기에서는 복호화할 수 없으므로 제외한다. -->
 <data-extraction-rules>
     <cloud-backup>
-        <!-- TODO: Use <include> and <exclude> to control what is backed up.
-        <include .../>
-        <exclude .../>
-        -->
+        <exclude domain="file" path="datastore/jwt_tokens_secure.preferences_pb" />
     </cloud-backup>
-    <!--
     <device-transfer>
-        <include .../>
-        <exclude .../>
+        <exclude domain="file" path="datastore/jwt_tokens_secure.preferences_pb" />
     </device-transfer>
-    -->
 </data-extraction-rules>

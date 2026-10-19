@@ -1,140 +1,81 @@
 package com.jparkbro.anipick
 
 import android.content.Intent
-import android.net.Uri
+import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateOptions
-import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
-import com.google.android.play.core.install.model.InstallStatus
-import com.google.android.play.core.install.model.UpdateAvailability
+import com.jparkbro.anipick.deeplink.DeepLinkViewModel
+import com.jparkbro.anipick.deeplink.parseDeepLink
 import com.jparkbro.anipick.firebase.TrackScreenNavigation
-import com.jparkbro.anipick.navigation.APBottomNavigation
-import com.jparkbro.anipick.navigation.APNavHost
-import com.jparkbro.anipick.navigation.BottomDestination
-import com.jparkbro.home.main.navigation.Home
-import com.jparkbro.info.anime.navigation.navigateToInfoAnime
-import com.jparkbro.login.navigation.Login
-import com.jparkbro.model.enum.DialogType
-import com.jparkbro.ui.components.APAlertDialog
-import com.jparkbro.ui.components.APConfirmDialog
-import com.jparkbro.ui.components.APReportReasonDialog
-import com.jparkbro.ui.components.APSnackBar
-import com.jparkbro.ui.model.DialogData
-import com.jparkbro.ui.model.DialogStyle
-import com.jparkbro.ui.model.SnackBarData
-import com.jparkbro.ui.snackbar.GlobalSnackbarManager
-import com.jparkbro.ui.theme.AniPickTheme
-import com.jparkbro.ui.util.UiText
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
-import kotlin.time.Duration.Companion.milliseconds
+import com.jparkbro.anipick.navigation.APNavDisplay
+import com.jparkbro.anipick.navigation.AniPickBottomNavigation
+import com.jparkbro.anipick.navigation.BOTTOM_NAV_ITEMS
+import com.jparkbro.anipick.navigation.TOP_LEVEL_ITEMS
+import com.jparkbro.anipick.theme.ThemeViewModel
+import com.jparkbro.anipick.update.AppUpdateUiState
+import com.jparkbro.anipick.update.UpdateAction
+import com.jparkbro.anipick.update.UpdateEvent
+import com.jparkbro.anipick.update.UpdateViewModel
+import com.jparkbro.auth.api.navigateToLogin
+import com.jparkbro.core.common.auth.TokenProvider
+import com.jparkbro.core.designsystem.component.AniPickDialog
+import com.jparkbro.core.designsystem.component.AniPickSnackbar
+import com.jparkbro.core.designsystem.theme.AniPick_v2Theme
+import com.jparkbro.core.model.setting.ThemeMode
+import com.jparkbro.core.navigation.Navigator
+import com.jparkbro.core.navigation.rememberNavigationState
+import com.jparkbro.core.ui.GlobalSnackbarManager
+import com.jparkbro.core.ui.effect.ObserveAsEvents
+import com.jparkbro.splash.api.SplashNavKey
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.compose.koinInject
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var globalSnackbarManager: GlobalSnackbarManager
-
-    private val viewModel: MainActivityViewModel by viewModels()
-    private val appUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
-    private val updatePreference by lazy { UpdatePreference(this) }
-
     private var backPressedTime: Long = 0
+    private val deepLinkViewModel: DeepLinkViewModel by viewModel()
+    private val updateViewModel: UpdateViewModel by viewModel()
+    private val themeViewModel: ThemeViewModel by viewModel()
+    private val appUpdateManager: AppUpdateManager by inject()
 
-    private val updateLauncher = registerForActivityResult(
+    private val updateResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
-    ) { result ->
-        if (result.resultCode != RESULT_OK) {
-            Log.d("MainActivity", "Update flow failed! Result code: ${result.resultCode}")
-        }
-    }
-
-    private val installStateUpdatedListener = InstallStateUpdatedListener { state ->
-        when (state.installStatus()) {
-            InstallStatus.DOWNLOADING -> {
-                val bytesDownloaded = state.bytesDownloaded()
-                val totalBytesToDownload = state.totalBytesToDownload()
-
-                if (totalBytesToDownload > 0) {
-                    val progress = (bytesDownloaded * 100 / totalBytesToDownload).toInt()
-                    Log.d("MainActivity", "Downloading update: $progress%")
-                } else {
-                    Log.d("MainActivity", "Downloading update: size not yet known")
-                }
-            }
-
-            InstallStatus.DOWNLOADED -> {
-                Log.d("MainActivity", "Update downloaded, ready to install")
-                // UI에서 Snackbar 표시를 위해 상태 업데이트
-                viewModel.setUpdateDownloaded(true)
-            }
-
-            InstallStatus.INSTALLED -> {
-                Log.d("MainActivity", "Update installed")
-                viewModel.setUpdateDownloaded(false)
-            }
-
-            InstallStatus.FAILED -> {
-                Log.e("MainActivity", "Update failed")
-                viewModel.setUpdateDownloaded(false)
-            }
-
-            else -> {
-                Log.d("MainActivity", "Install status: ${state.installStatus()}")
-            }
-        }
-    }
+    ) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
+        splashScreen.setOnExitAnimationListener { splashScreenView ->
+            splashScreenView.remove()
+        }
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        checkForAppUpdate()
-
-        splashScreen.setKeepOnScreenCondition { viewModel.uiState.value.shouldKeepSplashScreen() }
-
-        // Deep link 처리
-        intent?.data?.let { uri ->
-            Log.d("MainActivity", "onCreate - Deep link received: $uri")
-            viewModel.setPendingDeepLink(uri)
-        }
+        deepLinkViewModel.handleIntent(intent) // 콜드 스타트
+        updateViewModel.checkForUpdate()
 
         /** 종료 확인 콜백 */
         val callback = object : OnBackPressedCallback(true) {
@@ -151,151 +92,114 @@ class MainActivity : ComponentActivity() {
         onBackPressedDispatcher.addCallback(this, callback)
 
         setContent {
-            AniPickTheme {
-                val metaData by viewModel.metaData.collectAsState()
-                val uiState by viewModel.uiState.collectAsState()
-                val dialogData by viewModel.dialogData.collectAsState()
-                val pendingDeepLink by viewModel.pendingDeepLink.collectAsState()
-                val updateDownloaded by viewModel.updateDownloaded.collectAsState()
-                val showNoticeDialog by viewModel.showNoticeDialog.collectAsState()
+            val themeMode by themeViewModel.themeMode.collectAsStateWithLifecycle()
+            val darkTheme = when (themeMode) {
+                ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+            }
 
-                val snackbarHostState = remember { SnackbarHostState() }
+            // enableEdgeToEdge 기본값은 기기 다크 모드를 따라가서, 앱에서 고른 모드에 맞춰 상태바/내비게이션 바 아이콘 색을 다시 정한다.
+            DisposableEffect(darkTheme) {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { darkTheme },
+                    navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { darkTheme },
+                )
+                onDispose {}
+            }
 
-                // GlobalSnackbarManager 이벤트 수신 (리스트 스택 방식)
-                var snackBarDataList by remember { mutableStateOf<List<SnackBarData>>(emptyList()) }
+            AniPick_v2Theme(darkTheme = darkTheme) {
+                val navigationState = rememberNavigationState(
+                    startKey = SplashNavKey.Splash,
+                    topLevelKeys = TOP_LEVEL_ITEMS.keys,
+                )
+                val navigator = remember(navigationState) { Navigator(navigationState) }
 
-                LaunchedEffect(Unit) {
-                    globalSnackbarManager.snackbarEvents.collect { snackBarData ->
-                        snackBarDataList = snackBarDataList + snackBarData.copy(
-                            onDismiss = { snackBarDataList = snackBarDataList.drop(1) }
-                        )
-                    }
+                TrackScreenNavigation(navigationState = navigationState)
+
+                // 웜 스타트(onNewIntent) 딥링크 처리 - 콜드 스타트는 Splash가 Home 진입 직후 처리한다.
+                // 로그인 전(Splash/Auth)에 들어온 딥링크는 남겨 뒀다가 로그인 후 바텀 탭 화면에 진입하면 처리한다.
+                val deepLinkState by deepLinkViewModel.state.collectAsStateWithLifecycle()
+                LaunchedEffect(deepLinkState.pendingUri, navigationState.currentTopLevelKey) {
+                    val uri = deepLinkState.pendingUri ?: return@LaunchedEffect
+                    if (navigationState.currentTopLevelKey !in BOTTOM_NAV_ITEMS.keys) return@LaunchedEffect
+                    parseDeepLink(uri)?.let(navigator::navigate)
+                    deepLinkViewModel.consumeDeepLink()
                 }
 
-                // 업데이트 다운로드 완료 시 Snackbar 표시
-                LaunchedEffect(updateDownloaded) {
-                    if (updateDownloaded) {
-                        val result = snackbarHostState.showSnackbar(
-                            message = "업데이트가 준비되었습니다",
-                            actionLabel = "설치",
-                            duration = SnackbarDuration.Indefinite
-                        )
-                        if (result == SnackbarResult.ActionPerformed) {
-                            Log.d("MainActivity", "User clicked install, completing update")
-                            appUpdateManager.completeUpdate()
+                val tokenProvider = koinInject<TokenProvider>()
+                LaunchedEffect(tokenProvider) {
+                    tokenProvider.isLoggedIn
+                        .distinctUntilChanged()
+                        .drop(1) // 콜드 스타트 시점의 최초 상태는 무시 (Splash가 자체적으로 처리)
+                        .filter { isLoggedIn -> !isLoggedIn }
+                        .collect {
+                            // refreshToken까지 만료되어 세션이 끊긴 경우: 로그인 화면으로 강제 이동
+                            navigator.navigateToLogin()
                         }
+                }
+
+                val globalSnackbarManager = koinInject<GlobalSnackbarManager>()
+                val snackbarMessages by globalSnackbarManager.messages.collectAsStateWithLifecycle()
+
+                val updateState by updateViewModel.state.collectAsStateWithLifecycle()
+                ObserveAsEvents(updateViewModel.events) { event ->
+                    when (event) {
+                        is UpdateEvent.StartUpdateFlow -> appUpdateManager.startUpdateFlowForResult(
+                            event.info,
+                            updateResultLauncher,
+                            AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build(),
+                        )
+                        UpdateEvent.CompleteUpdate -> appUpdateManager.completeUpdate()
                     }
                 }
 
                 Box(modifier = Modifier.fillMaxSize()) {
-                    when (uiState) {
-                        is MainActivityUiState.Loading -> {
-                            Log.d("MainActivity", "UI State: Loading")
-                        }
-
-                        is MainActivityUiState.Success -> {
-                            val isAutoLogin = (uiState as MainActivityUiState.Success).isAutoLogin
-                            val startDestination = if (isAutoLogin) Home else Login
-
-                            Log.d("MainActivity", "UI State: Success, isAutoLogin=$isAutoLogin")
-
-                            val bottomDestinations: List<BottomDestination> = BottomDestination.entries
-                            val navController = rememberNavController()
-                            val navBackStackEntry by navController.currentBackStackEntryAsState()
-                            val currentDestination = navBackStackEntry?.destination
-
-                            TrackScreenNavigation(navController = navController)
-
-                            // 자동 로그인 완료 후 Deep link 처리
-                            Log.d("MainActivity", "Setting up LaunchedEffect for deep link, pendingDeepLink=$pendingDeepLink, isAutoLogin=$isAutoLogin")
-                            LaunchedEffect(pendingDeepLink, isAutoLogin) {
-                                Log.d("MainActivity", "LaunchedEffect triggered! pendingDeepLink=$pendingDeepLink, isAutoLogin=$isAutoLogin")
-                                pendingDeepLink?.let { uri ->
-                                    if (isAutoLogin) {
-                                        Log.d("MainActivity", "Auto login completed, waiting for token to be ready...")
-                                        // 토큰이 완전히 로드되고 API 호출에 사용 가능해질 때까지 잠시 대기
-                                        delay(300.milliseconds)
-                                        Log.d("MainActivity", "Processing deep link: $uri")
-                                        handleDeepLink(navController, uri)
-                                        viewModel.clearPendingDeepLink()
-                                    } else {
-                                        Log.d("MainActivity", "Deep link pending - waiting for login: $uri")
-                                        // 자동 로그인 실패 시, 로그인 화면으로 이동
-                                        // 로그인 성공 후 다시 처리하기 위해 pending 상태 유지
-                                    }
-                                }
-                            }
-
-                            APNavHost(
-                                navController = navController,
-                                startDestination = startDestination,
-                                metaData = metaData,
-                                bottomNav = {
-                                    APBottomNavigation(
-                                        items = bottomDestinations,
-                                        navController = navController,
-                                        currentDestination = currentDestination
-                                    )
-                                }
+                    APNavDisplay(
+                        navigationState = navigationState,
+                        navigator = navigator,
+                        bottomNavigation = {
+                            AniPickBottomNavigation(
+                                currentKey = navigationState.currentTopLevelKey,
+                                onNavigate = { navigator.navigate(it) },
                             )
-
-                            if (showNoticeDialog) {
-                                APAlertDialog(
-                                    dialogData = DialogData(
-                                        type = DialogType.ALERT,
-                                        title = UiText.DynamicString("서버 복구 과정 중\n데이터 롤백 및 재가입 안내"),
-                                        subTitle = UiText.DynamicString("7월 7일서버 복구 과정에서 데이터가 7월 4일 기준으로 롤백되는 문제가 발생했습니다.\n\n" +
-                                                "이로 인해 7월 4일 이후에 작성된 리뷰, 평가, 시청 기록 등의 데이터가 복구되지 않았으며, 해당 기간에 가입하신 계정 정보 또한 손실되었습니다.\n\n" +
-                                                "7월 4일 ~ 7월 7일 가입하신 회원분들은 번거러우시겠지만 다시 가입을 진행해 주시기 바랍니다.\n\n" +
-                                                "현재 동일한 문제가 재발하지 않도록 서버 증설 및 시스템 개선 작업을 진행하고 있습니다.\n\n" +
-                                                "서비스 이용에 큰 불편을 드린 점 진심으로 사과드립니다."),
-                                        confirm = UiText.DynamicString("닫기"),
-                                        onConfirm = { viewModel.dismissNoticeDialog() },
-                                        onDismiss = { viewModel.dismissNoticeDialog() }
-                                    ),
-                                    style = DialogStyle(
-                                        subTitleAlign = TextAlign.Start
-                                    )
-                                )
-                            }
-                        }
-
-                        is MainActivityUiState.Error -> {
-                            val errorMessage = (uiState as MainActivityUiState.Error).message
-
-                            dialogData?.let { dialogData ->
-                                when (dialogData.type) {
-                                    DialogType.CONFIRM -> APConfirmDialog(dialogData)
-                                    DialogType.SELECT -> APReportReasonDialog(dialogData)
-                                    DialogType.ALERT -> APAlertDialog(dialogData)
-                                }
-                            }
-
-                            APConfirmDialog(
-                                dialogData = DialogData(
-                                    type = DialogType.CONFIRM,
-                                    title = UiText.DynamicString("앱 초기화 실패"),
-                                    subTitle = UiText.DynamicString(errorMessage),
-                                    dismiss = UiText.DynamicString("종료"),
-                                    confirm = UiText.DynamicString("재시도"),
-                                    onDismiss = { finish() },
-                                    onConfirm = { viewModel.retryAppInit() }
-                                )
-                            )
-                        }
-                    }
-
-                    // 업데이트 Snackbar (하단)
-                    SnackbarHost(
-                        hostState = snackbarHostState,
+                        },
+                        deepLinkViewModel = deepLinkViewModel,
                         modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 80.dp) // BottomNavigation 높이만큼 위로
+                            .fillMaxSize()
                     )
 
-                    // GlobalSnackbarManager Snackbar (상단)
-                    snackBarDataList.firstOrNull()?.let { snackBarData ->
-                        APSnackBar(snackBarData = snackBarData)
+                    snackbarMessages.firstOrNull()?.let { message ->
+                        AniPickSnackbar(
+                            message = message,
+                            onDismiss = { globalSnackbarManager.dismissCurrent() },
+                        )
+                    }
+
+                    when (updateState.appUpdate) {
+                        is AppUpdateUiState.UpdateAvailable -> {
+                            AniPickDialog(
+                                title = "업데이트 안내",
+                                message = "새로운 버전이 있어요. 지금 업데이트할까요?",
+                                onDismissRequest = { updateViewModel.onAction(UpdateAction.OnUpdateDismissed) },
+                                confirmText = "업데이트",
+                                onConfirm = { updateViewModel.onAction(UpdateAction.OnUpdateConfirmed) },
+                                dismissText = "나중에",
+                                onDismiss = { updateViewModel.onAction(UpdateAction.OnUpdateDismissed) },
+                            )
+                        }
+                        AppUpdateUiState.ReadyToInstall -> {
+                            AniPickDialog(
+                                title = "설치 준비 완료",
+                                message = "업데이트 다운로드가 끝났어요. 지금 재시작해서 설치할까요?",
+                                onDismissRequest = { updateViewModel.onAction(UpdateAction.OnInstallDismissed) },
+                                confirmText = "재시작",
+                                onConfirm = { updateViewModel.onAction(UpdateAction.OnInstallConfirmed) },
+                                dismissText = "나중에",
+                                onDismiss = { updateViewModel.onAction(UpdateAction.OnInstallDismissed) },
+                            )
+                        }
+                        AppUpdateUiState.Idle -> Unit
                     }
                 }
             }
@@ -304,107 +208,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        setIntent(intent)
-
-        // 앱이 이미 실행 중일 때 새로운 Deep link 처리
-        intent.data?.let { uri ->
-            Log.d("MainActivity", "onNewIntent - Deep link received: $uri")
-            viewModel.setPendingDeepLink(uri)
-        }
+        setIntent(intent) // getIntent()가 이후에도 최신 intent를 보게 갱신
+        deepLinkViewModel.handleIntent(intent) // 웜 스타트 (launchMode singleTask 전제)
     }
 
     override fun onResume() {
         super.onResume()
-        checkForDownloadedUpdate()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        appUpdateManager.unregisterListener(installStateUpdatedListener)
-    }
-
-    /**
-     * 앱 업데이트 확인 (Flexible Update, 하루 1번)
-     */
-    private fun checkForAppUpdate() {
-        lifecycleScope.launch {
-            try {
-                // 하루 1번만 확인
-                if (!updatePreference.shouldCheckUpdate(daysInterval = 1)) {
-                    Log.d("MainActivity", "Update check skipped - already checked today")
-                    return@launch
-                }
-
-                val appUpdateInfo = appUpdateManager.appUpdateInfo.await()
-
-                // 업데이트가 있고, Flexible Update가 가능한 경우
-                if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
-                    appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
-                ) {
-                    Log.d("MainActivity", "Update available - starting flexible update")
-                    appUpdateManager.registerListener(installStateUpdatedListener)
-                    appUpdateManager.startUpdateFlowForResult(
-                        appUpdateInfo,
-                        updateLauncher,
-                        AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
-                    )
-                    updatePreference.saveUpdateCheckTime()
-                } else {
-                    Log.d("MainActivity", "No update available")
-                }
-            } catch (e: Exception) {
-                Log.e("MainActivity", "Error checking for update", e)
-            }
-        }
-    }
-
-    /**
-     * 다운로드 완료된 업데이트가 있는지 확인 (앱이 재시작되었을 때)
-     */
-    private fun checkForDownloadedUpdate() {
-        lifecycleScope.launch {
-            try {
-                val appUpdateInfo = appUpdateManager.appUpdateInfo.await()
-                if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
-                    Log.d("MainActivity", "Update already downloaded, showing install prompt")
-                    viewModel.setUpdateDownloaded(true)
-                }
-            } catch (e: Exception) {
-                Log.e("MainActivity", "Error checking for downloaded update", e)
-            }
-        }
-    }
-
-    /**
-     * Deep link URI를 파싱하여 적절한 화면으로 이동
-     * 지원하는 형식:
-     * - https://anipick.p-e.kr/app/anime/detail/{animeId}
-     */
-    private fun handleDeepLink(navController: NavHostController, uri: Uri) {
-        try {
-            Log.d("MainActivity", "Handling deep link: $uri")
-
-            val pathSegments = uri.pathSegments
-
-            when {
-                // https://anipick.p-e.kr/app/anime/detail/123 형식
-                uri.scheme in listOf("http", "https") &&
-                        pathSegments.getOrNull(0) == "app" &&
-                        pathSegments.getOrNull(1) == "anime" &&
-                        pathSegments.getOrNull(2) == "detail" -> {
-                    val animeId = pathSegments.getOrNull(3)?.toLongOrNull()
-                    animeId?.let {
-                        Log.d("MainActivity", "Navigating to anime detail: $it")
-                        navController.navigateToInfoAnime(it)
-                    } ?: Log.e("MainActivity", "Invalid anime ID in deep link: $uri")
-                }
-
-                else -> {
-                    Log.e("MainActivity", "Unsupported deep link format: $uri")
-                }
-            }
-        } catch (e: Exception) {
-            Log.e("MainActivity", "Error handling deep link: $uri", e)
-        }
+        updateViewModel.checkDownloadedUpdate()
     }
 }

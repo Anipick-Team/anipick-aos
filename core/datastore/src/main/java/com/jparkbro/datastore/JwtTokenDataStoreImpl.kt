@@ -16,11 +16,9 @@ import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
-import javax.inject.Inject
-import javax.inject.Named
 
-class JwtTokenDataStoreImpl @Inject constructor(
-    @param:Named("jwt") private val dataStore: DataStore<Preferences>
+class JwtTokenDataStoreImpl(
+    private val dataStore: DataStore<Preferences>
 ) : JwtTokenDataStore {
     
     companion object {
