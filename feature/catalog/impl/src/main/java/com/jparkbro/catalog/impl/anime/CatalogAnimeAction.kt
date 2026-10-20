@@ -19,7 +19,7 @@ sealed interface CatalogAnimeAction {
     data object OnLoadMoreReviews : CatalogAnimeAction
     data object OnWriteReviewClick : Navigation
     data object OnCreateCommunityDialogDismiss : CatalogAnimeAction
-    data object OnCreateCommunityConfirm : CatalogAnimeAction
+    data object OnCreateCommunityConfirm : Navigation
     data class OnMyReviewRatingChange(val rating: Float) : CatalogAnimeAction
     data object OnMyReviewRatingChangeFinished : CatalogAnimeAction
     data class OnReviewLikeClick(val reviewId: Long) : CatalogAnimeAction

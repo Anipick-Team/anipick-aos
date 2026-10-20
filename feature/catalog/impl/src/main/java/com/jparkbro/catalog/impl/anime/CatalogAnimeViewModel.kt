@@ -62,7 +62,6 @@ class CatalogAnimeViewModel(
             CatalogAnimeAction.OnCreateCommunityDialogDismiss -> {
                 _state.update { it.copy(showCreateCommunityDialog = false) }
             }
-            CatalogAnimeAction.OnCreateCommunityConfirm -> Unit // TODO: 커뮤니티 생성 API가 추가되면 연동
             is CatalogAnimeAction.OnMyReviewRatingChange -> {
                 _state.update { it.copy(myReviewDraftRating = action.rating) }
             }

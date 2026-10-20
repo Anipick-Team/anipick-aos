@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jparkbro.catalog.impl.anime.components.AnimeStickyTabHeader
 import com.jparkbro.catalog.impl.anime.components.CommunityBoardSkeleton
@@ -81,6 +82,11 @@ internal fun CatalogAnimeRoot(
                     CatalogAnimeAction.OnSeriesMoreClick -> onNavigateToSeries(animeId, state.animeDetail.title.orEmpty())
                     CatalogAnimeAction.OnRecommendationMoreClick -> onNavigateToRecommendation(animeId)
                     is CatalogAnimeAction.OnAnimeClick -> onNavigateToAnimeDetail(action.animeId)
+                    CatalogAnimeAction.OnCreateCommunityConfirm -> {
+                        viewModel.onAction(CatalogAnimeAction.OnCreateCommunityDialogDismiss)
+                        val intent = Intent(Intent.ACTION_VIEW, "https://forms.gle/zDiFyZnNwm8kFi2A7".toUri())
+                        context.startActivity(intent)
+                    }
                 }
                 else -> viewModel.onAction(action)
             }
