@@ -6,15 +6,14 @@ import com.jparkbro.anipick.firebase.FirebaseManager
 import com.jparkbro.auth.impl.di.authModule
 import com.jparkbro.catalog.impl.di.catalogModule
 import com.jparkbro.community.impl.di.communityModule
-import com.jparkbro.core.data.di.dataModule as v2DataModule
+import com.jparkbro.core.data.di.dataModule
 import com.jparkbro.core.datastore.di.datastoreModule
-import com.jparkbro.core.network.di.networkModule as v2NetworkModule
+import com.jparkbro.core.network.di.networkModule
 import com.jparkbro.core.ui.di.uiModule
 import com.jparkbro.datastore.di.dataStoreModule
 import com.jparkbro.explore.impl.di.exploreModule
 import com.jparkbro.home.impl.di.homeModule
 import com.jparkbro.mypage.impl.di.myPageModule
-import com.jparkbro.network.di.networkModule
 import com.jparkbro.ranking.impl.di.rankingModule
 import com.jparkbro.review.impl.di.reviewModule
 import com.jparkbro.search.impl.di.searchModule
@@ -43,9 +42,9 @@ class AniPickApplication : Application() {
                 appModule,
 
                 // v2 core (v1 core와 공존, 화면을 v2로 바꾸면서 v1 쪽을 걷어낸다)
-                v2NetworkModule,
+                networkModule,
                 datastoreModule,
-                v2DataModule,
+                dataModule,
                 uiModule,
 
                 splashModule,
@@ -59,7 +58,6 @@ class AniPickApplication : Application() {
                 catalogModule,
                 communityModule,
 
-                networkModule,
                 dataStoreModule,
             )
         }

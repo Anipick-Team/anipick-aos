@@ -84,4 +84,4 @@ AniPick
         └── search              # 검색
 ```
 
-각 feature 모듈은 `core:domain`, `core:data`를 통해 비즈니스 로직과 데이터에 접근하며, `core:ui`의 공통 컴포넌트와 테마를 공유합니다.
+각 feature 모듈은 `core:data`를 통해 비즈니스 로직과 데이터에 접근하며, `core:ui`의 공통 컴포넌트와 테마를 공유합니다.
