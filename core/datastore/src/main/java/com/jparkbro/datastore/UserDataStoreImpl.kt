@@ -3,13 +3,11 @@ package com.jparkbro.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.first
-import javax.inject.Inject
 
-class UserDataStoreImpl @Inject constructor(
+class UserDataStoreImpl(
     private val dataStore: DataStore<Preferences>
 ) : UserDataStore {
 

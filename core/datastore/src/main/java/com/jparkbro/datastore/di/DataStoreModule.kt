@@ -6,76 +6,24 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.jparkbro.datastore.JwtTokenDataStore
 import com.jparkbro.datastore.JwtTokenDataStoreImpl
-import com.jparkbro.datastore.NoticeDataStore
-import com.jparkbro.datastore.NoticeDataStoreImpl
 import com.jparkbro.datastore.RecentAnimeDataStore
 import com.jparkbro.datastore.RecentAnimeDataStoreImpl
-import com.jparkbro.datastore.SearchDataStore
-import com.jparkbro.datastore.SearchDataStoreImpl
 import com.jparkbro.datastore.UserDataStore
 import com.jparkbro.datastore.UserDataStoreImpl
-import dagger.Binds
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Named
-import javax.inject.Singleton
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "anipick_preferences")
 private val Context.jwtDataStore: DataStore<Preferences> by preferencesDataStore(name = "jwt_tokens_secure")
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class DataStoreModule {
+val dataStoreModule = module {
+    single<DataStore<Preferences>> { androidContext().dataStore }
+    single<DataStore<Preferences>>(named("jwt")) { androidContext().jwtDataStore }
 
-    @Binds
-    @Singleton
-    internal abstract fun bindsJwtTokenDataStore(
-        jwtTokenDataStoreImpl: JwtTokenDataStoreImpl
-    ): JwtTokenDataStore
-
-    @Binds
-    @Singleton
-    internal abstract fun bindsUserDataStore(
-        userDataStoreImpl: UserDataStoreImpl
-    ): UserDataStore
-
-    @Binds
-    @Singleton
-    internal abstract fun bindsRecentAnimeDataStore(
-        recentAnimeDataStoreImpl: RecentAnimeDataStoreImpl
-    ): RecentAnimeDataStore
-
-    @Binds
-    @Singleton
-    internal abstract fun bindsSearchDataStore(
-        searchDataStoreImpl: SearchDataStoreImpl
-    ): SearchDataStore
-
-    @Binds
-    @Singleton
-    internal abstract fun bindsNoticeDataStore(
-        noticeDataStoreImpl: NoticeDataStoreImpl
-    ): NoticeDataStore
-
-    companion object {
-        @Provides
-        @Singleton
-        fun providePreferencesDataStore(
-            @ApplicationContext context: Context
-        ): DataStore<Preferences> {
-            return context.dataStore
-        }
-        
-        @Provides
-        @Singleton
-        @Named("jwt")
-        fun provideJwtDataStore(
-            @ApplicationContext context: Context
-        ): DataStore<Preferences> {
-            return context.jwtDataStore
-        }
-    }
+    single<JwtTokenDataStore> { JwtTokenDataStoreImpl(get(named("jwt"))) }
+    singleOf(::UserDataStoreImpl) { bind<UserDataStore>() }
+    singleOf(::RecentAnimeDataStoreImpl) { bind<RecentAnimeDataStore>() }
 }

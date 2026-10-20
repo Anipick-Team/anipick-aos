@@ -22,18 +22,18 @@ AniPick은 애니메이션 정보를 탐색하고, 랭킹과 추천을 통해 �
 **Language & UI**
 - Kotlin
 - Jetpack Compose, Material 3
-- Navigation Compose
+- Navigation 3
 - Splash Screen API
 
 **Architecture & DI**
 - Multi-module 기반 Clean Architecture (Presentation - Domain - Data)
-- Hilt, KSP
+- Koin
 
 **비동기 처리**
 - Kotlin Coroutines, Flow
 
 **네트워크 & 데이터**
-- Retrofit2, OkHttp
+- Ktor (v1 화면은 Retrofit2, OkHttp — 이관 중)
 - Kotlinx Serialization
 - DataStore (Preferences)
 - Coil3 (이미지 로딩)
@@ -58,7 +58,7 @@ AniPick
 │
 ├── core
 │   ├── model                   # 공통 도메인 모델
-│   ├── network                 # Retrofit API, DataSource
+│   ├── network                 # Ktor API, DataSource
 │   ├── data                    # Repository 구현체
 │   ├── domain                  # UseCase
 │   ├── datastore               # 로컬 데이터 저장 (토큰 등)
@@ -84,4 +84,4 @@ AniPick
         └── search              # 검색
 ```
 
-각 feature 모듈은 `core:domain`, `core:data`를 통해 비즈니스 로직과 데이터에 접근하며, `core:ui`의 공통 컴포넌트와 테마를 공유합니다.
+각 feature 모듈은 `core:data`를 통해 비즈니스 로직과 데이터에 접근하며, `core:ui`의 공통 컴포넌트와 테마를 공유합니다.

@@ -1,0 +1,259 @@
+package com.jparkbro.catalog.impl.anime
+
+import android.content.Intent
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.net.toUri
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jparkbro.catalog.impl.anime.components.AnimeStickyTabHeader
+import com.jparkbro.catalog.impl.anime.components.CommunityBoardSkeleton
+import com.jparkbro.catalog.impl.anime.components.ImagePreviewDialog
+import com.jparkbro.catalog.impl.anime.components.animeHeroSection
+import com.jparkbro.catalog.impl.anime.components.animeInfoTabContent
+import com.jparkbro.catalog.impl.anime.components.animeInfoTabSkeleton
+import com.jparkbro.catalog.impl.anime.components.animeReviewTabContent
+import com.jparkbro.catalog.impl.BuildConfig
+import com.jparkbro.core.designsystem.component.AniPickDialog
+import com.jparkbro.core.designsystem.theme.AniPickTheme
+import com.jparkbro.core.model.community.CommunityBoard
+import com.jparkbro.core.ui.component.AniPickReportDialog
+import com.jparkbro.core.ui.effect.LoadMoreEffect
+import com.jparkbro.core.ui.effect.ObserveAsEvents
+import com.jparkbro.core.ui.util.orNullIfDefaultCover
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
+
+@Composable
+internal fun CatalogAnimeRoot(
+    animeId: Long,
+    onBackClick: () -> Unit,
+    onNavigateToStudio: (Long) -> Unit,
+    onNavigateToCommunity: (CommunityBoard) -> Unit,
+    onNavigateToReviewWrite: (Long) -> Unit,
+    onNavigateToCharacterList: (Long) -> Unit,
+    onNavigateToActorDetail: (Long) -> Unit,
+    onNavigateToSeries: (Long, String) -> Unit,
+    onNavigateToRecommendation: (Long) -> Unit,
+    onNavigateToAnimeDetail: (Long) -> Unit,
+    viewModel: CatalogAnimeViewModel = koinViewModel(parameters = { parametersOf(animeId) }),
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is CatalogAnimeEvent.NavigateToCommunity -> onNavigateToCommunity(event.board)
+        }
+    }
+
+    CatalogAnimeScreen(
+        state = state,
+        onAction = { action ->
+            when (action) {
+                is CatalogAnimeAction.Navigation -> when (action) {
+                    CatalogAnimeAction.OnBackClick -> onBackClick()
+                    CatalogAnimeAction.OnShareClick -> {
+                        val intent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, "${BuildConfig.DEEP_LINK_BASE_URL}/anime/detail/$animeId")
+                        }
+                        context.startActivity(Intent.createChooser(intent, null))
+                    }
+                    is CatalogAnimeAction.OnStudioClick -> onNavigateToStudio(action.studioId)
+                    CatalogAnimeAction.OnWriteReviewClick -> onNavigateToReviewWrite(animeId)
+                    CatalogAnimeAction.OnCastMoreClick -> onNavigateToCharacterList(animeId)
+                    is CatalogAnimeAction.OnCastClick -> onNavigateToActorDetail(action.personId)
+                    CatalogAnimeAction.OnSeriesMoreClick -> onNavigateToSeries(animeId, state.animeDetail.title.orEmpty())
+                    CatalogAnimeAction.OnRecommendationMoreClick -> onNavigateToRecommendation(animeId)
+                    is CatalogAnimeAction.OnAnimeClick -> onNavigateToAnimeDetail(action.animeId)
+                    CatalogAnimeAction.OnCreateCommunityConfirm -> {
+                        viewModel.onAction(CatalogAnimeAction.OnCreateCommunityDialogDismiss)
+                        val intent = Intent(Intent.ACTION_VIEW, "https://forms.gle/zDiFyZnNwm8kFi2A7".toUri())
+                        context.startActivity(intent)
+                    }
+                }
+                else -> viewModel.onAction(action)
+            }
+        },
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun CatalogAnimeScreen(
+    state: CatalogAnimeState,
+    onAction: (CatalogAnimeAction) -> Unit,
+) {
+    val listState = rememberLazyListState()
+    val isTopBarCollapsed by remember {
+        derivedStateOf { listState.firstVisibleItemIndex >= 1 }
+    }
+    var isDescriptionExpanded by remember { mutableStateOf(false) }
+    // null이면 다이얼로그 숨김 - 배너/커버 중 어느 쪽을 눌렀는지에 따라 보여줄 이미지 URL을 담는다.
+    var previewImageUrl by remember { mutableStateOf<String?>(null) }
+
+    if (state.selectedTab == CatalogAnimeTab.REVIEW) {
+        LoadMoreEffect(state = listState, threshold = 3) {
+            onAction(CatalogAnimeAction.OnLoadMoreReviews)
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .background(AniPickTheme.colors.white),
+        ) {
+            animeHeroSection(
+                state = state,
+                onAction = onAction,
+                onBannerImageClick = {
+                    previewImageUrl = state.animeDetail.bannerImageUrl.orNullIfDefaultCover()
+                        ?: state.animeDetail.coverImageUrl.orNullIfDefaultCover()
+                },
+                onCoverImageClick = { previewImageUrl = state.animeDetail.coverImageUrl.orNullIfDefaultCover() },
+            )
+
+            stickyHeader {
+                AnimeStickyTabHeader(
+                    state = state,
+                    onAction = onAction,
+                    isTopBarCollapsed = isTopBarCollapsed,
+                )
+            }
+
+            when (state.selectedTab) {
+                CatalogAnimeTab.INFO -> if (state.isLoading) {
+                    animeInfoTabSkeleton()
+                } else {
+                    animeInfoTabContent(
+                        detail = state.animeDetail,
+                        cast = state.cast,
+                        series = state.series,
+                        recommendations = state.recommendations,
+                        isDescriptionExpanded = isDescriptionExpanded,
+                        onToggleDescriptionExpanded = { isDescriptionExpanded = !isDescriptionExpanded },
+                        onCastMoreClick = { onAction(CatalogAnimeAction.OnCastMoreClick) },
+                        onCastClick = { personId -> onAction(CatalogAnimeAction.OnCastClick(personId)) },
+                        onSeriesMoreClick = { onAction(CatalogAnimeAction.OnSeriesMoreClick) },
+                        onRecommendationMoreClick = { onAction(CatalogAnimeAction.OnRecommendationMoreClick) },
+                        onAnimeClick = { animeId -> onAction(CatalogAnimeAction.OnAnimeClick(animeId)) },
+                        onStudioClick = { studioId -> onAction(CatalogAnimeAction.OnStudioClick(studioId)) },
+                    )
+                }
+                CatalogAnimeTab.REVIEW -> animeReviewTabContent(
+                    myReview = state.myReview,
+                    myReviewDraftRating = state.myReviewDraftRating,
+                    reviewCount = state.animeDetail.reviewCount ?: 0,
+                    reviews = state.reviews,
+                    isReviewsLoading = state.isReviewsLoading,
+                    isLoadingMoreReviews = state.isLoadingMoreReviews,
+                    reviewSort = state.reviewSort,
+                    onReviewSortChanged = { sort -> onAction(CatalogAnimeAction.OnReviewSortChanged(sort)) },
+                    showSpoilerReviews = state.showSpoilerReviews,
+                    onSpoilerToggle = { enabled -> onAction(CatalogAnimeAction.OnSpoilerToggle(enabled)) },
+                    onWriteReviewClick = { onAction(CatalogAnimeAction.OnWriteReviewClick) },
+                    onMyReviewRatingChange = { rating -> onAction(CatalogAnimeAction.OnMyReviewRatingChange(rating)) },
+                    onMyReviewRatingChangeFinished = { onAction(CatalogAnimeAction.OnMyReviewRatingChangeFinished) },
+                    onReviewLikeClick = { reviewId -> onAction(CatalogAnimeAction.OnReviewLikeClick(reviewId)) },
+                    onReviewEditClick = { onAction(CatalogAnimeAction.OnWriteReviewClick) },
+                    onReviewDeleteClick = { reviewId -> onAction(CatalogAnimeAction.OnReviewDeleteClick(reviewId)) },
+                    onReviewReportClick = { reviewId -> onAction(CatalogAnimeAction.OnReviewReportClick(reviewId)) },
+                    onReviewBlockClick = { userId -> onAction(CatalogAnimeAction.OnReviewBlockClick(userId)) },
+                )
+                CatalogAnimeTab.COMMUNITY -> Unit
+            }
+        }
+
+        if (state.isCommunityBoardLoading) {
+            CommunityBoardSkeleton()
+        }
+    }
+
+    if (state.showCreateCommunityDialog) {
+        AniPickDialog(
+            title = "알림",
+            message = "'${state.animeDetail.title}'의 커뮤니티는 아직 생성되지 않았습니다.\n커뮤니티 생성을 원하실 경우 문의해 주세요.",
+            onDismissRequest = { onAction(CatalogAnimeAction.OnCreateCommunityDialogDismiss) },
+            confirmText = "문의하기",
+            onConfirm = { onAction(CatalogAnimeAction.OnCreateCommunityConfirm) },
+            dismissText = "닫기",
+            onDismiss = { onAction(CatalogAnimeAction.OnCreateCommunityDialogDismiss) },
+        )
+    }
+
+    if (state.reportTargetReviewId != null) {
+        AniPickReportDialog(
+            selectedCategory = state.reportCategory,
+            onCategorySelect = { onAction(CatalogAnimeAction.OnReviewReportCategorySelect(it)) },
+            onDismissRequest = { onAction(CatalogAnimeAction.OnReviewReportDismiss) },
+            onConfirm = { onAction(CatalogAnimeAction.OnReviewReportConfirm) },
+            onDismiss = { onAction(CatalogAnimeAction.OnReviewReportDismiss) },
+        )
+    }
+
+    if (state.deleteTargetReviewId != null) {
+        AniPickDialog(
+            title = "리뷰 삭제",
+            message = "이 리뷰를 삭제하시겠어요?",
+            onDismissRequest = { onAction(CatalogAnimeAction.OnReviewDeleteDismiss) },
+            confirmText = "삭제",
+            onConfirm = { onAction(CatalogAnimeAction.OnReviewDeleteConfirm) },
+            dismissText = "취소",
+            onDismiss = { onAction(CatalogAnimeAction.OnReviewDeleteDismiss) },
+        )
+    }
+
+    previewImageUrl?.let { imageUrl ->
+        ImagePreviewDialog(
+            title = state.animeDetail.title ?: "-",
+            imageUrl = imageUrl,
+            onDismissRequest = { previewImageUrl = null },
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun CatalogAnimeScreenPreview() {
+    CatalogAnimeScreen(
+        state = CatalogAnimeState(animeId = 1L),
+        onAction = {},
+    )
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun CatalogAnimeScreenSkeletonPreview() {
+    CatalogAnimeScreen(
+        state = CatalogAnimeState(animeId = 1L, isLoading = true),
+        onAction = {},
+    )
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun CatalogAnimeScreenCommunityLoadingPreview() {
+    CatalogAnimeScreen(
+        state = CatalogAnimeState(animeId = 1L, isCommunityBoardLoading = true),
+        onAction = {},
+    )
+}
