@@ -1,17 +1,22 @@
 package com.jparkbro.auth.impl.login
 
 import android.app.Activity
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.jparkbro.auth.impl.BuildConfig
 import com.jparkbro.core.common.result.DataError
 import com.jparkbro.core.common.result.onFailure
 import com.jparkbro.core.common.result.onSuccess
 import com.jparkbro.core.common.result.toDisplayMessage
 import com.jparkbro.core.data.auth.AuthRepository
 import com.jparkbro.core.ui.GlobalSnackbarManager
-import com.jparkbro.domain.GoogleLoginUseCase
-import com.jparkbro.model.exception.ApiException
-import com.jparkbro.model.exception.NetworkException
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
@@ -26,7 +31,6 @@ import kotlin.coroutines.resume
 class LoginViewModel(
     private val authRepository: AuthRepository,
     private val globalSnackbarManager: GlobalSnackbarManager,
-    private val googleLoginUseCase: GoogleLoginUseCase,
 ) : ViewModel() {
 
     private val _events = Channel<LoginEvent>()
@@ -91,22 +95,20 @@ class LoginViewModel(
             }
         }
 
-    /** 구글 로그인은 v1 경로(core:domain [GoogleLoginUseCase])를 그대로 쓴다. v2 경로(authRepository.loginWithGoogle)는 동작하지 않는다. */
     private fun googleLogin(activity: Activity) {
         viewModelScope.launch {
-            googleLoginUseCase(activity).collect { result ->
-                result.fold(
-                    onSuccess = { reviewCompletedYn ->
-                        _events.send(
-                            if (reviewCompletedYn) LoginEvent.NavigateToHome else LoginEvent.NavigateToPreferenceSetup
-                        )
-                    },
-                    onFailure = { exception ->
-                        Timber.e(exception, "구글 로그인 실패")
-                        handleLoginFailure(exception.toNetworkError())
-                    },
-                )
-            }
+            val idToken = requestGoogleIdToken(activity) ?: return@launch
+
+            authRepository.loginWithGoogle(idToken)
+                .onSuccess { reviewCompletedYn ->
+                    _events.send(
+                        if (reviewCompletedYn == true) LoginEvent.NavigateToHome else LoginEvent.NavigateToPreferenceSetup
+                    )
+                }
+                .onFailure { error ->
+                    Timber.e("구글 로그인 실패: $error")
+                    handleLoginFailure(error)
+                }
         }
     }
 
@@ -114,10 +116,37 @@ class LoginViewModel(
         globalSnackbarManager.showSnackbar(error.toDisplayMessage())
     }
 
-    /** v1 [GoogleLoginUseCase]가 던지는 예외를 v2 에러 문구 체계([toDisplayMessage])로 옮긴다. */
-    private fun Throwable.toNetworkError(): DataError.Network = when (this) {
-        is NetworkException -> DataError.Network.NO_INTERNET
-        is ApiException -> DataError.Network.Api(code = errorCode, message = errorValue, reason = null)
-        else -> DataError.Network.UNKNOWN
+    private suspend fun requestGoogleIdToken(activity: Activity): String? {
+        val signInWithGoogleOption: GetSignInWithGoogleOption = GetSignInWithGoogleOption
+            .Builder(serverClientId = BuildConfig.WEB_CLIENT_ID)
+            .build()
+
+        val request: GetCredentialRequest = GetCredentialRequest.Builder()
+            .addCredentialOption(signInWithGoogleOption)
+            .build()
+
+        Timber.d("구글 로그인 시도: getCredential 요청")
+
+        return try {
+            val credential = CredentialManager.create(activity)
+                .getCredential(context = activity, request = request)
+                .credential
+
+            Timber.d("구글 로그인: credential 수신 (type=${credential.type})")
+
+            if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                GoogleIdTokenCredential.createFrom(credential.data).idToken
+            } else {
+                Timber.e("구글 로그인 실패: 알 수 없는 credential 타입 (${credential.type})")
+                null
+            }
+        } catch (e: GetCredentialCancellationException) {
+            // 사용자가 직접 취소한 경우
+            Timber.d("구글 로그인 취소됨: ${e.type}, ${e.errorMessage}")
+            null
+        } catch (e: GetCredentialException) {
+            Timber.e(e, "구글 로그인 실패: type=${e.type}, errorMessage=${e.errorMessage}")
+            null
+        }
     }
 }

@@ -10,9 +10,7 @@ import com.jparkbro.core.data.di.dataModule as v2DataModule
 import com.jparkbro.core.datastore.di.datastoreModule
 import com.jparkbro.core.network.di.networkModule as v2NetworkModule
 import com.jparkbro.core.ui.di.uiModule
-import com.jparkbro.data.di.dataModule
 import com.jparkbro.datastore.di.dataStoreModule
-import com.jparkbro.domain.di.domainModule
 import com.jparkbro.explore.impl.di.exploreModule
 import com.jparkbro.home.impl.di.homeModule
 import com.jparkbro.mypage.impl.di.myPageModule
@@ -63,8 +61,6 @@ class AniPickApplication : Application() {
 
                 networkModule,
                 dataStoreModule,
-                dataModule,
-                domainModule,
             )
         }
 

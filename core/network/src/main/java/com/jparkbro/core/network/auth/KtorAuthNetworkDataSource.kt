@@ -24,7 +24,8 @@ class KtorAuthNetworkDataSource(
     ): Result<OAuthLoginResponse, DataError.Network> {
         return httpClient.post(
             route = "/oauth/${provider.name}/callback",
-            body = OAuthLoginRequest(code = code),
+            // ApiJson은 encodeDefaults가 꺼져 있어 기본값 프로퍼티를 보내지 않는다 - platform은 기본값 없이 명시한다.
+            body = OAuthLoginRequest(platform = "android", code = code),
         )
     }
 

@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class OAuthLoginRequest(
-    val platform: String = "android",
+    val platform: String,
     val code: String,
 )

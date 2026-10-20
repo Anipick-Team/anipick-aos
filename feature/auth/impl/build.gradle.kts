@@ -10,8 +10,10 @@ dependencies {
     // Kakao
     implementation(libs.kakao.user)
 
-    // Google Login: v1 core:domain의 GoogleLoginUseCase를 그대로 쓴다 (v2 구글 로그인 경로는 동작하지 않음)
-    implementation(projects.core.domain)
+    // Google Login
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     implementation(projects.feature.auth.api)
     implementation(projects.feature.home.api)
