@@ -10,7 +10,6 @@ import com.jparkbro.core.data.di.dataModule
 import com.jparkbro.core.datastore.di.datastoreModule
 import com.jparkbro.core.network.di.networkModule
 import com.jparkbro.core.ui.di.uiModule
-import com.jparkbro.datastore.di.dataStoreModule
 import com.jparkbro.explore.impl.di.exploreModule
 import com.jparkbro.home.impl.di.homeModule
 import com.jparkbro.mypage.impl.di.myPageModule
@@ -41,7 +40,6 @@ class AniPickApplication : Application() {
             modules(
                 appModule,
 
-                // v2 core (v1 core와 공존, 화면을 v2로 바꾸면서 v1 쪽을 걷어낸다)
                 networkModule,
                 datastoreModule,
                 dataModule,
@@ -57,8 +55,6 @@ class AniPickApplication : Application() {
                 searchModule,
                 catalogModule,
                 communityModule,
-
-                dataStoreModule,
             )
         }
 
