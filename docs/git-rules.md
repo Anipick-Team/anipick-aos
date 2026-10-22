@@ -6,7 +6,7 @@
 
 | 항목 | 값 |
 |---|---|
-| 원격 | `origin` = `https://github.com/Anipick-Team/anipick-aos.git` |
+| 원격 | `origin` = `git@github.com:Anipick-Team/anipick-aos.git` |
 | 기본 브랜치 | `main` |
 | 통합 브랜치 | `dev` (`main`에서 분기) |
 | 작업 브랜치 | `v3` 등 버전 단위 브랜치 |
