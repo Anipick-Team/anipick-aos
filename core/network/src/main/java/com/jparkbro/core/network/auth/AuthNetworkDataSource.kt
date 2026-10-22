@@ -31,4 +31,7 @@ interface AuthNetworkDataSource {
         newPassword: String,
         checkNewPassword: String,
     ): Result<Unit, DataError.Network>
+
+    /** HttpClient가 메모리에 들고 있는 bearer 토큰 비우기 - 다음 요청 때 저장소에서 다시 읽는다 */
+    fun clearCachedTokens()
 }

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jparkbro.core.common.result.onFailure
 import com.jparkbro.core.common.result.onSuccess
-import com.jparkbro.core.data.auth.AuthRepository
 import com.jparkbro.core.data.setting.AppSettingRepository
 import com.jparkbro.core.data.user.UserRepository
 import com.jparkbro.core.model.setting.ThemeMode
@@ -20,7 +19,6 @@ import kotlinx.coroutines.launch
 
 class SettingMainViewModel(
     private val userRepository: UserRepository,
-    private val authRepository: AuthRepository,
     private val globalSnackbarManager: GlobalSnackbarManager,
     private val appSettingRepository: AppSettingRepository,
 ) : ViewModel() {
@@ -97,7 +95,7 @@ class SettingMainViewModel(
     private fun logout() {
         viewModelScope.launch {
             _state.update { it.copy(showLogoutDialog = false) }
-            authRepository.clearLocalData()
+            userRepository.logout()
             sendEvent(SettingMainEvent.LogoutConfirmed)
         }
     }

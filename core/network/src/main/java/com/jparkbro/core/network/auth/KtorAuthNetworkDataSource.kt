@@ -13,6 +13,8 @@ import com.jparkbro.core.network.auth.dto.PasswordResetRequest
 import com.jparkbro.core.network.patch
 import com.jparkbro.core.network.post
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.authProvider
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 
 class KtorAuthNetworkDataSource(
     private val httpClient: HttpClient,
@@ -73,5 +75,9 @@ class KtorAuthNetworkDataSource(
             route = "/auth/password/reset",
             body = PasswordResetRequest(email = email, newPassword = newPassword, checkNewPassword = checkNewPassword),
         )
+    }
+
+    override fun clearCachedTokens() {
+        httpClient.authProvider<BearerAuthProvider>()?.clearToken()
     }
 }
