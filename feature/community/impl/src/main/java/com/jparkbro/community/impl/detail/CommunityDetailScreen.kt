@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +36,7 @@ import com.jparkbro.community.impl.detail.components.CommunityDetailSkeleton
 import com.jparkbro.core.designsystem.component.AniPickDialog
 import com.jparkbro.core.designsystem.component.AniPickDropdownMenuIcon
 import com.jparkbro.core.designsystem.component.AniPickEmptyState
+import com.jparkbro.core.designsystem.component.AniPickLoadingOverlay
 import com.jparkbro.core.designsystem.component.AniPickTitleTopAppBar
 import com.jparkbro.core.designsystem.extension.modifier.BottomEdgeShadowClearance
 import com.jparkbro.core.designsystem.icon.MoreHorizontal
@@ -96,147 +98,153 @@ private fun CommunityDetailScreen(
 ) {
     val focusManager = LocalFocusManager.current
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = { focusManager.clearFocus() })
-            },
-        topBar = {
-            AniPickTitleTopAppBar(
-                onBackClick = { onAction(CommunityDetailAction.OnBackClick) },
-                actions = {
-                    AniPickDropdownMenuIcon(
-                        items = if (state.post.isMine == true) {
-                            listOf(
-                                communityMenuItem("수정") { onAction(CommunityDetailAction.OnEditClick) },
-                                communityMenuItem("삭제") { onAction(CommunityDetailAction.OnDeleteClick) },
-                            )
-                        } else {
-                            listOf(
-                                communityMenuItem("신고") { onAction(CommunityDetailAction.OnReportClick) },
-                            )
-                        },
-                        trigger = {
-                            Icon(
-                                imageVector = MoreHorizontal,
-                                contentDescription = "더보기",
-                                tint = AniPickTheme.colors.black,
-                                modifier = Modifier.size(24.dp),
-                            )
-                        },
-                    )
-                }
-            )
-        },
-        containerColor = AniPickTheme.colors.lightGray,
-        bottomBar = {
-            if (!state.isContentLoading && state.error == null) {
-                CommunityCommentInputBar(
-                    state = state.commentInputState,
-                    enabled = state.commentInputState.text.isNotBlank() && !state.isCommentSubmitting,
-                    isSubmitting = state.isCommentSubmitting,
-                    replyTargetContent = state.replyTargetComment?.content,
-                    isEditing = state.editTargetComment != null,
-                    onCancelClick = {
-                        if (state.editTargetComment != null) {
-                            onAction(CommunityDetailAction.OnCommentEditCancelClick)
-                        } else {
-                            onAction(CommunityDetailAction.OnReplyTargetCancelClick)
-                        }
-                    },
-                    onSendClick = { onAction(CommunityDetailAction.OnCommentSendClick) },
-                )
-            }
-        },
-    ) { innerPadding ->
-        LazyColumn(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(top = BottomEdgeShadowClearance),
-            contentPadding = PaddingValues(bottom = 40.dp),
-        ) {
-            if (state.isContentLoading) {
-                item {
-                    Column {
-                        CommunityDetailSkeleton(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(AniPickTheme.colors.white)
-                                .padding(top = 40.dp),
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(40.dp)
-                                .background(AniPickTheme.colors.white),
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { focusManager.clearFocus() })
+                },
+            topBar = {
+                AniPickTitleTopAppBar(
+                    onBackClick = { onAction(CommunityDetailAction.OnBackClick) },
+                    actions = {
+                        AniPickDropdownMenuIcon(
+                            items = if (state.post.isMine == true) {
+                                listOf(
+                                    communityMenuItem("수정") { onAction(CommunityDetailAction.OnEditClick) },
+                                    communityMenuItem("삭제") { onAction(CommunityDetailAction.OnDeleteClick) },
+                                )
+                            } else {
+                                listOf(
+                                    communityMenuItem("신고") { onAction(CommunityDetailAction.OnReportClick) },
+                                )
+                            },
+                            trigger = {
+                                Icon(
+                                    imageVector = MoreHorizontal,
+                                    contentDescription = "더보기",
+                                    tint = AniPickTheme.colors.black,
+                                    modifier = Modifier.size(24.dp),
+                                )
+                            },
                         )
                     }
-                }
-                items(COMMENT_SKELETON_ITEM_COUNT) {
-                    CommunityCommentItemSkeleton()
-                }
-            } else if (state.error != null) {
-                item {
-                    AniPickEmptyState(
-                        message = state.error,
-                        onRetryClick = { onAction(CommunityDetailAction.OnRetryClick) },
-                        modifier = Modifier
-                            .fillParentMaxHeight(0.6f)
-                            .padding(top = 40.dp),
+                )
+            },
+            containerColor = AniPickTheme.colors.lightGray,
+            bottomBar = {
+                if (!state.isContentLoading && state.error == null) {
+                    CommunityCommentInputBar(
+                        state = state.commentInputState,
+                        enabled = state.commentInputState.text.isNotBlank() && !state.isCommentSubmitting,
+                        isSubmitting = state.isCommentSubmitting,
+                        replyTargetContent = state.replyTargetComment?.content,
+                        isEditing = state.editTargetComment != null,
+                        onCancelClick = {
+                            if (state.editTargetComment != null) {
+                                onAction(CommunityDetailAction.OnCommentEditCancelClick)
+                            } else {
+                                onAction(CommunityDetailAction.OnReplyTargetCancelClick)
+                            }
+                        },
+                        onSendClick = { onAction(CommunityDetailAction.OnCommentSendClick) },
                     )
                 }
-            } else {
-                item {
-                    Column {
-                        CommunityDetailHeader(
-                            post = state.post,
-                            images = state.post.imageUrls.orEmpty().mapIndexed { index, url ->
-                                state.post.imageBytesList?.getOrNull(index) ?: url
-                            },
-                            onLikeClick = { onAction(CommunityDetailAction.OnPostLikeClick) },
-                            onShareClick = { onAction(CommunityDetailAction.OnShareClick) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(AniPickTheme.colors.white)
-                                .padding(top = 20.dp),
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(40.dp)
-                                .background(AniPickTheme.colors.white),
-                        )
+            },
+        ) { innerPadding ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(top = BottomEdgeShadowClearance),
+                contentPadding = PaddingValues(bottom = 40.dp),
+            ) {
+                if (state.isContentLoading) {
+                    item {
+                        Column {
+                            CommunityDetailSkeleton(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(AniPickTheme.colors.white)
+                                    .padding(top = 40.dp),
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(40.dp)
+                                    .background(AniPickTheme.colors.white),
+                            )
+                        }
                     }
-                }
-                if (state.comments.isEmpty()) {
+                    items(COMMENT_SKELETON_ITEM_COUNT) {
+                        CommunityCommentItemSkeleton()
+                    }
+                } else if (state.error != null) {
                     item {
                         AniPickEmptyState(
-                            message = "아직 댓글이 없습니다.",
-                            onRetryClick = null,
+                            message = state.error,
+                            onRetryClick = { onAction(CommunityDetailAction.OnRetryClick) },
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 20.dp),
+                                .fillParentMaxHeight(0.6f)
+                                .padding(top = 40.dp),
                         )
                     }
-                }
-                itemsIndexed(state.comments, key = { _, comment -> comment.commentId }) { index, comment ->
-                    Column {
-                        CommunityCommentItem(
-                            comment = comment,
-                            onReplyClick = { onAction(CommunityDetailAction.OnCommentReplyClick(it)) },
-                            onLikeClick = { onAction(CommunityDetailAction.OnCommentLikeClick(it)) },
-                            onEditClick = { onAction(CommunityDetailAction.OnCommentEditClick(it)) },
-                            onDeleteClick = { onAction(CommunityDetailAction.OnCommentDeleteClick(it)) },
-                            onReportClick = { onAction(CommunityDetailAction.OnCommentReportClick(it)) },
-                        )
-                        if (index != state.comments.lastIndex) {
-                            HorizontalDivider(thickness = 1.dp, color = AniPickTheme.colors.gray)
+                } else {
+                    item {
+                        Column {
+                            CommunityDetailHeader(
+                                post = state.post,
+                                images = state.post.imageUrls.orEmpty().mapIndexed { index, url ->
+                                    state.post.imageBytesList?.getOrNull(index) ?: url
+                                },
+                                onLikeClick = { onAction(CommunityDetailAction.OnPostLikeClick) },
+                                onShareClick = { onAction(CommunityDetailAction.OnShareClick) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(AniPickTheme.colors.white)
+                                    .padding(top = 20.dp),
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(40.dp)
+                                    .background(AniPickTheme.colors.white),
+                            )
+                        }
+                    }
+                    if (state.comments.isEmpty()) {
+                        item {
+                            AniPickEmptyState(
+                                message = "아직 댓글이 없습니다.",
+                                onRetryClick = null,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 20.dp),
+                            )
+                        }
+                    }
+                    itemsIndexed(state.comments, key = { _, comment -> comment.commentId }) { index, comment ->
+                        Column {
+                            CommunityCommentItem(
+                                comment = comment,
+                                onReplyClick = { onAction(CommunityDetailAction.OnCommentReplyClick(it)) },
+                                onLikeClick = { onAction(CommunityDetailAction.OnCommentLikeClick(it)) },
+                                onEditClick = { onAction(CommunityDetailAction.OnCommentEditClick(it)) },
+                                onDeleteClick = { onAction(CommunityDetailAction.OnCommentDeleteClick(it)) },
+                                onReportClick = { onAction(CommunityDetailAction.OnCommentReportClick(it)) },
+                            )
+                            if (index != state.comments.lastIndex) {
+                                HorizontalDivider(thickness = 1.dp, color = AniPickTheme.colors.gray)
+                            }
                         }
                     }
                 }
             }
+        }
+
+        if (state.isCommentSubmitting || state.isDeleting) {
+            AniPickLoadingOverlay()
         }
     }
 
