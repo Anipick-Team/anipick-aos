@@ -12,5 +12,7 @@ data class MyPageMainState(
     val likedAnimes: List<Anime> = emptyList(),
     val likedPersons: List<Actor> = emptyList(),
     val isLoading: Boolean = false,
+    /** 프로필 이미지 업로드 요청 중. */
+    val isProfileImageUpdating: Boolean = false,
     val error: String? = null,
 )

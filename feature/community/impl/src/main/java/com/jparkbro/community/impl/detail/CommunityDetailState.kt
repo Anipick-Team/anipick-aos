@@ -25,6 +25,8 @@ data class CommunityDetailState(
     /** 최하단 댓글 입력창. */
     val commentInputState: TextFieldState = TextFieldState(),
     val isCommentSubmitting: Boolean = false,
+    /** 게시글/댓글 삭제 요청 중. */
+    val isDeleting: Boolean = false,
     /** 답글 대상 댓글 - null이 아니면 입력창이 답글 모드(대상 미리보기 표시, 등록 시 parentCommentId로 전달). */
     val replyTargetComment: CommunityComment? = null,
     /** 수정 대상 댓글 - null이 아니면 입력창이 수정 모드(내용 프리필, 등록 시 updateComment로 전달). */

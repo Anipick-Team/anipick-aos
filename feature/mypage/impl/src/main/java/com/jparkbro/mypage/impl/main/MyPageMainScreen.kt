@@ -2,6 +2,7 @@ package com.jparkbro.mypage.impl.main
 
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import com.jparkbro.core.designsystem.component.AniPickLoadingOverlay
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -65,25 +67,31 @@ private fun MyPageMainScreen(
     bottomNavigation: @Composable () -> Unit,
     onAction: (MyPageMainAction) -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            MyPageTopAppBar(
-                profileImage = state.profileImageBytes,
-                onSettingClick = { onAction(MyPageMainAction.OnSettingClick) },
-                onProfileImageSelected = { image -> onAction(MyPageMainAction.OnChangeProfileImage(image)) },
-            )
-        },
-        bottomBar = bottomNavigation,
-        containerColor = AniPickTheme.colors.white,
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 28.dp),
-            verticalArrangement = Arrangement.spacedBy(28.dp)
-        ) {
-            myPageMainSections(state = state, onAction = onAction)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            topBar = {
+                MyPageTopAppBar(
+                    profileImage = state.profileImageBytes,
+                    onSettingClick = { onAction(MyPageMainAction.OnSettingClick) },
+                    onProfileImageSelected = { image -> onAction(MyPageMainAction.OnChangeProfileImage(image)) },
+                )
+            },
+            bottomBar = bottomNavigation,
+            containerColor = AniPickTheme.colors.white,
+        ) { innerPadding ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 28.dp),
+                verticalArrangement = Arrangement.spacedBy(28.dp)
+            ) {
+                myPageMainSections(state = state, onAction = onAction)
+            }
+        }
+
+        if (state.isProfileImageUpdating) {
+            AniPickLoadingOverlay()
         }
     }
 }

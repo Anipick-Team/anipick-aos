@@ -210,6 +210,9 @@ class CommunityDetailViewModel(
         _state.update { it.copy(showDeleteConfirmDialog = false) }
 
         viewModelScope.launch {
+            _state.update { it.copy(isDeleting = true) }
+
+            // 성공하면 로딩을 켠 채로 목록으로 돌아간다
             communityRepository.deletePost(_state.value.postId)
                 .onSuccess {
                     // 목록 화면(CommunityMain)이 다시 보일 때 삭제된 게시글이 안 보이도록 캐시를 재조회시킨다.
@@ -217,7 +220,10 @@ class CommunityDetailViewModel(
                     globalSnackbarManager.showSnackbar("게시글이 삭제되었습니다.")
                     _events.send(CommunityDetailEvent.DeleteSuccess)
                 }
-                .onFailure { error -> globalSnackbarManager.showSnackbar(error.toDisplayMessage()) }
+                .onFailure { error ->
+                    _state.update { it.copy(isDeleting = false) }
+                    globalSnackbarManager.showSnackbar(error.toDisplayMessage())
+                }
         }
     }
 
@@ -279,12 +285,17 @@ class CommunityDetailViewModel(
         if (commentId == null) return
 
         viewModelScope.launch {
+            _state.update { it.copy(isDeleting = true) }
+
             communityRepository.deleteComment(commentId)
                 .onSuccess {
-                    _state.update { it.copy(comments = removeComment(it.comments, commentId)) }
+                    _state.update { it.copy(comments = removeComment(it.comments, commentId), isDeleting = false) }
                     globalSnackbarManager.showSnackbar("댓글이 삭제되었습니다.")
                 }
-                .onFailure { error -> globalSnackbarManager.showSnackbar(error.toDisplayMessage()) }
+                .onFailure { error ->
+                    _state.update { it.copy(isDeleting = false) }
+                    globalSnackbarManager.showSnackbar(error.toDisplayMessage())
+                }
         }
     }
 

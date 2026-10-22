@@ -57,6 +57,7 @@ class AuthRepositoryImpl(
 
     override suspend fun clearLocalData() {
         tokenProvider.clearTokens()
+        authNetworkDataSource.clearCachedTokens()
         userDataStore.clearUser()
         recentSearchDataStore.clearRecentSearches()
         recentAnimeDataStore.clearRecentAnimeId()
@@ -68,6 +69,8 @@ class AuthRepositoryImpl(
 
     private suspend fun OAuthLoginResponse.saveSession(): Boolean? {
         tokenProvider.saveTokens(accessToken = token.accessToken, refreshToken = token.refreshToken)
+        // 이전 계정 토큰이 HttpClient에 남아 있으면 새 계정 요청에 그 토큰이 실린다
+        authNetworkDataSource.clearCachedTokens()
         userDataStore.saveUser(userId = userId, nickname = nickname)
         return reviewCompletedYn
     }

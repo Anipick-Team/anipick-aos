@@ -45,6 +45,9 @@ interface UserRepository {
         confirmNewPassword: String,
     ): Result<Unit, DataError.Network>
 
+    /** 로그아웃 - 로컬 세션 데이터와 메모리 캐시를 모두 비운다 */
+    suspend fun logout()
+
     /** 회원 탈퇴 - `PATCH /setting/withdrawal`. */
     suspend fun withdraw(): Result<Unit, DataError.Network>
 

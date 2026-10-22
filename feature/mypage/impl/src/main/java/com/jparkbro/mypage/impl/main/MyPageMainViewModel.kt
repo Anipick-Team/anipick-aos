@@ -10,6 +10,7 @@ import com.jparkbro.core.common.result.onSuccess
 import com.jparkbro.core.common.result.toDisplayMessage
 import com.jparkbro.core.data.user.UserRepository
 import com.jparkbro.core.model.mypage.WatchCounts
+import com.jparkbro.core.ui.GlobalSnackbarManager
 import com.jparkbro.core.ui.util.readBytesOrNull
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +24,7 @@ import timber.log.Timber
 class MyPageMainViewModel(
     private val userRepository: UserRepository,
     private val context: Context,
+    private val globalSnackbarManager: GlobalSnackbarManager,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(MyPageMainState())
@@ -82,11 +84,17 @@ class MyPageMainViewModel(
             val mimeType = context.contentResolver.getType(image) ?: "image/jpeg"
             val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
 
+            _state.update { it.copy(isProfileImageUpdating = true) }
             userRepository.updateProfileImage(
                 imageBytes = imageBytes,
                 fileName = "profile_image.$extension",
                 mimeType = mimeType,
             )
+                .onFailure { error ->
+                    Timber.e("프로필 이미지 변경 실패: $error")
+                    globalSnackbarManager.showSnackbar(error.toDisplayMessage())
+                }
+            _state.update { it.copy(isProfileImageUpdating = false) }
         }
     }
 }

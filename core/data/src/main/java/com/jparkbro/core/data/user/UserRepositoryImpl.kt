@@ -116,9 +116,21 @@ class UserRepositoryImpl(
         return userNetworkDataSource.updatePassword(currentPassword, newPassword, confirmNewPassword)
     }
 
+    override suspend fun logout() {
+        clearSession()
+    }
+
     override suspend fun withdraw(): Result<Unit, DataError.Network> {
         return userNetworkDataSource.withdraw()
-            .onSuccess { authRepository.clearLocalData() }
+            .onSuccess { clearSession() }
+    }
+
+    /** 싱글톤이라 이전 계정 캐시가 남으면 다음 로그인 계정 화면에 그대로 보인다 */
+    private suspend fun clearSession() {
+        authRepository.clearLocalData()
+        _myPageProfile.value = null
+        _myCommunityPosts.value = MyCommunityPostsState()
+        _myCommunityComments.value = MyCommunityCommentsState()
     }
 
     override suspend fun updateProfileImage(

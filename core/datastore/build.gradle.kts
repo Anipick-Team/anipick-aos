@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.jparkbro.datastore"
+    namespace = "com.jparkbro.core.datastore"
 }
 
 dependencies {
