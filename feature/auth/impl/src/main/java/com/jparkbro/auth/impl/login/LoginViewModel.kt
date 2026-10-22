@@ -22,7 +22,11 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
@@ -33,10 +37,14 @@ class LoginViewModel(
     private val globalSnackbarManager: GlobalSnackbarManager,
 ) : ViewModel() {
 
+    private val _state = MutableStateFlow(LoginState())
+    val state: StateFlow<LoginState> = _state.asStateFlow()
+
     private val _events = Channel<LoginEvent>()
     val events = _events.receiveAsFlow()
 
     fun onAction(action: LoginAction) {
+        if (_state.value.isLoggingIn) return
         when (action) {
             is LoginAction.OnKakaoLoginClick -> { kakaoLogin(action.activity) }
             is LoginAction.OnGoogleLoginClick -> { googleLogin(action.activity) }
@@ -48,6 +56,7 @@ class LoginViewModel(
         viewModelScope.launch {
             val token = requestKakaoToken(activity) ?: return@launch
 
+            _state.update { it.copy(isLoggingIn = true) }
             authRepository.loginWithKakao(token.accessToken)
                 .onSuccess { reviewCompletedYn ->
                     _events.send(
@@ -99,6 +108,7 @@ class LoginViewModel(
         viewModelScope.launch {
             val idToken = requestGoogleIdToken(activity) ?: return@launch
 
+            _state.update { it.copy(isLoggingIn = true) }
             authRepository.loginWithGoogle(idToken)
                 .onSuccess { reviewCompletedYn ->
                     _events.send(
@@ -112,7 +122,9 @@ class LoginViewModel(
         }
     }
 
+    /** 실패할 때만 로딩을 끈다 - 성공하면 켠 채로 다음 화면으로 넘어가서 전환 중 버튼이 다시 눌리지 않는다 */
     private fun handleLoginFailure(error: DataError.Network) {
+        _state.update { it.copy(isLoggingIn = false) }
         globalSnackbarManager.showSnackbar(error.toDisplayMessage())
     }
 
