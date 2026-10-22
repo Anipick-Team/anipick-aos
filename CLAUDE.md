@@ -4,7 +4,7 @@
 
 ## 저장소
 
-- 원격: `origin` = `https://github.com/Anipick-Team/anipick-aos.git`, 기본 브랜치 `main`, 통합 브랜치 `dev`
+- 원격: `origin` = `git@github.com:Anipick-Team/anipick-aos.git`, 기본 브랜치 `main`, 통합 브랜치 `dev`
 - Kotlin 2.4 / AGP 9.3 / Jetpack Compose (Material 3) / Navigation 3 / Koin 4 / Ktor 3 / kotlinx.serialization / DataStore / Coil 3
 - `minSdk 30`, `targetSdk`·`compileSdk 37`, Java 17. 버전은 `gradle/libs.versions.toml`, 모듈 공통 설정은 `build-logic/convention`.
 - 테스트 소스는 없다. 검증은 컴파일과 Compose Preview다.
