@@ -18,8 +18,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -65,10 +65,8 @@ class CommunityWriteViewModel(
 
     private fun observeSubmitEnabled() {
         viewModelScope.launch {
-            combine(
-                snapshotFlow { _state.value.titleState.text.toString() },
-                snapshotFlow { _state.value.contentState.text.toString() },
-            ) { title, content -> title.isNotBlank() && content.isNotBlank() }
+            snapshotFlow { _state.value.titleState.text.toString() }
+                .map { title -> title.isNotBlank() }
                 .distinctUntilChanged()
                 .collect { isSubmitEnabled ->
                     _state.update { it.copy(isSubmitEnabled = isSubmitEnabled) }

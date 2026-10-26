@@ -53,7 +53,7 @@ internal fun LazyListScope.communityWriteFields(
                     AniPickBaseTextField(
                         state = state.contentState,
                         type = TextFieldType.TEXT,
-                        placeholder = "리뷰 내용을 입력해주세요.",
+                        placeholder = "내용을 입력해 주세요.",
                         lineLimits = TextFieldLineLimits.MultiLine(minHeightInLines = 6, maxHeightInLines = 10),
                         maxLength = CONTENT_MAX_LENGTH,
                         height = 220.dp,
