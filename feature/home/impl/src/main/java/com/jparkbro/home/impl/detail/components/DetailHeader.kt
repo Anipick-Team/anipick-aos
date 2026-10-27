@@ -2,10 +2,14 @@ package com.jparkbro.home.impl.detail.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,6 +18,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jparkbro.core.designsystem.R
+import com.jparkbro.core.designsystem.icon.Notice
 import com.jparkbro.core.designsystem.theme.AniPickTheme
 import com.jparkbro.core.ui.util.DevicePreviews
 import com.jparkbro.home.api.HomeDetailType
@@ -65,11 +70,16 @@ internal fun DetailHeader(
             }
         }
         HomeDetailType.Weekly -> {
-            DayOfWeekSelector(
-                selectedDay = state.selectedDayOfWeek,
-                onDaySelected = { day -> onAction(HomeDetailAction.OnDaySelected(day)) },
+            Column(
                 modifier = modifier,
-            )
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                WeeklyScheduleNotice()
+                DayOfWeekSelector(
+                    selectedDay = state.selectedDayOfWeek,
+                    onDaySelected = { day -> onAction(HomeDetailAction.OnDaySelected(day)) },
+                )
+            }
         }
         HomeDetailType.ComingSoon -> {
             ComingSoonSortHeader(
@@ -78,6 +88,31 @@ internal fun DetailHeader(
                 modifier = modifier.fillMaxWidth(),
             )
         }
+    }
+}
+
+/** 요일별 신작 방영 일정 기준 안내 */
+@Composable
+private fun WeeklyScheduleNotice(
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(AniPickTheme.colors.gray, RoundedCornerShape(8.dp))
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Image(
+            imageVector = Notice,
+            contentDescription = null,
+        )
+        Text(
+            text = "제공되는 정보는 공식 방영 일정을 기준으로 하며,\nOTT 플랫폼별 방영 일정과는 다를 수 있습니다.",
+            style = AniPickTheme.typography.caption2,
+            color = AniPickTheme.colors.black,
+        )
     }
 }
 
