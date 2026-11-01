@@ -68,6 +68,7 @@ timber = "5.0.1"
 
 # OSS-Licenses
 playServicesOssLicenses = "17.5.2"
+ossLicensesPlugin = "0.13.0"
 
 # 테스트
 junit = "4.13.2"
@@ -195,6 +196,8 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 room = { id = "androidx.room", version.ref = "room" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+oss-licenses = { id = "com.google.android.gms.oss-licenses-plugin", version.ref = "ossLicensesPlugin" }
 
 anipick-android-application = { id = "anipick.android.application", version = "unspecified" }
 anipick-android-application-compose = { id = "anipick.android.application.compose", version = "unspecified" }
