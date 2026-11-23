@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.anipick.android.application.compose)
     alias(libs.plugins.kotlin.serialization)
+    // 빌드 시 의존성 라이선스 목록(third_party_licenses)을 생성한다. 없으면 오픈소스 라이선스 화면이 비어 보인다.
+    alias(libs.plugins.oss.licenses)
 
     // ─── v2 미사용 (v1 레거시) ───────────────────────────────
     // Firebase - Application 모듈에만 필요

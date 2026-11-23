@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.jparkbro.auth.impl.BuildConfig
 import com.jparkbro.core.common.result.DataError
 import com.jparkbro.core.common.result.onFailure
@@ -78,6 +79,9 @@ class LoginViewModel(
 
                 if (error != null) {
                     Timber.e(error, "카카오계정 로그인 실패")
+                    if (!(error is ClientError && error.reason == ClientErrorCause.Cancelled)) {
+                        globalSnackbarManager.showSnackbar(KAKAO_OAUTH_FAILURE_MESSAGE)
+                    }
                     continuation.resume(null)
                 } else {
                     continuation.resume(token)
@@ -150,15 +154,31 @@ class LoginViewModel(
                 GoogleIdTokenCredential.createFrom(credential.data).idToken
             } else {
                 Timber.e("구글 로그인 실패: 알 수 없는 credential 타입 (${credential.type})")
+                globalSnackbarManager.showSnackbar(GOOGLE_OAUTH_FAILURE_MESSAGE)
                 null
             }
         } catch (e: GetCredentialCancellationException) {
-            // 사용자가 직접 취소한 경우
-            Timber.d("구글 로그인 취소됨: ${e.type}, ${e.errorMessage}")
+            // OAuth 설정 오류([16] Account reauth failed)도 취소 예외로 온다 - 메시지로 구분한다
+            if (e.errorMessage?.contains("reauth", ignoreCase = true) == true) {
+                Timber.e(e, "구글 로그인 실패: type=${e.type}, errorMessage=${e.errorMessage}")
+                globalSnackbarManager.showSnackbar(GOOGLE_OAUTH_FAILURE_MESSAGE)
+            } else {
+                Timber.d("구글 로그인 취소됨: ${e.type}, ${e.errorMessage}")
+            }
             null
         } catch (e: GetCredentialException) {
             Timber.e(e, "구글 로그인 실패: type=${e.type}, errorMessage=${e.errorMessage}")
+            globalSnackbarManager.showSnackbar(GOOGLE_OAUTH_FAILURE_MESSAGE)
+            null
+        } catch (e: GoogleIdTokenParsingException) {
+            Timber.e(e, "구글 로그인 실패: ID 토큰 파싱 오류")
+            globalSnackbarManager.showSnackbar(GOOGLE_OAUTH_FAILURE_MESSAGE)
             null
         }
+    }
+
+    private companion object {
+        const val KAKAO_OAUTH_FAILURE_MESSAGE = "카카오 로그인에 실패했습니다. 문제가 계속되면 문의해주세요."
+        const val GOOGLE_OAUTH_FAILURE_MESSAGE = "구글 로그인에 실패했습니다. 문제가 계속되면 문의해주세요."
     }
 }
