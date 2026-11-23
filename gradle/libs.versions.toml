@@ -81,7 +81,7 @@ turbine = "1.2.1"
 # Project versions
 projectApplicationId = "com.jparkbro.anipick"
 projectVersionCode = "72"
-projectVersionName = "2.0.0"
+projectVersionName = "2.0.1"
 projectMinSdkVersion = "30"
 projectTargetSdkVersion = "37"
 projectCompileSdkVersion = "37"
